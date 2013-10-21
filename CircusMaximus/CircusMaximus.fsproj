@@ -94,6 +94,9 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>
     <Folder Include="Content\" />
+    <Folder Include="Models\" />
+    <Folder Include="Views\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\boundry.png" />
