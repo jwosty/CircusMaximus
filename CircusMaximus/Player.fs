@@ -37,4 +37,4 @@ let loadContent (content: ContentManager) =
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) =
-  spriteBatch.Draw(texture, player.position, new Nullable<_>(), Color.White, single 0, Vector2.Zero, single 1, SpriteEffects.None, single 0)
+  spriteBatch.Draw(texture, player.position, new Nullable<_>(), Color.White, single 0, Vector2.Zero, new Vector2(0.25f, 0.25f), SpriteEffects.None, single 0)

@@ -33,7 +33,6 @@ open Microsoft.Xna.Framework.Media
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
         override this.Update ( gameTime:GameTime) =
-            // TODO: Add your update logic here                 
             base.Update (gameTime)
 
         /// This is called when the game should draw itself. 
