@@ -13,7 +13,8 @@ open Microsoft.Xna.Framework.Media
     type CircusMaximusGame() as this =
         inherit Game()
         let graphics = new GraphicsDeviceManager(this)
-        let mutable spriteBatch = Unchecked.defaultof<_>
+        let mutable playerSpriteBatch = Unchecked.defaultof<_>
+        let mutable player = new Player.Player(Vector2.Zero, 0.0, 0.0)
         let mutable playerTexture = Unchecked.defaultof<_>
         do
           this.Content.RootDirectory <- "Content"
@@ -26,7 +27,7 @@ open Microsoft.Xna.Framework.Media
         /// Load your graphics content.
         override this.LoadContent() =
             // Create a new SpriteBatch, which can be use to draw textures.
-            spriteBatch <- new SpriteBatch(graphics.GraphicsDevice)
+            playerSpriteBatch <- new SpriteBatch(graphics.GraphicsDevice)
             playerTexture <- Player.loadContent this.Content
 
         /// Allows the game to run logic such as updating the world,
@@ -37,14 +38,9 @@ open Microsoft.Xna.Framework.Media
 
         /// This is called when the game should draw itself. 
         override this.Draw (gameTime:GameTime) =
-            // Clear the backbuffer
             graphics.GraphicsDevice.Clear (Color.CornflowerBlue)
-
-            spriteBatch.Begin()
-
-            // draw the logo
-            //spriteBatch.Draw (logoTexture, Vector2 (130.f, 200.f), Color.White);
-            spriteBatch.End()
-
-            //TODO: Add your drawing code here
             base.Draw (gameTime)
+            
+            playerSpriteBatch.Begin()
+            Player.draw player playerSpriteBatch playerTexture
+            playerSpriteBatch.End()
