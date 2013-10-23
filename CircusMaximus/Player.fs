@@ -33,7 +33,7 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Content
 
 let loadContent (content: ContentManager) =
-  content.Load<Texture2D>("charoit")
+  content.Load<Texture2D>("chariot")
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) =
