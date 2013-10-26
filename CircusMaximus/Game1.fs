@@ -19,11 +19,19 @@ open Microsoft.Xna.Framework.Media
         let mutable playerTexture = Unchecked.defaultof<_>
         do
           this.Content.RootDirectory <- "Content"
+#if DEBUG
           graphics.IsFullScreen <- false
+#else
+          graphics.IsFullScreen <- true
+#endif
+          graphics.PreferredBackBufferWidth <- GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width
+          graphics.PreferredBackBufferHeight <- GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height
      
         /// Overridden from the base Game.Initialize. Once the GraphicsDevice is setup,
         /// we'll use the viewport to initialize some values.
-        override this.Initialize() = base.Initialize()
+        override this.Initialize() =
+          base.Initialize()
+          this.IsMouseVisible <- true
 
         /// Load your graphics content.
         override this.LoadContent() =
@@ -35,7 +43,9 @@ open Microsoft.Xna.Framework.Media
         /// checking for collisions, gathering input, and playing audio.
         override this.Update(gameTime:GameTime) =
             base.Update(gameTime)
-            player1 <- Player.update (Player.getPowerTurnFromKeyboard <| Keyboard.GetState()) player1
+            let keyboard = Keyboard.GetState()
+            if keyboard.IsKeyDown(Keys.Escape) then this.Exit()
+            player1 <- Player.update (Player.getPowerTurnFromKeyboard keyboard) player1
             player2 <- Player.update (Player.getPowerTurnFromGamepad <| GamePad.GetState(PlayerIndex.One)) player2
 
         /// This is called when the game should draw itself. 
