@@ -58,7 +58,7 @@ type CircusMaximusGame() as this =
     base.Draw (gameTime)
     
     playerScreens |> List.iter
-      (PlayerScreen.screenDo
+      (PlayerScreen.screenDraw
         (fun (sb, rect) ->
           sb.Draw(racetrackTexture, Vector2.Zero, Color.White)
           Player.draw player1 sb playerTexture

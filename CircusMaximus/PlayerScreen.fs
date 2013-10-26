@@ -26,7 +26,7 @@ let createScreen graphics playerNumber =
 // Returns a list of player screens
 let createScreens graphics = List.init 5 (createScreen graphics)
 
-let screenDo drawPredicate (screen: PlayerScreen) =
+let screenDraw drawPredicate (screen: PlayerScreen) =
   let sb, rect = screen
   let oldRect = sb.GraphicsDevice.ScissorRectangle
   sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, rasterizerState, null, Matrix.CreateTranslation(float32 rect.X, float32 rect.Y, 0.0f))
