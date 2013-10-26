@@ -15,8 +15,14 @@ type CircusMaximusGame() as this =
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
   let mutable globalSpriteBatch = Unchecked.defaultof<_>
-  let mutable player1 = new Player.Player(new Vector2(400.0f, 50.0f), 0.0, 0.0)
-  let mutable player2 = new Player.Player(new Vector2(400.0f, 150.0f), 0.0, 0.0)
+  let mutable players =
+    [
+      400.0f, 50.0f;
+      400.0f, 150.0f;
+      400.0f, 250.0f;
+      400.0f, 350.0f;
+      400.0f, 450.0f;
+    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), 0.0, 0.0))
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTexture = Unchecked.defaultof<_>
   do
@@ -49,17 +55,20 @@ type CircusMaximusGame() as this =
     base.Update(gameTime)
     let keyboard = Keyboard.GetState()
     if keyboard.IsKeyDown(Keys.Escape) then this.Exit()
-    player1 <- Player.update (Player.getPowerTurnFromKeyboard keyboard) player1
-    player2 <- Player.update (Player.getPowerTurnFromGamepad <| GamePad.GetState(PlayerIndex.One)) player2
-
-  /// This is called when the game should draw itself. 
+    
+    players <- players |>
+      List.mapi
+        (fun i player ->
+          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player
+          // For now, first player controlls players 2-5
+          else Player.update (Player.getPowerTurnFromGamepad (GamePad.GetState(PlayerIndex.One))) player)
+  
+  member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
+    sb.Draw(racetrackTexture, Vector2.Zero, Color.White)
+    List.iter (fun player -> Player.draw player sb playerTexture) players
+  
+  /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
     graphics.GraphicsDevice.Clear (Color.CornflowerBlue)
     base.Draw (gameTime)
-    
-    playerScreens |> List.iter
-      (PlayerScreen.screenDraw
-        (fun (sb, rect) ->
-          sb.Draw(racetrackTexture, Vector2.Zero, Color.White)
-          Player.draw player1 sb playerTexture
-          Player.draw player2 sb playerTexture))
+    List.iter2 (PlayerScreen.screenDraw this.DrawWorld) players playerScreens
