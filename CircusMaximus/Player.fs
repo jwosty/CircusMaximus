@@ -17,7 +17,7 @@ type Player =
 
 #nowarn "49"
 // Returns a new player updated with the given parameters
-let update Δdirection velocity (player: Player) =
+let update (Δdirection, velocity) (player: Player) =
   let x, y = cos player.position.X, sin player.position.Y
   new Player(
     new Microsoft.Xna.Framework.Vector2(
@@ -35,6 +35,20 @@ let update Δdirection velocity (player: Player) =
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Content
+open Microsoft.Xna.Framework.Input
+
+let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
+
+// Returns change in direction and power (in that order) based on the given game pad state
+let getPowerTurnFromGamepad(gamepad: GamePadState) =
+  (float gamepad.ThumbSticks.Left.X * 6.0 |> degreesToRadians, float gamepad.Triggers.Right * 5.0)
+
+// Returns change in direction and power (in that order) based on the given keyboard state
+let getPowerTurnFromKeyboard(keyboard: KeyboardState) =
+  ( (if keyboard.IsKeyDown(Keys.A) then -6.0 else 0.0) + (if keyboard.IsKeyDown(Keys.D) then 6.0 else 0.0)
+      |> degreesToRadians,
+    (if keyboard.IsKeyDown(Keys.W) then 5.0 else 0.0))
+
 
 let loadContent (content: ContentManager) =
   content.Load<Texture2D>("chariot")
