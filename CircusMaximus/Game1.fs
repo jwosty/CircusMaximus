@@ -14,7 +14,7 @@ open Microsoft.Xna.Framework.Media
         inherit Game()
         let graphics = new GraphicsDeviceManager(this)
         let mutable playerSpriteBatch = Unchecked.defaultof<_>
-        let mutable player = new Player.Player(Vector2.Zero, 0.0, 0.0)
+        let mutable player = new Player.Player(new Vector2(400.5f, 50.0f), 0.0, 0.0)
         let mutable playerTexture = Unchecked.defaultof<_>
         do
           this.Content.RootDirectory <- "Content"
@@ -34,6 +34,7 @@ open Microsoft.Xna.Framework.Media
         /// checking for collisions, gathering input, and playing audio.
         override this.Update ( gameTime:GameTime) =
             base.Update (gameTime)
+            player <- Player.update (2.0 * Math.PI / 360.0 * 6.0) 1.0 player
 
         /// This is called when the game should draw itself. 
         override this.Draw (gameTime:GameTime) =
