@@ -92,8 +92,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Player.fs" />
-    <Compile Include="Game1.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="Game.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
