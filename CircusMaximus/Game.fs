@@ -60,8 +60,7 @@ type CircusMaximusGame() as this =
       List.mapi
         (fun i player ->
           if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player
-          // For now, first player controlls players 2-5
-          else Player.update (Player.getPowerTurnFromGamepad (GamePad.GetState(PlayerIndex.One))) player)
+          else Player.update (Player.getPowerTurnFromGamepad (GamePad.GetState(enum <| i - 1))) player)
   
   member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
     sb.Draw(racetrackTexture, Vector2.Zero, Color.White)
