@@ -13,10 +13,11 @@ open Microsoft.Xna.Framework.Media
 type CircusMaximusGame() as this =
   inherit Game()
   let graphics = new GraphicsDeviceManager(this)
-  let mutable playerSpriteBatch = Unchecked.defaultof<_>
+  let mutable globalSpriteBatch = Unchecked.defaultof<_>
   let mutable player1 = new Player.Player(new Vector2(400.0f, 50.0f), 0.0, 0.0)
   let mutable player2 = new Player.Player(new Vector2(400.0f, 150.0f), 0.0, 0.0)
   let mutable playerTexture = Unchecked.defaultof<_>
+  let mutable racetrackTexture = Unchecked.defaultof<_>
   do
     this.Content.RootDirectory <- "Content"
 #if DEBUG
@@ -36,8 +37,9 @@ type CircusMaximusGame() as this =
   /// Load your graphics content.
   override this.LoadContent() =
     // Create a new SpriteBatch, which can be use to draw textures.
-    playerSpriteBatch <- new SpriteBatch(graphics.GraphicsDevice)
+    globalSpriteBatch <- new SpriteBatch(graphics.GraphicsDevice)
     playerTexture <- Player.loadContent this.Content
+    racetrackTexture <- this.Content.Load<Texture2D>("racetrack")
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
@@ -53,7 +55,8 @@ type CircusMaximusGame() as this =
     graphics.GraphicsDevice.Clear (Color.CornflowerBlue)
     base.Draw (gameTime)
     
-    playerSpriteBatch.Begin()
-    Player.draw player1 playerSpriteBatch playerTexture
-    Player.draw player2 playerSpriteBatch playerTexture
-    playerSpriteBatch.End()
+    globalSpriteBatch.Begin()
+    globalSpriteBatch.Draw(racetrackTexture, Vector2.Zero, Color.White)
+    Player.draw player1 globalSpriteBatch playerTexture
+    Player.draw player2 globalSpriteBatch playerTexture
+    globalSpriteBatch.End()

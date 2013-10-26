@@ -39,15 +39,17 @@ open Microsoft.Xna.Framework.Input
 
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
+let private maxTurn, maxSpeed = 1.0, 1.0
+
 // Returns change in direction and power (in that order) based on the given game pad state
 let getPowerTurnFromGamepad(gamepad: GamePadState) =
-  (float gamepad.ThumbSticks.Left.X * 6.0 |> degreesToRadians, float gamepad.Triggers.Right * 5.0)
+  (float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians, float gamepad.Triggers.Right * maxSpeed)
 
 // Returns change in direction and power (in that order) based on the given keyboard state
 let getPowerTurnFromKeyboard(keyboard: KeyboardState) =
-  ( (if keyboard.IsKeyDown(Keys.A) then -6.0 else 0.0) + (if keyboard.IsKeyDown(Keys.D) then 6.0 else 0.0)
+  ( (if keyboard.IsKeyDown(Keys.A) then -maxTurn else 0.0) + (if keyboard.IsKeyDown(Keys.D) then maxTurn else 0.0)
       |> degreesToRadians,
-    (if keyboard.IsKeyDown(Keys.W) then 5.0 else 0.0))
+    (if keyboard.IsKeyDown(Keys.W) then maxSpeed else 0.0))
 
 
 let loadContent (content: ContentManager) =
@@ -55,6 +57,7 @@ let loadContent (content: ContentManager) =
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) =
-  let scale = 0.25f
+  let scale = 0.125f
+  // The center is based on the original image dimensions 
   let center = new Vector2(127.0f, 57.5f)
   spriteBatch.Draw(texture, player.position, new Nullable<_>(), Color.White, single player.direction, center, scale, SpriteEffects.None, single 0)
