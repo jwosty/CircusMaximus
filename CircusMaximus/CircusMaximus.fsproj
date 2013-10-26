@@ -94,6 +94,7 @@
     <Compile Include="Player.fs" />
     <Compile Include="Main.fs" />
     <Compile Include="Game.fs" />
+    <Compile Include="Racetrack.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -105,6 +106,6 @@
   <ItemGroup>
     <BundleResource Include="Content\boundry.png" />
     <BundleResource Include="Content\chariot.png" />
-    <BundleResource Include="Content\track.png" />
+    <BundleResource Include="Content\racetrack.png" />
   </ItemGroup>
 </Project>
