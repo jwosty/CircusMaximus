@@ -13,6 +13,7 @@ open Microsoft.Xna.Framework.Media
 type CircusMaximusGame() as this =
   inherit Game()
   let graphics = new GraphicsDeviceManager(this)
+  let mutable playerScreens = Unchecked.defaultof<_>
   let mutable globalSpriteBatch = Unchecked.defaultof<_>
   let mutable player1 = new Player.Player(new Vector2(400.0f, 50.0f), 0.0, 0.0)
   let mutable player2 = new Player.Player(new Vector2(400.0f, 150.0f), 0.0, 0.0)
@@ -33,6 +34,7 @@ type CircusMaximusGame() as this =
   override this.Initialize() =
     base.Initialize()
     this.IsMouseVisible <- true
+    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice
   
   /// Load your graphics content.
   override this.LoadContent() =
@@ -55,8 +57,9 @@ type CircusMaximusGame() as this =
     graphics.GraphicsDevice.Clear (Color.CornflowerBlue)
     base.Draw (gameTime)
     
-    globalSpriteBatch.Begin()
-    globalSpriteBatch.Draw(racetrackTexture, Vector2.Zero, Color.White)
-    Player.draw player1 globalSpriteBatch playerTexture
-    Player.draw player2 globalSpriteBatch playerTexture
-    globalSpriteBatch.End()
+    playerScreens |> List.iter
+      (PlayerScreen.screenDo
+        (fun (sb, rect) ->
+          sb.Draw(racetrackTexture, Vector2.Zero, Color.White)
+          Player.draw player1 sb playerTexture
+          Player.draw player2 sb playerTexture))
