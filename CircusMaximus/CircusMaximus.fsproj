@@ -94,7 +94,6 @@
     <Compile Include="Player.fs" />
     <Compile Include="Main.fs" />
     <Compile Include="Game.fs" />
-    <Compile Include="Racetrack.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
