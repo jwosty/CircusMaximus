@@ -10,11 +10,7 @@ let loadContent (content: ContentManager) =
   // that sometime
   Array2D.init 10 3 (fun x y -> content.Load<Texture2D>(sprintf "racetrack/%i-%i.png" y x))
 
-// Wow, even though the textures collectively contain about 40,000,000 pixels, and the players are
-// updated by copying, it's still lightning fast on OSX. That's some good optimization.
+// Wow, even though the textures collectively contain about 25 million pixels, and the players are
+// updated via copying every fram, it's still lightning fast on OSX. That's some good optimization.
 let drawSingle (sb: SpriteBatch) (texture: Texture2D) x (y: int) =
-  // Every is tile 1044x1043 pixels
-  sb.Draw(texture,
-    new Vector2(float32 <| x * texture.Width, float32 <| y * texture.Height),
-    new Nullable<_>(), Color.White, single 0, Vector2.Zero, single 1,
-    SpriteEffects.None, single 0)
+  sb.Draw(texture, new Vector2(float32 <| x * texture.Width, float32 <| y * texture.Height), Color.White)
