@@ -7,14 +7,40 @@ type PlayerScreen = SpriteBatch * Rectangle
 
 let rasterizerState = new RasterizerState(ScissorTestEnable = true)
 
+// Compute a rectangle for a single screen
+let screenBounds (screenWidth, screenHeight) (row, column) =
+  // Determine how many screens will be in this row
+  // If you think about it, the screen arrangement is actually a pyramid (granted, only the top two rows)
+  let screensInRow = column + 2.0f
+  let screensInColumn = 2.0f
+  new Rectangle(
+    int <| screenWidth * (row / screensInRow),
+    int <| screenHeight * (column / screensInColumn),
+    int <| screenWidth / screensInRow,
+    int <| screenHeight / screensInColumn
+    )
+
 // Creates one of the 5 screens
 let createScreen graphics playerNumber =
   // Each screen doesn't really need it's own sprite batch...
   let spriteBatch = new SpriteBatch(graphics)
-  // The game window's width and height
-  let w, h = graphics.PresentationParameters.BackBufferWidth, graphics.PresentationParameters.BackBufferHeight
-  let halfW, thirdW, halfH = w / 2, w / 3, h / 2
+  let windowWidth, windowHeight = graphics.PresentationParameters.BackBufferWidth, graphics.PresentationParameters.BackBufferHeight
+  // Calculate what the screen's bounds should be
+  let bounds =
+    screenBounds (float32 windowWidth, float32 windowHeight) <|
+      match playerNumber with
+        // Top screens
+        | 0 -> 0.0f, 0.0f
+        | 1 -> 1.0f, 0.0f
+        // Bottom screens
+        | 2 -> 0.0f, 1.0f
+        | 3 -> 1.0f, 1.0f
+        | 4 -> 2.0f, 1.0f
+        | _ -> raise (new ArgumentException("player number"))
+  spriteBatch, bounds
+  
   // Calculate the screen's position and dimensions
+  (*
   let rx, ry, rw, rh =
     match playerNumber with
       // Top screens
@@ -22,10 +48,10 @@ let createScreen graphics playerNumber =
       | 1 -> halfW, 0,  halfW, halfH
       // Bottom screens
       | 2 -> 0, halfH,          thirdW, halfH
-      | 3 -> thirdW, halfH,     thirdW, halfH
-      | 4 -> thirdW * 2, halfH, thirdW, halfH
+      | 3 -> thirdW + halfB, halfH,     thirdW, halfH
+      | 4 -> (thirdW * 2) + (halfB * 2), halfH, thirdW, halfH
       | _ -> raise (new ArgumentException("player number"))
-  spriteBatch, new Rectangle(rx, ry, rw, rh)
+  *)
 
 // Returns a list of player screens
 let createScreens graphics = List.init 5 (createScreen graphics)
