@@ -39,7 +39,7 @@ open Microsoft.Xna.Framework.Input
 
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
-let private maxTurn, maxSpeed = 1.0, 1.0
+let private maxTurn, maxSpeed = 2.0, 5.0
 
 // Returns change in direction and power (in that order) based on the given game pad state
 let getPowerTurnFromGamepad(gamepad: GamePadState) =
@@ -57,7 +57,7 @@ let loadContent (content: ContentManager) =
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) =
-  let scale = 0.125f
+  let scale = 0.5f
   // The center is based on the original image dimensions 
   let center = new Vector2(127.0f, 57.5f)
   spriteBatch.Draw(texture, player.position, new Nullable<_>(), Color.White, single player.direction, center, scale, SpriteEffects.None, single 0)
