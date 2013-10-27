@@ -71,4 +71,4 @@ type CircusMaximusGame() as this =
   override this.Draw(gameTime:GameTime) =
     graphics.GraphicsDevice.Clear (Color.CornflowerBlue)
     base.Draw (gameTime)
-    List.iter2 (PlayerScreen.screenDraw this.DrawWorld) players playerScreens
+    List.iter2 (PlayerScreen.drawSingle this.DrawWorld) players playerScreens
