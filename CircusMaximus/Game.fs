@@ -14,7 +14,6 @@ type CircusMaximusGame() as this =
   inherit Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable globalSpriteBatch = Unchecked.defaultof<_>
   let mutable players =
     [
       400.0f, 50.0f;
@@ -24,7 +23,7 @@ type CircusMaximusGame() as this =
       400.0f, 450.0f;
     ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), 0.0, 0.0))
   let mutable playerTexture = Unchecked.defaultof<_>
-  let mutable racetrackTexture = Unchecked.defaultof<_>
+  let mutable racetrackTextures = Unchecked.defaultof<_>
   do
     this.Content.RootDirectory <- "Content"
 #if DEBUG
@@ -41,13 +40,12 @@ type CircusMaximusGame() as this =
     base.Initialize()
     this.IsMouseVisible <- true
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice
+    
   
   /// Load your graphics content.
   override this.LoadContent() =
-    // Create a new SpriteBatch, which can be use to draw textures.
-    globalSpriteBatch <- new SpriteBatch(graphics.GraphicsDevice)
     playerTexture <- Player.loadContent this.Content
-    racetrackTexture <- this.Content.Load<Texture2D>("racetrack/0-0")
+    racetrackTextures <- Racetrack.loadContent this.Content
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
@@ -63,7 +61,9 @@ type CircusMaximusGame() as this =
           else Player.update (Player.getPowerTurnFromGamepad (GamePad.GetState(enum <| i - 1))) player)
   
   member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
-    sb.Draw(racetrackTexture, Vector2.Zero, Color.White)
+    for x in 0..11 do
+      for y in 0..2 do
+        Racetrack.drawSingle sb racetrackTextures.[x, y] x y
     List.iter (fun player -> Player.draw player sb playerTexture) players
   
   /// This is called when the game should draw itself.
