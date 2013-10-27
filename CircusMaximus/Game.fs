@@ -41,7 +41,6 @@ type CircusMaximusGame() as this =
     base.Initialize()
     this.IsMouseVisible <- true
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice
-    
   
   /// Load your graphics content.
   override this.LoadContent() =
@@ -61,14 +60,14 @@ type CircusMaximusGame() as this =
           if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player
           else Player.update (Player.getPowerTurnFromGamepad (GamePad.GetState(enum <| i - 1))) player)
   
-  member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
-    for x in 0..9 do
-      for y in 0..2 do
-        Racetrack.drawSingle sb racetrackTextures.[x, y] x y
-    List.iter (fun player -> Player.draw player sb playerTexture) players
-  
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
     graphics.GraphicsDevice.Clear (Color.CornflowerBlue)
     base.Draw (gameTime)
     List.iter2 (PlayerScreen.drawSingle this.DrawWorld) players playerScreens
+  
+  member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
+    for x in 0..9 do
+      for y in 0..2 do
+        Racetrack.drawSingle sb racetrackTextures.[x, y] x y
+    List.iter (fun player -> Player.draw player sb playerTexture) players

@@ -13,16 +13,17 @@ let createScreen graphics playerNumber =
   let spriteBatch = new SpriteBatch(graphics)
   // The game window's width and height
   let w, h = graphics.PresentationParameters.BackBufferWidth, graphics.PresentationParameters.BackBufferHeight
+  let halfW, thirdW, halfH = w / 2, w / 3, h / 2
   // Calculate the screen's position and dimensions
   let rx, ry, rw, rh =
     match playerNumber with
       // Top screens
-      | 0 -> 0, 0,      w / 2, h / 2
-      | 1 -> w / 2, 0,  w / 2, h / 2
+      | 0 -> 0, 0,      halfW, halfH
+      | 1 -> halfW, 0,  halfW, halfH
       // Bottom screens
-      | 2 -> 0, h / 2,          w / 3, h / 2
-      | 3 -> w / 3, h / 2,      w / 3, h / 2
-      | 4 -> w * 2 / 3, h / 2,  w / 3, h / 2
+      | 2 -> 0, halfH,          thirdW, halfH
+      | 3 -> thirdW, halfH,     thirdW, halfH
+      | 4 -> thirdW * 2, halfH, thirdW, halfH
       | _ -> raise (new ArgumentException("player number"))
   spriteBatch, new Rectangle(rx, ry, rw, rh)
 
