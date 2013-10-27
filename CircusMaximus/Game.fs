@@ -47,7 +47,7 @@ type CircusMaximusGame() as this =
     // Create a new SpriteBatch, which can be use to draw textures.
     globalSpriteBatch <- new SpriteBatch(graphics.GraphicsDevice)
     playerTexture <- Player.loadContent this.Content
-    racetrackTexture <- this.Content.Load<Texture2D>("racetrack")
+    racetrackTexture <- this.Content.Load<Texture2D>("racetrack/0-0")
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
