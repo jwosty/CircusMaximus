@@ -61,7 +61,7 @@ type CircusMaximusGame() as this =
           else Player.update (Player.getPowerTurnFromGamepad (GamePad.GetState(enum <| i - 1))) player)
   
   member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
-    for x in 0..11 do
+    for x in 0..9 do
       for y in 0..2 do
         Racetrack.drawSingle sb racetrackTextures.[x, y] x y
     List.iter (fun player -> Player.draw player sb playerTexture) players
