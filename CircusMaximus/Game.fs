@@ -15,12 +15,13 @@ type CircusMaximusGame() as this =
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
   let mutable players =
+    let x = 820.0f
     [
-      400.0f, 50.0f;
-      400.0f, 150.0f;
-      400.0f, 250.0f;
-      400.0f, 350.0f;
-      400.0f, 450.0f;
+      x, 740.0f;
+      x, 950.0f;
+      x, 1160.0f;
+      x, 1370.0f;
+      x, 1580.0f;
     ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), 0.0, 0.0))
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
