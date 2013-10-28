@@ -8,17 +8,36 @@ type PlayerScreen = SpriteBatch * Rectangle
 let rasterizerState = new RasterizerState(ScissorTestEnable = true)
 
 // Compute a rectangle for a single screen
-let screenBounds (screenWidth, screenHeight) (row, column) =
+let screenBounds (screenWidth, screenHeight) border (row, column) =
   // Determine how many screens will be in this row
   // If you think about it, the screen arrangement is actually a pyramid (granted, only the top two rows)
   let screensInRow = column + 2.0f
   let screensInColumn = 2.0f
-  new Rectangle(
-    int <| screenWidth * (row / screensInRow),
-    int <| screenHeight * (column / screensInColumn),
-    int <| screenWidth / screensInRow,
-    int <| screenHeight / screensInColumn
-    )
+  let halfB = border * 0.5f
+  // Do maths ignoring borders
+  let bx, by, bw, bh =
+    (screenWidth * (row / screensInRow)),
+    (screenHeight * (column / screensInColumn)),
+    (screenWidth / screensInRow),
+    (screenHeight / screensInColumn)
+  
+  // Subtract borders
+  let x, w =
+    if row = 0.0f then
+      bx, bw - halfB
+    elif row = (screensInRow - 1.0f) then
+      bx + halfB, bw - halfB
+    else
+      bx + halfB, bw - border
+  let y, h =
+    if column = 0.0f then
+      by, bh - halfB
+    elif column = (screensInColumn - 1.0f) then
+      by + halfB, bh - halfB
+    else
+      by + halfB, bh - border
+  
+  new Rectangle(int <| round x, int <| round y, int <| round w, int <| round h)
 
 // Creates one of the 5 screens
 let createScreen graphics playerNumber =
@@ -27,7 +46,7 @@ let createScreen graphics playerNumber =
   let windowWidth, windowHeight = graphics.PresentationParameters.BackBufferWidth, graphics.PresentationParameters.BackBufferHeight
   // Calculate what the screen's bounds should be
   let bounds =
-    screenBounds (float32 windowWidth, float32 windowHeight) <|
+    screenBounds (float32 windowWidth, float32 windowHeight) 6.0f <|
       match playerNumber with
         // Top screens
         | 0 -> 0.0f, 0.0f
