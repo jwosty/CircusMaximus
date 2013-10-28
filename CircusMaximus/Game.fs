@@ -22,7 +22,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), 0.0, 0.0))
+    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), 0.0, 0.0, 0))
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
   do

@@ -12,7 +12,8 @@ type Player =
     // Radians
     val public direction: float
     val public velocity: float
-    new(p, d, v) = { position = p; direction = d; velocity = v }
+    val public lap: int
+    new(p, d, v, l) = { position = p; direction = d; velocity = v; lap = l }
   end
 
 #nowarn "49"
@@ -25,7 +26,7 @@ let update (Δdirection, velocity) (player: Player) =
       player.position.X + float32 (cos player.direction * player.velocity),
       player.position.Y + float32 (sin player.direction * player.velocity)),
     // Turn and de/accellerate
-    player.direction + Δdirection, velocity)
+    player.direction + Δdirection, velocity, player.lap)
 
 
 // ===================
