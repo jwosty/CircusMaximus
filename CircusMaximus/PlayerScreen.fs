@@ -38,20 +38,6 @@ let createScreen graphics playerNumber =
         | 4 -> 2.0f, 1.0f
         | _ -> raise (new ArgumentException("player number"))
   spriteBatch, bounds
-  
-  // Calculate the screen's position and dimensions
-  (*
-  let rx, ry, rw, rh =
-    match playerNumber with
-      // Top screens
-      | 0 -> 0, 0,      halfW, halfH
-      | 1 -> halfW, 0,  halfW, halfH
-      // Bottom screens
-      | 2 -> 0, halfH,          thirdW, halfH
-      | 3 -> thirdW + halfB, halfH,     thirdW, halfH
-      | 4 -> (thirdW * 2) + (halfB * 2), halfH, thirdW, halfH
-      | _ -> raise (new ArgumentException("player number"))
-  *)
 
 // Returns a list of player screens
 let createScreens graphics = List.init 5 (createScreen graphics)
