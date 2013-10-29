@@ -40,7 +40,7 @@ open Microsoft.Xna.Framework.Input
 
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
-let private maxTurn, maxSpeed = 2.0, 4.0
+let private maxTurn, maxSpeed = 1.0, 4.0
 
 // Returns change in direction and power (in that order) based on the given game pad state
 let getPowerTurnFromGamepad(gamepad: GamePadState) =
@@ -51,7 +51,6 @@ let getPowerTurnFromKeyboard(keyboard: KeyboardState) =
   ( (if keyboard.IsKeyDown(Keys.A) then -maxTurn else 0.0) + (if keyboard.IsKeyDown(Keys.D) then maxTurn else 0.0)
       |> degreesToRadians,
     (if keyboard.IsKeyDown(Keys.W) then maxSpeed else 0.0))
-
 
 let loadContent (content: ContentManager) =
   content.Load<Texture2D>("chariot")
