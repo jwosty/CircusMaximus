@@ -61,5 +61,5 @@ let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) =
   spriteBatch.Draw(
     texture, player.position, new Nullable<_>(), Color.White, single player.direction,
     new Vector2(float32 texture.Width / 1.75f, float32 texture.Height / 1.75f), // texture center
-    0.25f, // scale
+    1.0f, // scale
     SpriteEffects.None, single 0)

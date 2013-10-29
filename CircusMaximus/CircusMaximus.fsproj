@@ -106,7 +106,6 @@
     <Folder Include="Content\racetrack\" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Content\boundry.png" />
     <BundleResource Include="Content\chariot.png" />
     <BundleResource Include="Content\racetrack\0-0.png" />
     <BundleResource Include="Content\racetrack\0-1.png" />
