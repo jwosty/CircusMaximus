@@ -64,4 +64,4 @@ let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) font =
     1.0f, // scale
     SpriteEffects.None, single 0)
   // Draw an asterisk on the player
-  FlatSpriteFont.drawChar font spriteBatch '*' player.position 3 Color.White
+  FlatSpriteFont.drawString font spriteBatch "The quick brown fox\njumped over\nthe lazy dog" player.position 3 Color.White
