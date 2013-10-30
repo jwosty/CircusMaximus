@@ -8,6 +8,7 @@ open Microsoft.Xna.Framework.Input.Touch
 open Microsoft.Xna.Framework.Storage
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Media
+open CircusMaximus.Extensions
 
 /// Default Project Template
 type CircusMaximusGame() as this =
@@ -22,9 +23,10 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), 0.0, 0.0, 0))
+    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians -180.0, 0.0, 0))
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
+  let mutable font = Unchecked.defaultof<_>
   do
     this.Content.RootDirectory <- "Content"
 #if DEBUG
@@ -41,6 +43,7 @@ type CircusMaximusGame() as this =
     base.Initialize()
     this.IsMouseVisible <- true
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice
+    font <- this.Content.Load<Texture2D>("font")
   
   /// Load your graphics content.
   override this.LoadContent() =
@@ -68,8 +71,8 @@ type CircusMaximusGame() as this =
     base.Draw (gameTime)
     List.iter2 (PlayerScreen.drawSingle this.DrawWorld) players playerScreens
   
-  member this.DrawWorld((sb, rect): PlayerScreen.PlayerScreen) =
+  member this.DrawWorld((sb, _): PlayerScreen.PlayerScreen) =
     for x in 0..9 do
       for y in 0..2 do
         Racetrack.drawSingle sb racetrackTextures.[x, y] x y
-    List.iter (fun player -> Player.draw player sb playerTexture) players
+    List.iter (fun player -> Player.draw player sb playerTexture font) players

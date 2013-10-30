@@ -92,6 +92,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Extensions.fs" />
+    <Compile Include="FlatSpriteFont.fs" />
     <Compile Include="Racetrack.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerScreen.fs" />
@@ -138,5 +139,6 @@
     <BundleResource Include="Content\racetrack\2-7.png" />
     <BundleResource Include="Content\racetrack\2-8.png" />
     <BundleResource Include="Content\racetrack\2-9.png" />
+    <BundleResource Include="Content\font.png" />
   </ItemGroup>
 </Project>

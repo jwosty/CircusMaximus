@@ -1,4 +1,4 @@
-namespace CircusMaximus
+ namespace CircusMaximus
 open MonoMac.AppKit
 open MonoMac.Foundation
 
