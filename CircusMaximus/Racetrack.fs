@@ -12,5 +12,5 @@ let loadContent (content: ContentManager) =
 
 // Wow, even though the textures collectively contain about 25 million pixels, and the players are
 // updated via copying every fram, it's still lightning fast on OSX. That's some good optimization.
-let drawSingle (sb: SpriteBatch) (texture: Texture2D) x (y: int) =
+let drawSingle (sb: SpriteBatch) (texture: Texture2D) x y =
   sb.Draw(texture, new Vector2(float32 <| x * texture.Width, float32 <| y * texture.Height), Color.White)

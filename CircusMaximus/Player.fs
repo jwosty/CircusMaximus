@@ -56,7 +56,7 @@ let loadContent (content: ContentManager) =
   content.Load<Texture2D>("chariot")
 
 // Renders a player, assuming spriteBatch.Begin has already been called
-let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) font =
+let draw (player: Player) (spriteBatch: SpriteBatch) screenHeight (texture: Texture2D) font =
   // Draw the player
   spriteBatch.Draw(
     texture, player.position, new Nullable<_>(), Color.White, single player.direction,
@@ -64,4 +64,4 @@ let draw (player: Player) (spriteBatch: SpriteBatch) (texture: Texture2D) font =
     1.0f, // scale
     SpriteEffects.None, single 0)
   // Draw an asterisk on the player
-  FlatSpriteFont.drawString font spriteBatch "The quick brown fox\njumped over\nthe lazy dog" player.position 3 Color.White
+  //FlatSpriteFont.drawString font spriteBatch "The quick brown fox\njumped over\nthe lazy dog" (player.position + new Vector2(float32 <| screenHeight / 2, 0.0f)) 3 Color.White

@@ -69,10 +69,14 @@ type CircusMaximusGame() as this =
     // background and become whatever color the screen is cleared with
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw (gameTime)
-    List.iter2 (PlayerScreen.drawSingle this.DrawWorld) players playerScreens
+    List.iteri2 (PlayerScreen.drawSingle this.DrawWorld) players playerScreens
   
-  member this.DrawWorld((sb, _): PlayerScreen.PlayerScreen) =
+  member this.DrawWorld(mainPlayer, ((sb, rect): PlayerScreen.PlayerScreen)) =
     for x in 0..9 do
       for y in 0..2 do
         Racetrack.drawSingle sb racetrackTextures.[x, y] x y
-    List.iter (fun player -> Player.draw player sb playerTexture font) players
+    List.iter (fun player -> Player.draw player sb rect.Height playerTexture font) players
+    this.DrawHUD(players.[mainPlayer], (sb, rect))
+  
+  member this.DrawHUD(player, ((sb, rect): PlayerScreen.PlayerScreen)) =
+    FlatSpriteFont.drawString font sb (sprintf "Lap: %i\nScore: foo" player.lap) (player.position - rect.Height) 3 Color.White FlatSpriteFont.XY

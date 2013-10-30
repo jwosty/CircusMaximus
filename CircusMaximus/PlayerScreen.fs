@@ -62,7 +62,7 @@ let createScreen graphics playerNumber =
 let createScreens graphics = List.init 5 (createScreen graphics)
 
 // Draw a single player's screen
-let drawSingle drawPredicate (player: Player.Player) (screen: PlayerScreen) =
+let drawSingle drawPredicate playerNumber (player: Player.Player) (screen: PlayerScreen) =
   let sb, rect = screen
   sb.Begin(
     SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, rasterizerState, null,
@@ -73,5 +73,5 @@ let drawSingle drawPredicate (player: Player.Player) (screen: PlayerScreen) =
   // Cuts off anything outside the screen's bounds, thus stopping screens from drawing on top of each other
   sb.GraphicsDevice.ScissorRectangle <- rect
   // Call the custom drawing code
-  drawPredicate screen
+  drawPredicate(playerNumber, screen)
   sb.End()
