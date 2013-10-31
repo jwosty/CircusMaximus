@@ -4,16 +4,21 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 
-type OriginAlignment = | CenterX | CenterY | CenterXCenterY | XY
+type Alignment = | Min | Center | Max
+
+type AxisAlignment = Alignment * Alignment
 
 // Returns a vector of the offset for an object to be aligned in that manner
-let inline alignmentToOffset objWidth objHeight alignment =
-  match alignment with
-    | CenterX -> new Vector2(-0.5f, 0.0f)
-    | CenterY -> new Vector2(0.0f, -0.5f)
-    | CenterXCenterY -> new Vector2(-0.5f, -0.5f)
-    | XY -> new Vector2(0.0f, 0.0f)
-    * new Vector2(float32 objWidth, float32 objHeight)
+let inline axisAlignmentToOffset objWidth objHeight ((xAlignment, yAlignment): AxisAlignment) =
+  let x =
+    match xAlignment with
+      | Min -> 0.0f | Center -> -0.5f | Max -> -1.0f
+      * float32 objWidth
+  let y =
+    match yAlignment with
+      | Min -> 0.0f | Center -> -0.5f | Max -> -1.0f
+      * float32 objHeight
+  new Vector2(x, y)
 
 // Returns the a rectangle that specifies where the character is in the texture
 let getCharTextureRectangle (chr: char) (w, h) =
@@ -31,12 +36,11 @@ let drawChar (fontTexture: Texture2D) (sb: SpriteBatch) (chr: char) (position: V
 let lines (str: string) = List.ofArray (str.Split([|'\n'|]))
 
 let width (str: string) charWidth scale =
-  (str.Split([|'\n'|]) |> Array.fold (fun longest str -> if str.Length > longest then str.Length else longest) 0)
-    * charWidth * scale
+  float32 (str.Split([|'\n'|]) |> Array.fold (fun longest str -> if str.Length > longest then str.Length else longest) 0)
+    * float32 charWidth * scale
 
 let height (str: string) charHeight scale =
-  str.Split([|'\n'|]).Length
-    * charHeight * scale
+  float32 (str.Split([|'\n'|]).Length) * float32 charHeight * scale
 
 // Draws a string without interpreting newlines
 let drawSingleLineString fontTexture sb (str: String) position scale color =
@@ -45,17 +49,17 @@ let drawSingleLineString fontTexture sb (str: String) position scale color =
       drawChar
         fontTexture sb chr
         // line position + char offset
-        (position + new Vector2(float32 <| fontTexture.Height * scale * i, 0.0f))
+        (position + new Vector2(float32 fontTexture.Height * scale * float32 i, 0.0f))
         scale color)
     (str.ToCharArray())
 
 let drawString (fontTexture: Texture2D) sb (str: String) position scale color alignment =
-  let grandOffset = alignmentToOffset <| width str fontTexture.Height scale <| height str fontTexture.Height scale <| alignment
+  let grandOffset = axisAlignmentToOffset <| width str fontTexture.Height scale <| height str fontTexture.Height scale <| alignment
   Array.iteri
     (fun i siStr ->
       drawSingleLineString
         fontTexture sb siStr
         // string position + line offset + string offset
-        (position + new Vector2(0.0f, float32 <| fontTexture.Height * scale * i) + grandOffset)
+        (position + new Vector2(0.0f, float32 fontTexture.Height * scale * float32 i) + grandOffset)
         scale color)
     (str.Split([|'\n'|]))

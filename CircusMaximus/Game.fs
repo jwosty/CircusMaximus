@@ -24,6 +24,7 @@ type CircusMaximusGame() as this =
       x, 1370.0f;
       x, 1580.0f;
     ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians -180.0, 0.0, 0))
+  let mutable fontBatch = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
   let mutable font = Unchecked.defaultof<_>
@@ -43,12 +44,13 @@ type CircusMaximusGame() as this =
     base.Initialize()
     this.IsMouseVisible <- true
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice
-    font <- this.Content.Load<Texture2D>("font")
+    fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
   override this.LoadContent() =
     playerTexture <- Player.loadContent this.Content
     racetrackTextures <- Racetrack.loadContent this.Content
+    font <- this.Content.Load<Texture2D>("font")
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
@@ -79,4 +81,12 @@ type CircusMaximusGame() as this =
     this.DrawHUD(players.[mainPlayer], (sb, rect))
   
   member this.DrawHUD(player, ((sb, rect): PlayerScreen.PlayerScreen)) =
-    FlatSpriteFont.drawString font sb (sprintf "Lap: %i\nScore: foo" player.lap) (player.position - rect.Height) 3 Color.White FlatSpriteFont.XY
+    // SamplerState.PointClamp disables anti-aliasing, which just looks horrible on scaled bitmap fonts
+    fontBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null)
+    FlatSpriteFont.drawString
+      font fontBatch
+      (sprintf "Lap: %i" player.lap)
+      (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y))
+      3.0f Color.White
+      (FlatSpriteFont.Center, FlatSpriteFont.Min)
+    fontBatch.End()

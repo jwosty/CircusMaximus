@@ -98,6 +98,7 @@
     <Compile Include="PlayerScreen.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="Taunt.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
