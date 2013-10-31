@@ -92,13 +92,13 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Extensions.fs" />
+    <Compile Include="Taunt.fs" />
     <Compile Include="FlatSpriteFont.fs" />
     <Compile Include="Racetrack.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerScreen.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Main.fs" />
-    <Compile Include="Taunt.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
