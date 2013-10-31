@@ -64,6 +64,7 @@ let createScreens graphics = List.init 5 (createScreen graphics)
 // Draw a single player's screen
 let drawSingle drawPredicate playerNumber (player: Player.Player) (screen: PlayerScreen) =
   let sb, rect = screen
+  let sr = sb.GraphicsDevice.ScissorRectangle
   sb.Begin(
     SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, rasterizerState, null,
     // Use a simple translation matrix based on the player's position to produce scrolling
@@ -75,3 +76,4 @@ let drawSingle drawPredicate playerNumber (player: Player.Player) (screen: Playe
   // Call the custom drawing code
   drawPredicate(playerNumber, screen)
   sb.End()
+  sb.GraphicsDevice.ScissorRectangle <- sr
