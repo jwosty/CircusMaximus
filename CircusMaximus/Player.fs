@@ -4,6 +4,10 @@ open System
 // =====================
 // == XNA INDEPENDENT ==
 // =====================
+open Microsoft.Xna.Framework
+
+let turnLine = 1255
+let tauntTime = 500
 
 type Player =
   struct
@@ -12,30 +16,39 @@ type Player =
     // Radians
     val public direction: float
     val public velocity: float
-    val public lap: int
+    val public turns: int
     val public currentTaunt: string option
     val public tauntTimer: int
-    new(pos, dir, vel, lap, tnt, tntT) = { position = pos; direction = dir; velocity = vel; lap = lap; currentTaunt = tnt; tauntTimer = tntT }
+    new(pos, dir, vel, turns, tnt, tntT) = { position = pos; direction = dir; velocity = vel; turns = turns; currentTaunt = tnt; tauntTimer = tntT }
+    new(pos, dir, vel, turnLine) =
+      { position = pos; direction = dir; velocity = vel;
+        turns = if pos.Y <= turnLine then 0 else -1 ;
+        currentTaunt = None; tauntTimer = 0 }
   end
 
 #nowarn "49"
 // Returns a new player updated with the given parameters
-let update (Δdirection, velocity) (player: Player) expectingTaunt =
-  let x, y = cos player.position.X, sin player.position.Y
+let update (Δdirection, velocity) (player: Player) expectingTaunt turnLine =
+  let position =
+    player.position 
+      + new Vector2(
+        float32 <| cos player.direction * player.velocity,
+        float32 <| sin player.direction * player.velocity)
   let taunt, tauntTimer =
     if player.tauntTimer > 0 then
       player.currentTaunt, player.tauntTimer - 1
     elif expectingTaunt then
-      Some(Taunt.pickTaunt ()), 500
+      Some(Taunt.pickTaunt ()), tauntTime
     else
       None, player.tauntTimer - 1
   new Player(
-    new Microsoft.Xna.Framework.Vector2(
-      // Go forward
-      player.position.X + float32 (cos player.direction * player.velocity),
-      player.position.Y + float32 (sin player.direction * player.velocity)),
+    position,
     // Turn and de/accellerate
-    player.direction + Δdirection, velocity, player.lap,
+    player.direction + Δdirection, velocity,
+    (if (player.position.Y < float32 turnLine && position.Y > float32 turnLine) || (player.position.Y > float32 turnLine && position.Y < float32 turnLine) then
+      player.turns + 1
+    else
+      player.turns),
     taunt, tauntTimer)
 
 
