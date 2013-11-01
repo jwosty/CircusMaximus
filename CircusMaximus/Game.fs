@@ -90,7 +90,7 @@ type CircusMaximusGame() as this =
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
     FlatSpriteFont.drawString
       font fontBatch
-      (sprintf "Lap: %i" player.turns)
+      (sprintf "Turns: %i" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
       (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y))
       3.0f Color.White
       (FlatSpriteFont.Min, FlatSpriteFont.Min)
