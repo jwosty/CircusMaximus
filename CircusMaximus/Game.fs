@@ -23,7 +23,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians 0.0, 0.0, 1255.0f))
+    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians 0.0, 0.0, Player.turnLine))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
@@ -74,7 +74,9 @@ type CircusMaximusGame() as this =
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw (gameTime)
     // SamplerState.PointClamp disables anti-aliasing, which just looks horrible on scaled bitmap fonts
+    fontBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null)
     List.iteri2 (PlayerScreen.drawSingle this.DrawWorld) players playerScreens
+    fontBatch.End()
     fontBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null)
     List.iter2 this.DrawHUD players playerScreens
     fontBatch.End()
@@ -88,8 +90,7 @@ type CircusMaximusGame() as this =
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
     FlatSpriteFont.drawString
       font fontBatch
-      (sprintf "Lap: %i" player.turns)//(MathHelper.Clamp(player.lap, 0, Int32.MaxValue)))
-      //player.position
+      (sprintf "Lap: %i" player.turns)
       (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y))
       3.0f Color.White
       (FlatSpriteFont.Min, FlatSpriteFont.Min)

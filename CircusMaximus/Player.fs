@@ -22,7 +22,7 @@ type Player =
     new(pos, dir, vel, turns, tnt, tntT) = { position = pos; direction = dir; velocity = vel; turns = turns; currentTaunt = tnt; tauntTimer = tntT }
     new(pos, dir, vel, turnLine) =
       { position = pos; direction = dir; velocity = vel;
-        turns = if pos.Y <= turnLine then 0 else -1 ;
+        turns = if pos.Y <= float32 turnLine then 0 else -1 ;
         currentTaunt = None; tauntTimer = 0 }
   end
 
@@ -45,6 +45,7 @@ let update (Δdirection, velocity) (player: Player) expectingTaunt turnLine =
     position,
     // Turn and de/accellerate
     player.direction + Δdirection, velocity,
+    // If the player has crossed the threshhold, increment the turn count
     (if (player.position.Y < float32 turnLine && position.Y > float32 turnLine) || (player.position.Y > float32 turnLine && position.Y < float32 turnLine) then
       player.turns + 1
     else
