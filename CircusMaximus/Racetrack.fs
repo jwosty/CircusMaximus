@@ -3,6 +3,9 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
+open CircusMaximus.VectorOps
+
+let center = 5418 @@ 1255
 
 let loadContent (content: ContentManager) =
   // Use a 2D array because there aren't 2D lists, and a 1D list would be harder to deal with here

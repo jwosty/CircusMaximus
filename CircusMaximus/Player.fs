@@ -6,7 +6,6 @@ open System
 // =====================
 open Microsoft.Xna.Framework
 
-let turnLine = 1255
 let tauntTime = 500
 
 type Player =
@@ -17,18 +16,28 @@ type Player =
     val public direction: float
     val public velocity: float
     val public turns: int
+    val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
-    new(pos, dir, vel, turns, tnt, tntT) = { position = pos; direction = dir; velocity = vel; turns = turns; currentTaunt = tnt; tauntTimer = tntT }
-    new(pos, dir, vel, turnLine) =
+    new(pos, dir, vel, turns, ltl, tnt, tntT) = { position = pos; direction = dir; velocity = vel; turns = turns; lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT }
+    new(pos, dir, vel, (center: Vector2)) =
       { position = pos; direction = dir; velocity = vel;
-        turns = if pos.Y >= float32 turnLine then 0 else -1 ;
+        turns = if pos.Y >= center.Y then 0 else -1;
+        // Always start on the opposite side
+        lastTurnedLeft = pos.X >= center.X;
         currentTaunt = None; tauntTimer = 0 }
   end
 
+let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
+  if lastTurnedLeft && position.X > center.X then
+    lastPosition.Y > center.Y && position.Y < center.Y
+  elif (not lastTurnedLeft) && position.X < center.X then
+    lastPosition.Y < center.Y && position.Y > center.Y
+  else false
+
 #nowarn "49"
 // Returns a new player updated with the given parameters
-let update (Δdirection, velocity) (player: Player) expectingTaunt turnLine =
+let update (Δdirection, velocity) (player: Player) expectingTaunt (center: Vector2) =
   let position =
     player.position 
       + new Vector2(
@@ -41,16 +50,16 @@ let update (Δdirection, velocity) (player: Player) expectingTaunt turnLine =
       Some(Taunt.pickTaunt ()), tauntTime
     else
       None, player.tauntTimer - 1
-  new Player(
-    position,
-    // Turn and de/accellerate
-    player.direction + Δdirection, velocity,
-    // If the player has crossed the threshhold, increment the turn count
-    (if (player.position.Y < float32 turnLine && position.Y > float32 turnLine) || (player.position.Y > float32 turnLine && position.Y < float32 turnLine) then
-      player.turns + 1
+  // If the player has crossed the threshhold not more than once in a row, increment the turn count
+  let turns, lastTurnedLeft =
+    if isPassingTurnLine center player.lastTurnedLeft player.position position then
+      player.turns + 1, not player.lastTurnedLeft
     else
-      player.turns),
-    taunt, tauntTimer)
+      player.turns, player.lastTurnedLeft
+  
+  new Player(
+    position, player.direction + Δdirection, velocity,
+    turns, lastTurnedLeft, taunt, tauntTimer)
 
 
 // ===================

@@ -23,7 +23,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians 0.0, 0.0, Player.turnLine))
+    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians 0.0, 0.0, Racetrack.center))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
@@ -62,10 +62,10 @@ type CircusMaximusGame() as this =
     players <- players |>
       List.mapi
         (fun i player ->
-          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player (keyboard.IsKeyDown(Keys.Q)) Player.turnLine
+          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
           else
             let gamepad = GamePad.GetState(enum <| i - 1)
-            Player.update (Player.getPowerTurnFromGamepad gamepad) player (gamepad.Buttons.A = ButtonState.Pressed) Player.turnLine)
+            Player.update (Player.getPowerTurnFromGamepad gamepad) player (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
   
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
@@ -90,7 +90,13 @@ type CircusMaximusGame() as this =
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
     FlatSpriteFont.drawString
       font fontBatch
-      (sprintf "Turns: %i" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
+      (sprintf "Turns: %i" player.turns)//(MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
       (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y))
       3.0f Color.White
-      (FlatSpriteFont.Min, FlatSpriteFont.Min)
+      (FlatSpriteFont.Center, FlatSpriteFont.Min)
+    FlatSpriteFont.drawString
+      font fontBatch
+      (sprintf "LastTurnLeft: %b" player.lastTurnedLeft)
+      (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y + 24.0f))
+      3.0f Color.White
+      (FlatSpriteFont.Center, FlatSpriteFont.Min)
