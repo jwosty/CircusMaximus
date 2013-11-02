@@ -1,0 +1,7 @@
+#I "/Users/alanwostenberg/Projects/FSharp/CircusMaximus/lib/"
+#I "/Users/alanwostenberg/Projects/FSharp/CircusMaximus/CircusMaximus/"
+#r "MonoGame.Framework.dll"
+#load "BasicFunctions/HelperFunctions.fs"
+#load "BasicFunctions/Extensions.fs"
+#load "BasicFunctions/LinearEquation.fs"
+#load "BasicFunctions/LineSegment.fs"

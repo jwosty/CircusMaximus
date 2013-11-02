@@ -102,6 +102,8 @@
     <Compile Include="GameElements\PlayerScreen.fs" />
     <Compile Include="GameElements\Game.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="GameElements\BoundingBox2D.fs" />
+    <Compile Include="BasicFunctions\LineSegment.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
