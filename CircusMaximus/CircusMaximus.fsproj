@@ -101,6 +101,7 @@
     <Compile Include="PlayerScreen.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="LinearEquation.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
