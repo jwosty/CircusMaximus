@@ -21,3 +21,24 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
       new Nullable<Rectangle>(), color_,
       atan2 edge.Y edge.X,  // angle
       0 @@ 0, SpriteEffects.None, 0.0f)
+
+module List =
+  /// Returns the consecutive pairs of a list (including the first and last elements together)
+  let consecutivePairs list =
+    let max = List.length list - 1
+    List.mapi
+      (fun i _ ->
+        let nextI = if i = max then 0 else i + 1
+        list.[i], list.[nextI])
+      list
+  
+  /// Returns a list without the element at the index
+  let removeIndex (index: int) (stuff: 'a list) : 'a list =
+    // Written in the imperitive style for the sake of efficiency
+    let mutable result = []
+    let mutable erodingList = stuff
+    for i in 0 .. List.length stuff - 1 do
+      if i <> index then
+        result <- result @ [erodingList.Head]
+      erodingList <- erodingList.Tail
+    result
