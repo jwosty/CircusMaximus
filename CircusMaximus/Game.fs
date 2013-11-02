@@ -8,7 +8,8 @@ open Microsoft.Xna.Framework.Input.Touch
 open Microsoft.Xna.Framework.Storage
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Media
-open CircusMaximus.Extensions
+open Extensions
+open HelperFunctions
 
 /// Default Project Template
 type CircusMaximusGame() as this =
@@ -23,7 +24,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new Vector2(x, y), Player.degreesToRadians 0.0, 0.0, Racetrack.center))
+    ] |> List.map (fun (x, y) -> new Player.Player(x@@y, Player.degreesToRadians 0.0, 0.0, Racetrack.center))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
@@ -90,13 +91,13 @@ type CircusMaximusGame() as this =
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
     FlatSpriteFont.drawString
       font fontBatch
-      (sprintf "Turns: %i" player.turns)//(MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
-      (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y))
+      (sprintf "Turns: %i" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
+      (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
       3.0f Color.White
       (FlatSpriteFont.Center, FlatSpriteFont.Min)
     FlatSpriteFont.drawString
       font fontBatch
       (sprintf "LastTurnLeft: %b" player.lastTurnedLeft)
-      (new Vector2(float32 rect.X + (float32 rect.Width / 2.0f), float32 rect.Y + 24.0f))
+      (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + 24)
       3.0f Color.White
       (FlatSpriteFont.Center, FlatSpriteFont.Min)

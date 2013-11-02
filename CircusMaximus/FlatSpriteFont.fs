@@ -3,6 +3,7 @@ module CircusMaximus.FlatSpriteFont
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
+open HelperFunctions
 
 type Alignment = | Min | Center | Max
 
@@ -18,7 +19,7 @@ let inline axisAlignmentToOffset objWidth objHeight ((xAlignment, yAlignment): A
     match yAlignment with
       | Min -> 0.0f | Center -> -0.5f | Max -> -1.0f
       * float32 objHeight
-  new Vector2(x, y)
+  x @@ y
 
 // Returns the a rectangle that specifies where the character is in the texture
 let getCharTextureRectangle (chr: char) (w, h) =
@@ -49,7 +50,7 @@ let drawSingleLineString fontTexture sb (str: String) position scale color =
       drawChar
         fontTexture sb chr
         // line position + char offset
-        (position + new Vector2(float32 fontTexture.Height * scale * float32 i, 0.0f))
+        (position + (float32 fontTexture.Height * scale * float32 i @@ 0))
         scale color)
     (str.ToCharArray())
 
@@ -60,6 +61,6 @@ let drawString (fontTexture: Texture2D) sb (str: String) position scale color al
       drawSingleLineString
         fontTexture sb siStr
         // string position + line offset + string offset
-        (position + new Vector2(0.0f, float32 fontTexture.Height * scale * float32 i) + grandOffset)
+        (position + (0 @@ float32 fontTexture.Height * scale * float32 i) + grandOffset)
         scale color)
     (str.Split([|'\n'|]))

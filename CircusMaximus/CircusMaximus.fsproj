@@ -91,7 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="VectorOps.fs" />
+    <Compile Include="HelperFunctions.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="Taunt.fs" />
     <Compile Include="FlatSpriteFont.fs" />

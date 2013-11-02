@@ -5,6 +5,7 @@ open System
 // == XNA INDEPENDENT ==
 // =====================
 open Microsoft.Xna.Framework
+open HelperFunctions
 
 let tauntTime = 500
 
@@ -40,9 +41,8 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
 let update (Δdirection, velocity) (player: Player) expectingTaunt (center: Vector2) =
   let position =
     player.position 
-      + new Vector2(
-        float32 <| cos player.direction * player.velocity,
-        float32 <| sin player.direction * player.velocity)
+      + (   cos player.direction * player.velocity
+         @@ sin player.direction * player.velocity)
   let taunt, tauntTimer =
     if player.tauntTimer > 0 then
       player.currentTaunt, player.tauntTimer - 1
@@ -93,7 +93,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
   // Draw the player
   sb.Draw(
     texture, player.position, new Nullable<_>(), Color.White, single player.direction,
-    new Vector2(float32 texture.Width / 1.75f, float32 texture.Height / 1.75f), // texture center
+    (float32 texture.Width / 1.75f @@ float32 texture.Height / 1.75f),
     1.0f, // scale
     SpriteEffects.None, single 0)
   // Draw the player's taunt, if any
