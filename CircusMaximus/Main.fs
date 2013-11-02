@@ -3,20 +3,20 @@ open MonoMac.AppKit
 open MonoMac.Foundation
 
 type AppDelegate() = 
-    inherit NSApplicationDelegate()
+  inherit NSApplicationDelegate()
+  
+  override x.FinishedLaunching(notification) =
+    let game = new CircusMaximusGame()
+    game.Run()
     
-    override x.FinishedLaunching(notification) =
-        let game = new CircusMaximusGame()
-        game.Run()
-    
-    override x.ApplicationShouldTerminateAfterLastWindowClosed(sender) =
-        true
+  override x.ApplicationShouldTerminateAfterLastWindowClosed(sender) =
+    true
  
-module main =         
-    [<EntryPoint>]
-    let main args =
-        NSApplication.Init ()
-        using (new NSAutoreleasePool()) (fun n -> 
-            NSApplication.SharedApplication.Delegate <- new AppDelegate()
-            NSApplication.Main(args) )
-        0
+module main =
+  [<EntryPoint>]
+  let main args =
+    NSApplication.Init ()
+    using (new NSAutoreleasePool()) (fun n -> 
+      NSApplication.SharedApplication.Delegate <- new AppDelegate()
+      NSApplication.Main(args) )
+    0
