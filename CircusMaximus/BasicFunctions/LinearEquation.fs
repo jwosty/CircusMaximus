@@ -2,6 +2,7 @@
 module CircusMaximus.LinearEquation
 open System
 open Microsoft.Xna.Framework
+open HelperFunctions
 
 /// Stores the slope and intercept of a linear equation
 type Line = { m: float32; b: float32 }
@@ -19,7 +20,7 @@ let solveSystem (eq1: Line, eq2: Line) =
   // The formula we can get by solving the system for x by hand
   let x = (eq1.b - eq2.b) / (eq2.m - eq1.m)
   // Doesn't matter which equation we use; both will give the same answer. Elementary algebra.
-  x, solveForY eq1 x
+  x @@ solveForY eq1 x
 
 /// Returns a linear equation that both points lie on
 let fromPoints (p1: Vector2, p2: Vector2) =
