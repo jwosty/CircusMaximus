@@ -5,6 +5,7 @@ open System
 // == XNA INDEPENDENT ==
 // =====================
 open Microsoft.Xna.Framework
+open Extensions
 open HelperFunctions
 open BoundingBox2D
 
@@ -27,12 +28,12 @@ type Player =
     
     new(bb, dir, vel, (center: Vector2)) =
       { boundingBox = bb; direction = dir; velocity = vel;
-        turns = if bb.Position.Y >= center.Y then 0 else -1;
+        turns = if bb.Center.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
-        lastTurnedLeft = bb.Position.X >= center.X;
+        lastTurnedLeft = bb.Center.X >= center.X;
         currentTaunt = None; tauntTimer = 0 }
     
-    member this.position with get() = this.boundingBox.Position
+    member this.position with get() = this.boundingBox.Center
   end
 
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
@@ -105,13 +106,13 @@ let loadContent (content: ContentManager) =
   content.Load<Texture2D>("chariot")
 
 // Renders a player, assuming spriteBatch.Begin has already been called
-let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (texture: Texture2D) font fontBatch =
-  // Draw the player
+let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (texture: Texture2D) font fontBatch pixelTexture =
   sb.Draw(
     texture, player.position, new Nullable<_>(), Color.White, single player.direction,
     (float32 texture.Width / 1.75f @@ float32 texture.Height / 1.75f),
     1.0f, // scale
     SpriteEffects.None, single 0)
+  player.boundingBox.Edges |> List.iter (fun (start, ``end``) -> sb.DrawLine(pixelTexture, start, ``end``))
   // Draw the player's taunt, if any
   match player.currentTaunt with
     | Some taunt ->

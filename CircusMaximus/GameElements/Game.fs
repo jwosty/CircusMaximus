@@ -89,8 +89,7 @@ type CircusMaximusGame() as this =
     for x in 0..9 do
       for y in 0..2 do
         Racetrack.drawSingle sb racetrackTextures.[x, y] x y
-    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) playerTexture font fontBatch) players
-    sb.DrawLine(pixelTexture, 0 @@ 0, players.[mainPlayer].position, Color.White)
+    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) playerTexture font fontBatch pixelTexture) players
   
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
     FlatSpriteFont.drawString

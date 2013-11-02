@@ -7,21 +7,21 @@ open LineSegment
 // Position, width, height
 type BoundingBox2D =
   struct
-    val public Position: Vector2
+    val public Center: Vector2
     val public Width: float32
     val public Height: float32
     
-    new(pos, w, h) = { Position = pos; Width = w; Height = h }
+    new(pos, w, h) = { Center = pos; Width = w; Height = h }
     
-    member this.X with get() = this.Position.X
-    member this.Y with get() = this.Position.Y
+    member this.X with get() = this.Center.X
+    member this.Y with get() = this.Center.Y
     
     /// The corners in clockwise order
     member this.Corners =
-      [ this.Position;
-        this.Position + (this.Width @@ 0);
-        this.Position + (0 @@ this.Height);
-        this.Position + (this.Width @@ this.Height) ]
+      [ this.Center;
+        this.Center + (this.Width @@ 0);
+        this.Center + (this.Width @@ this.Height)
+        this.Center + (0 @@ this.Height); ]
     
     /// Edges specified as line segments that make up the rectangle, in the form of pairs of points
     member this.Edges = this.Corners |> List.consecutivePairs
