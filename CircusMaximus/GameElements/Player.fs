@@ -112,7 +112,9 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     (float32 texture.Width / 1.75f @@ float32 texture.Height / 1.75f),
     1.0f, // scale
     SpriteEffects.None, single 0)
+#if DEBUG
   player.boundingBox.Edges |> List.iter (fun (start, ``end``) -> sb.DrawLine(pixelTexture, start, ``end``))
+#endif
   // Draw the player's taunt, if any
   match player.currentTaunt with
     | Some taunt ->
