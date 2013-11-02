@@ -3,8 +3,9 @@ open System
 open Microsoft.Xna.Framework
 
 let inline (@@) a b = new Vector2(float32 a, float32 b)
-
 let inline (@~) a b = new Nullable<_>(new Vector2(float32 a, float32 b))
+/// Between operator
+let inline (><) x (a, b) = (x > a && x < b) || (x < a && x > b)
 
 module List =
   /// Returns the consecutive pairs of a list (including the first and last elements together)
