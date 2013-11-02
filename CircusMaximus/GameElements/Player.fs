@@ -13,27 +13,29 @@ let tauntTime = 500
 
 type Player =
   struct
+    /// The bounding box that stores the player's position, dimensions, and directions
     val public boundingBox: BoundingBox2D.BoundingBox2D
-    // Radians
-    val public direction: float
     val public velocity: float
     val public turns: int
     val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
     
-    new(bb, dir, vel, turns, ltl, tnt, tntT) =
-      { boundingBox = bb; direction = dir; velocity = vel; turns = turns;
+    new(bb, vel, turns, ltl, tnt, tntT) =
+      { boundingBox = bb; velocity = vel; turns = turns;
       lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT }
     
-    new(bb, dir, vel, (center: Vector2)) =
-      { boundingBox = bb; direction = dir; velocity = vel;
+    new(bb, vel, (center: Vector2)) =
+      { boundingBox = bb; velocity = vel;
         turns = if bb.Center.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
         lastTurnedLeft = bb.Center.X >= center.X;
         currentTaunt = None; tauntTimer = 0 }
     
+    /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center
+    /// Player direction, in radians, obtained from the bounding box
+    member this.direction with get() = this.boundingBox.Direction
   end
 
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
@@ -75,8 +77,8 @@ let update (Δdirection, nextVelocity) (player: Player) expectingTaunt (racetrac
   let taunt, tauntTimer = updateTaunt player expectingTaunt
   
   new Player(
-    new BoundingBox2D(position, player.boundingBox.Width, player.boundingBox.Height),
-    direction, nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer)
+    new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
+    nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer)
 
 
 // ===================

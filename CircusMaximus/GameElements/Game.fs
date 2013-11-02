@@ -25,7 +25,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new BoundingBox2D(x@@y, 64.0f, 29.0f), Player.degreesToRadians 0.0, 0.0, Racetrack.center))
+    ] |> List.map (fun (x, y) -> new Player.Player(new BoundingBox2D(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>

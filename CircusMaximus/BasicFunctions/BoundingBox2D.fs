@@ -12,8 +12,9 @@ type BoundingBox2D =
     val public Center: Vector2
     val public Width: float32
     val public Height: float32
+    val public Direction: float
     
-    new(pos, w, h) = { Center = pos; Width = w; Height = h }
+    new(pos, direction, w, h) = { Center = pos; Width = w; Height = h; Direction = direction }
     
     member this.X with get() = this.Center.X
     member this.Y with get() = this.Center.Y
@@ -22,10 +23,14 @@ type BoundingBox2D =
     
     /// The corners in clockwise order
     member this.Corners =
-      [ this.Center + (-this.HalfWidth @@ -this.HalfHeight);
-        this.Center + ( this.HalfWidth @@ -this.HalfHeight);
-        this.Center + ( this.HalfWidth @@ this.HalfHeight );
-        this.Center + (-this.HalfWidth @@ this.HalfHeight )]
+      let origin, direction = this.Center, this.Direction
+      // Offsets from the center
+      [ -this.HalfWidth @@ -this.HalfHeight;
+         this.HalfWidth @@ -this.HalfHeight;
+         this.HalfWidth @@ this.HalfHeight ;
+        -this.HalfWidth @@ this.HalfHeight ]
+      // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
+        |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
     
     /// Edges specified as line segments that make up the rectangle, in the form of pairs of points
     member this.Edges = this.Corners |> List.consecutivePairs
