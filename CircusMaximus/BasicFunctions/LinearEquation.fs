@@ -22,7 +22,7 @@ let solveSystem (eq1: Line, eq2: Line) =
   x, solveForY eq1 x
 
 /// Returns a linear equation that both points lie on
-let lineFromPoints (p1: Vector2, p2: Vector2) =
+let fromPoints (p1: Vector2, p2: Vector2) =
   let m = (p1.Y - p2.Y) / (p1.X - p2.X)
   let b = p1.Y - (solveForY { m = m; b = 0.0f } p1.X)
   { m = m; b = b }
