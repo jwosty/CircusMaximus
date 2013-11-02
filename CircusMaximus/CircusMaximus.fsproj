@@ -95,6 +95,7 @@
     <Compile Include="Extensions.fs" />
     <Compile Include="Taunt.fs" />
     <Compile Include="FlatSpriteFont.fs" />
+    <Compile Include="BoundingBox2D.fs" />
     <Compile Include="Racetrack.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerScreen.fs" />
