@@ -66,10 +66,11 @@ type CircusMaximusGame() as this =
     players <- players |>
       List.mapi
         (fun i player ->
-          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
+          let otherPlayers = List.removeIndex i players
+          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) otherPlayers player (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
           else
             let gamepad = GamePad.GetState(enum <| i - 1)
-            Player.update (Player.getPowerTurnFromGamepad gamepad) player (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
+            Player.update (Player.getPowerTurnFromGamepad gamepad) otherPlayers player (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
   
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =

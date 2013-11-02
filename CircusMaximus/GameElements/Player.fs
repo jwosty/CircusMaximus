@@ -45,12 +45,19 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
     lastPosition.Y < center.Y && position.Y > center.Y
   else false
 
+/// Tests for a collision playerA and all other players
+let collidesWith (player: Player) (otherPlayers: Player list) =
+  match (otherPlayers |> List.tryFind (fun otherPlayer -> player.boundingBox.Intersects otherPlayer.boundingBox)) with
+    | Some _ -> true
+    | None -> false
+
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
-let nextPositionDirection (player: Player) Δdirection =
+let nextPositionDirection otherPlayers (player: Player) Δdirection =
+  let v = if collidesWith player otherPlayers then -player.velocity else player.velocity
   (player.position
-    + (   cos player.direction * player.velocity
-       @@ sin player.direction * player.velocity),
+    + (   cos player.direction * v
+       @@ sin player.direction * v),
    player.direction + Δdirection)
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
@@ -70,8 +77,8 @@ let updateTaunt (player: Player) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (Δdirection, nextVelocity) (player: Player) expectingTaunt (racetrackCenter: Vector2) =
-  let position, direction = nextPositionDirection player Δdirection
+let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTaunt (racetrackCenter: Vector2) =
+  let position, direction = nextPositionDirection otherPlayers player Δdirection
   // If the player has crossed the threshhold not more than once in a row, increment the turn count
   let turns, lastTurnedLeft = updateLaps racetrackCenter player position
   let taunt, tauntTimer = updateTaunt player expectingTaunt
