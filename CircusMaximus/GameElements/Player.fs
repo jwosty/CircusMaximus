@@ -6,13 +6,13 @@ open System
 // =====================
 open Microsoft.Xna.Framework
 open HelperFunctions
+open BoundingBox2D
 
 let tauntTime = 500
 
 type Player =
   struct
-    // This is from XNA, but it's a common mathematical structure so it's OK
-    val public position: Microsoft.Xna.Framework.Vector2
+    val public boundingBox: BoundingBox2D.BoundingBox2D
     // Radians
     val public direction: float
     val public velocity: float
@@ -20,13 +20,19 @@ type Player =
     val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
-    new(pos, dir, vel, turns, ltl, tnt, tntT) = { position = pos; direction = dir; velocity = vel; turns = turns; lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT }
-    new(pos, dir, vel, (center: Vector2)) =
-      { position = pos; direction = dir; velocity = vel;
-        turns = if pos.Y >= center.Y then 0 else -1;
+    
+    new(bb, dir, vel, turns, ltl, tnt, tntT) =
+      { boundingBox = bb; direction = dir; velocity = vel; turns = turns;
+      lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT }
+    
+    new(bb, dir, vel, (center: Vector2)) =
+      { boundingBox = bb; direction = dir; velocity = vel;
+        turns = if bb.Position.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
-        lastTurnedLeft = pos.X >= center.X;
+        lastTurnedLeft = bb.Position.X >= center.X;
         currentTaunt = None; tauntTimer = 0 }
+    
+    member this.position with get() = this.boundingBox.Position
   end
 
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
@@ -40,7 +46,7 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
 // Returns a new player updated with the given parameters
 let update (Δdirection, velocity) (player: Player) expectingTaunt (center: Vector2) =
   let position =
-    player.position 
+    player.position
       + (   cos player.direction * player.velocity
          @@ sin player.direction * player.velocity)
   let taunt, tauntTimer =
@@ -58,7 +64,8 @@ let update (Δdirection, velocity) (player: Player) expectingTaunt (center: Vect
       player.turns, player.lastTurnedLeft
   
   new Player(
-    position, player.direction + Δdirection, velocity,
+    new BoundingBox2D(position, player.boundingBox.Width, player.boundingBox.Height),
+    player.direction + Δdirection, velocity,
     turns, lastTurnedLeft, taunt, tauntTimer)
 
 
