@@ -5,3 +5,8 @@
 #load "BasicFunctions/Extensions.fs"
 #load "BasicFunctions/LinearEquation.fs"
 #load "BasicFunctions/LineSegment.fs"
+open System
+open Microsoft.Xna.Framework
+open CircusMaximus.LinearEquation
+open CircusMaximus.HelperFunctions
+open CircusMaximus.LineSegment

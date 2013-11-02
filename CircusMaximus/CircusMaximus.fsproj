@@ -94,6 +94,7 @@
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\LinearEquation.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
+    <Compile Include="BasicFunctions\LineSegment.fs" />
     <Compile Include="BasicFunctions\BoundingBox2D.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\FlatSpriteFont.fs" />
@@ -102,11 +103,10 @@
     <Compile Include="GameElements\PlayerScreen.fs" />
     <Compile Include="GameElements\Game.fs" />
     <Compile Include="Main.fs" />
-    <Compile Include="GameElements\BoundingBox2D.fs" />
-    <Compile Include="BasicFunctions\LineSegment.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
+    <None Include="script.fsx" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>

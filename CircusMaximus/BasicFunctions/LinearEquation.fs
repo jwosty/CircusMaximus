@@ -2,7 +2,7 @@
 module CircusMaximus.LinearEquation
 open System
 open Microsoft.Xna.Framework
-open HelperFunctions
+open CircusMaximus.HelperFunctions
 
 /// Stores the slope and intercept of a linear equation
 type Line = { m: float32; b: float32 }
