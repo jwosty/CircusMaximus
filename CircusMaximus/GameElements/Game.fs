@@ -27,6 +27,7 @@ type CircusMaximusGame() as this =
       x, 1580.0f;
     ] |> List.map (fun (x, y) -> new Player.Player(new BoundingBox2D(x@@y, 64.0f, 29.0f), Player.degreesToRadians 0.0, 0.0, Racetrack.center))
   let mutable fontBatch = Unchecked.defaultof<_>
+  let mutable pixelTexture = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
   let mutable font = Unchecked.defaultof<_>
@@ -50,6 +51,7 @@ type CircusMaximusGame() as this =
   
   /// Load your graphics content.
   override this.LoadContent() =
+    pixelTexture <- Extensions.loadContent this.GraphicsDevice
     playerTexture <- Player.loadContent this.Content
     racetrackTextures <- Racetrack.loadContent this.Content
     font <- this.Content.Load<Texture2D>("font")
@@ -88,6 +90,7 @@ type CircusMaximusGame() as this =
       for y in 0..2 do
         Racetrack.drawSingle sb racetrackTextures.[x, y] x y
     List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) playerTexture font fontBatch) players
+    sb.DrawLine(pixelTexture, 0 @@ 0, players.[mainPlayer].position, Color.White)
   
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
     FlatSpriteFont.drawString
