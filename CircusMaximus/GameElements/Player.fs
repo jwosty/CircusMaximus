@@ -43,30 +43,39 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
   else false
 
 #nowarn "49"
-// Returns a new player updated with the given parameters
-let update (Δdirection, velocity) (player: Player) expectingTaunt (center: Vector2) =
-  let position =
-    player.position
-      + (   cos player.direction * player.velocity
-         @@ sin player.direction * player.velocity)
-  let taunt, tauntTimer =
-    if player.tauntTimer > 0 then
-      player.currentTaunt, player.tauntTimer - 1
-    elif expectingTaunt then
-      Some(Taunt.pickTaunt ()), tauntTime
-    else
-      None, player.tauntTimer - 1
+/// Returns the next position and direction of the player and change in direction
+let nextPositionDirection (player: Player) Δdirection =
+  (player.position
+    + (   cos player.direction * player.velocity
+       @@ sin player.direction * player.velocity),
+   player.direction + Δdirection)
+
+/// Returns the next number of laps and whether or not the player last turned on the left side of the map
+let updateLaps racetrackCenter (player: Player) nextPosition =
+  if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition then
+    player.turns + 1, not player.lastTurnedLeft
+  else
+    player.turns, player.lastTurnedLeft
+
+/// Returns a new taunt if needed, otherwise none
+let updateTaunt (player: Player) expectingTaunt =
+  if player.tauntTimer > 0 then
+    player.currentTaunt, player.tauntTimer - 1
+  elif expectingTaunt then
+    Some(Taunt.pickTaunt ()), tauntTime
+  else
+    None, player.tauntTimer - 1
+
+/// Update the player with the given parameters, but this is functional, so it won't actually modify anything
+let update (Δdirection, nextVelocity) (player: Player) expectingTaunt (racetrackCenter: Vector2) =
+  let position, direction = nextPositionDirection player Δdirection
   // If the player has crossed the threshhold not more than once in a row, increment the turn count
-  let turns, lastTurnedLeft =
-    if isPassingTurnLine center player.lastTurnedLeft player.position position then
-      player.turns + 1, not player.lastTurnedLeft
-    else
-      player.turns, player.lastTurnedLeft
+  let turns, lastTurnedLeft = updateLaps racetrackCenter player position
+  let taunt, tauntTimer = updateTaunt player expectingTaunt
   
   new Player(
     new BoundingBox2D(position, player.boundingBox.Width, player.boundingBox.Height),
-    player.direction + Δdirection, velocity,
-    turns, lastTurnedLeft, taunt, tauntTimer)
+    direction, nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer)
 
 
 // ===================
