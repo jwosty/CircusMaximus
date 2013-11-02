@@ -13,11 +13,11 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
   member this.DrawStringCentered(font: SpriteFont, string: string, position, color) =
     this.DrawString(font, string, font.MeasureString(string) / (2 @@ 2), color)
   
-  member this.DrawLine(t: Texture2D, start: Vector2, ``end``: Vector2, color: Color, ?width) =
-    let width_ = defaultArg width 1
+  member this.DrawLine(t: Texture2D, start: Vector2, ``end``: Vector2, ?color, ?width) =
+    let width_, color_ = defaultArg width 1, defaultArg color Color.White
     let edge = ``end`` - start
     this.Draw(t,
       new Rectangle(int start.X, int start.Y, int <| edge.Length(), width_),
-      new Nullable<Rectangle>(), color,
+      new Nullable<Rectangle>(), color_,
       atan2 edge.Y edge.X,  // angle
       0 @@ 0, SpriteEffects.None, 0.0f)
