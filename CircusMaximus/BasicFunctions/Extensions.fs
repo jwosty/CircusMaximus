@@ -33,11 +33,11 @@ module List =
       list
   
   /// Returns a list without the element at the index
-  let removeIndex (index: int) (stuff: 'a list) : 'a list =
+  let removeIndex index list =
     // Written in the imperitive style for the sake of efficiency
     let mutable result = []
-    let mutable erodingList = stuff
-    for i in 0 .. List.length stuff - 1 do
+    let mutable erodingList = list
+    for i in 0 .. List.length list - 1 do
       if i <> index then
         result <- result @ [erodingList.Head]
       erodingList <- erodingList.Tail
