@@ -90,18 +90,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="HelperFunctions.fs" />
-    <Compile Include="Extensions.fs" />
-    <Compile Include="Taunt.fs" />
-    <Compile Include="FlatSpriteFont.fs" />
-    <Compile Include="BoundingBox2D.fs" />
-    <Compile Include="Racetrack.fs" />
-    <Compile Include="Player.fs" />
-    <Compile Include="PlayerScreen.fs" />
-    <Compile Include="Game.fs" />
+    <Compile Include="Properties\AssemblyInfo.fs" />
+    <Compile Include="BasicFunctions\LinearEquation.fs" />
+    <Compile Include="BasicFunctions\HelperFunctions.fs" />
+    <Compile Include="BasicFunctions\Extensions.fs" />
+    <Compile Include="BasicFunctions\BoundingBox2D.fs" />
+    <Compile Include="GameElements\Taunt.fs" />
+    <Compile Include="GameElements\FlatSpriteFont.fs" />
+    <Compile Include="GameElements\Racetrack.fs" />
+    <Compile Include="GameElements\Player.fs" />
+    <Compile Include="GameElements\PlayerScreen.fs" />
+    <Compile Include="GameElements\Game.fs" />
     <Compile Include="Main.fs" />
-    <Compile Include="LinearEquation.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -110,6 +110,9 @@
   <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="Content\racetrack\" />
+    <Folder Include="Properties\" />
+    <Folder Include="BasicFunctions\" />
+    <Folder Include="GameElements\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\chariot.png" />
