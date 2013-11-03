@@ -11,3 +11,12 @@ let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
 let (><) x (a, b) = (x > a && x < b) || (x < a && x > b)
 /// Inclusive 'between' operator
 let (>=<) x (a, b) = (x >= a && x <= b) || (x <= a && x >= b)
+
+/// Converts a number to a Roman Numeral string, courtesy of http://fssnip.net/8h 
+let toRoman =
+  let numerals = [(1000, "M"); (900, "CM"); (500, "D"); (400, "CD"); (100, "C");
+                  (90, "XC"); (50, "L"); (40, "XL"); (10, "X"); (9, "IX");
+                  (5, "V"); (4, "IV"); (1, "I")]
+  let rec acc (v, r) (m, s) = if (v < m) then (v, r) else acc (v-m, r+s) (m, s)
+  fun n ->
+    List.fold acc (n, "") numerals |> snd
