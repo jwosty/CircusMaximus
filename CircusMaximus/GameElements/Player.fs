@@ -12,36 +12,6 @@ open LineSegment
 
 let tauntTime = 500
 
-type MovingPlayerState =
-  struct
-    /// The bounding box that stores the player's position, dimensions, and directions
-    val public boundingBox: BoundingBox2D.BoundingBox2D
-    val public velocity: float
-    val public turns: int
-    val public lastTurnedLeft: bool
-    val public currentTaunt: string option
-    val public tauntTimer: int
-    val public intersectingLines: int list
-    
-    new(bb, vel, turns, ltl, tnt, tntT, il) =
-      { boundingBox = bb; velocity = vel; turns = turns;
-      lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT;
-      intersectingLines = il }
-    
-    new(bb, vel, center: Vector2) =
-      { boundingBox = bb; velocity = vel;
-        turns = if bb.Center.Y >= center.Y then 0 else -1;
-        // Always start on the opposite side
-        lastTurnedLeft = bb.Center.X >= center.X;
-        currentTaunt = None; tauntTimer = 0;
-        intersectingLines = [] }
-    
-    /// Player position, obtained from the bounding box
-    member this.position with get() = this.boundingBox.Center
-    /// Player direction, in radians, obtained from the bounding box
-    member this.direction with get() = this.boundingBox.Direction
-  end
-
 type Player =
   | Moving of State.Player.Moving
   | Crashed of State.Player.Crashed
