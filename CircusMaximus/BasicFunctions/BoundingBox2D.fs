@@ -9,8 +9,6 @@ open CircusMaximus.LineSegment
 // Position, width, height
 type BoundingBox2D =
   struct
-    static member private list4int = [ 0..4 ]
-    
     val public Center: Vector2
     val public Width: float32
     val public Height: float32
