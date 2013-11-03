@@ -49,3 +49,6 @@ module List =
       |> Seq.concat
       |> Seq.distinctBy id
       |> List.ofSeq
+  
+  /// Four-way zip
+  let zip4 a (b: _ list) (c: _ list) (d: _ list) = List.init (List.length a) (fun i -> a.[i], b.[i], c.[i], d.[i])
