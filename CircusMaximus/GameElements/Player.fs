@@ -12,7 +12,7 @@ open LineSegment
 
 let tauntTime = 500
 
-type Player =
+type MovingPlayerState =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
     val public boundingBox: BoundingBox2D.BoundingBox2D
@@ -21,7 +21,7 @@ type Player =
     val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
-    val public intersectingLines: bool list
+    val public intersectingLines: int list
     
     new(bb, vel, turns, ltl, tnt, tntT, il) =
       { boundingBox = bb; velocity = vel; turns = turns;
@@ -42,6 +42,10 @@ type Player =
     member this.direction with get() = this.boundingBox.Direction
   end
 
+type Player =
+  | Moving of State.Player.Moving
+  | Crashed of State.Player.Crashed
+
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
   if lastTurnedLeft && position.X > center.X then
     lastPosition.Y > center.Y && position.Y < center.Y
@@ -50,28 +54,28 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
   else false
 
 /// Tests for a collision playerA and all other players
-let detectCollisions (player: Player) (otherPlayers: Player list) =
+let detectCollisions (player: State.Player.Moving) (otherPlayers: State.Player.Moving list) =
   otherPlayers
     |> List.map (fun otherPlayer -> player.boundingBox.FindIntersections otherPlayer.boundingBox)
     |> List.combine (||)
 
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
-let nextPositionDirection otherPlayers (player: Player) Δdirection =
+let nextPositionDirection otherPlayers (player: State.Player.Moving) Δdirection =
   (player.position
     + (   cos player.direction * player.velocity
        @@ sin player.direction * player.velocity),
    player.direction + Δdirection)
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
-let updateLaps racetrackCenter (player: Player) nextPosition =
+let updateLaps racetrackCenter (player: State.Player.Moving) nextPosition =
   if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition then
     player.turns + 1, not player.lastTurnedLeft
   else
     player.turns, player.lastTurnedLeft
 
 /// Returns a new taunt if needed, otherwise none
-let updateTaunt (player: Player) expectingTaunt =
+let updateTaunt (player: State.Player.Moving) expectingTaunt =
   if player.tauntTimer > 0 then
     player.currentTaunt, player.tauntTimer - 1
   elif expectingTaunt then
@@ -79,18 +83,39 @@ let updateTaunt (player: Player) expectingTaunt =
   else
     None, player.tauntTimer - 1
 
+let filterMoving = List.choose (fun p -> match p with | Moving state -> Some state | Crashed _ -> None)
+
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
 let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTaunt (racetrackCenter: Vector2) =
+  match player with
+  | Moving player ->
+    let movingPlayers = filterMoving otherPlayers
+    let position, direction = nextPositionDirection movingPlayers player Δdirection
+    // If the player has crossed the threshhold not more than once in a row, increment the turn count
+    let collisions = detectCollisions player movingPlayers
+    let turns, lastTurnedLeft = updateLaps racetrackCenter player position
+    let taunt, tauntTimer = updateTaunt player expectingTaunt
+    
+    Player.Moving(
+      new State.Player.Moving(
+        new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
+        nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions))
+  | Crashed _ -> player
+  (*
   let collisions = detectCollisions player otherPlayers
-  let position, direction = nextPositionDirection otherPlayers player Δdirection
-  // If the player has crossed the threshhold not more than once in a row, increment the turn count
-  let turns, lastTurnedLeft = updateLaps racetrackCenter player position
-  let taunt, tauntTimer = updateTaunt player expectingTaunt
-  
+  // If the front is colliding, then the player is crashing
+  let crashing = List.head collisions
+  if crashing then
+    let position, direction = nextPositionDirection otherPlayers player Δdirection
+    // If the player has crossed the threshhold not more than once in a row, increment the turn count
+    let turns, lastTurnedLeft = updateLaps racetrackCenter player position
+    let taunt, tauntTimer = updateTaunt player expectingTaunt
+  else
+    
   new Player(
     new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
     nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions)
-
+*)
 
 // ===================
 // == XNA DEPENDENT ==
@@ -120,19 +145,26 @@ let loadContent (content: ContentManager) =
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (texture: Texture2D) font fontBatch pixelTexture =
+  let playerBB, playerIL =
+    match player with
+    | Moving player -> player.boundingBox, player.intersectingLines
+    | Crashed player -> player.boundingBox, []
   sb.Draw(
-    texture, player.position, new Nullable<_>(), Color.White, single player.direction,
+    texture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
     (float32 texture.Width / 1.75f @@ float32 texture.Height / 1.75f),
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
-  player.boundingBox.Draw(sb, pixelTexture, player.intersectingLines)
+  playerBB.Draw(sb, pixelTexture, playerIL)
 #endif
-  // Draw the player's taunt, if any
-  match player.currentTaunt with
+  match player with
+  | Moving player ->
+    // Draw the player's taunt, if any
+    match player.currentTaunt with
     | Some taunt ->
-        FlatSpriteFont.drawString
-          font fontBatch taunt player.position 2.0f
-          (if isMainPlayer then Color.White else Color.OrangeRed)
-          (FlatSpriteFont.Center, FlatSpriteFont.Center)
+      FlatSpriteFont.drawString
+        font fontBatch taunt player.position 2.0f
+        (if isMainPlayer then Color.White else Color.OrangeRed)
+        (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
+  | _ -> ()

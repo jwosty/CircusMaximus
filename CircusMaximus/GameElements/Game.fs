@@ -25,7 +25,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> new Player.Player(new BoundingBox2D(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center))
+    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new BoundingBox2D(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center)))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
@@ -93,15 +93,12 @@ type CircusMaximusGame() as this =
     List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) playerTexture font fontBatch pixelTexture) players
   
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =
-    FlatSpriteFont.drawString
-      font fontBatch
-      (sprintf "Turns: %i" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
-      (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
-      3.0f Color.White
-      (FlatSpriteFont.Center, FlatSpriteFont.Min)
-    FlatSpriteFont.drawString
-      font fontBatch
-      (sprintf "LastTurnLeft: %b" player.lastTurnedLeft)
-      (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + 24)
-      3.0f Color.White
-      (FlatSpriteFont.Center, FlatSpriteFont.Min)
+    match player with
+    | Player.Moving player ->
+        FlatSpriteFont.drawString
+          font fontBatch
+          (sprintf "Turns: %i" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue)))
+          (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
+          3.0f Color.White
+          (FlatSpriteFont.Center, FlatSpriteFont.Min)
+    | _ -> ()

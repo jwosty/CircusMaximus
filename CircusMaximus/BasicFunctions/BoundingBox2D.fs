@@ -28,10 +28,9 @@ type BoundingBox2D =
       let origin, direction = this.Center, this.Direction
       // Offsets from the center
       [  this.HalfWidth @@ -this.HalfHeight;
-         this.HalfWidth @@  this.HalfHeight ;
-        -this.HalfWidth @@  this.HalfHeight ;
+         this.HalfWidth @@  this.HalfHeight;
+        -this.HalfWidth @@  this.HalfHeight;
         -this.HalfWidth @@ -this.HalfHeight]
-        //]
       // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
         |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
     
