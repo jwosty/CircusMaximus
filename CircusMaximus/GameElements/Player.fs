@@ -8,6 +8,7 @@ open Microsoft.Xna.Framework
 open Extensions
 open HelperFunctions
 open BoundingBox2D
+open LineSegment
 
 let tauntTime = 500
 
@@ -20,17 +21,20 @@ type Player =
     val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
+    val public intersectingLines: bool list
     
-    new(bb, vel, turns, ltl, tnt, tntT) =
+    new(bb, vel, turns, ltl, tnt, tntT, il) =
       { boundingBox = bb; velocity = vel; turns = turns;
-      lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT }
+      lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT;
+      intersectingLines = il }
     
-    new(bb, vel, (center: Vector2)) =
+    new(bb, vel, center: Vector2) =
       { boundingBox = bb; velocity = vel;
         turns = if bb.Center.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
         lastTurnedLeft = bb.Center.X >= center.X;
-        currentTaunt = None; tauntTimer = 0 }
+        currentTaunt = None; tauntTimer = 0;
+        intersectingLines = [] }
     
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center
@@ -46,18 +50,17 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
   else false
 
 /// Tests for a collision playerA and all other players
-let collidesWith (player: Player) (otherPlayers: Player list) =
-  match (otherPlayers |> List.tryFind (fun otherPlayer -> player.boundingBox.Intersects otherPlayer.boundingBox)) with
-    | Some _ -> true
-    | None -> false
+let findCollisions (player: Player) (otherPlayers: Player list) =
+  otherPlayers
+    |> List.map (fun otherPlayer -> player.boundingBox.FindIntersections otherPlayer.boundingBox)
+    |> List.combine (||)
 
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
 let nextPositionDirection otherPlayers (player: Player) Δdirection =
-  let v = if collidesWith player otherPlayers then -player.velocity else player.velocity
   (player.position
-    + (   cos player.direction * v
-       @@ sin player.direction * v),
+    + (   cos player.direction * player.velocity
+       @@ sin player.direction * player.velocity),
    player.direction + Δdirection)
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
@@ -85,7 +88,7 @@ let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTa
   
   new Player(
     new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
-    nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer)
+    nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, findCollisions player otherPlayers)
 
 
 // ===================
@@ -122,7 +125,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
-  player.boundingBox.Draw(sb, pixelTexture)
+  player.boundingBox.Draw(sb, pixelTexture, player.intersectingLines)
 #endif
   // Draw the player's taunt, if any
   match player.currentTaunt with

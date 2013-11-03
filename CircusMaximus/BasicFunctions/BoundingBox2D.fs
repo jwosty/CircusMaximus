@@ -9,6 +9,8 @@ open CircusMaximus.LineSegment
 // Position, width, height
 type BoundingBox2D =
   struct
+    static member private list4int = [ 0..4 ]
+    
     val public Center: Vector2
     val public Width: float32
     val public Height: float32
@@ -33,7 +35,18 @@ type BoundingBox2D =
         |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
     
     /// Edges specified as line segments that make up the rectangle, in the form of pairs of points
-    member this.Edges = this.Corners |> List.consecutivePairs
+    member this.Edges =
+      this.Corners |> List.consecutivePairs// |> List.map (fun seg -> seg, rotateLineSegments seg (float32 <| Math.PI / 2.0))
+    
+    /// Returns the indices of every edge that is intersecting the given line segment
+    member this.FindIntersections lineSegment =
+      this.Edges
+        |> List.map (fun edge -> edge -+- lineSegment)
+    
+    /// Returns the indices of every edge that is intersecting a bounding box
+    member this.FindIntersections (boundingBox: BoundingBox2D) : bool list =
+      this.Edges
+        |> List.map (fun edge -> edge |> boundingBox.FindIntersections |> List.exists id)
     
     /// Tests if this bounding box collides with a line segment
     member this.Intersects lineSegment =
@@ -48,5 +61,11 @@ type BoundingBox2D =
         | None -> false
     
     /// Draws the bounding box's boundries
-    member this.Draw(sb: SpriteBatch, pixelTexture) = this.Edges |> List.iter (fun (start, ``end``) -> sb.DrawLine(pixelTexture, start, ``end``))
+    member this.Draw(sb: SpriteBatch, pixelTexture, intersectingLines) =
+      List.iter2
+        (fun intersects (start, ``end``) ->
+          let color = if intersects then Color.Red else Color.White
+          sb.DrawLine(pixelTexture, start, ``end``, color))
+        intersectingLines
+        this.Edges
   end
