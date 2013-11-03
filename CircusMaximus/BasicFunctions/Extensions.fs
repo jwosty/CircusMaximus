@@ -42,3 +42,10 @@ module List =
         result <- result @ [erodingList.Head]
       erodingList <- erodingList.Tail
     result
+  
+  /// Merges multiple lists into one
+  let merge (lists: 'a list list) =
+    lists
+      |> Seq.concat
+      |> Seq.distinctBy id
+      |> List.ofSeq
