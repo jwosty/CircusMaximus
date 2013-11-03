@@ -92,14 +92,18 @@ let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTa
     let movingPlayers = filterMoving otherPlayers
     let position, direction = nextPositionDirection movingPlayers player Δdirection
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
-    let collisions = detectCollisions player movingPlayers
     let turns, lastTurnedLeft = updateLaps racetrackCenter player position
     let taunt, tauntTimer = updateTaunt player expectingTaunt
     
-    Player.Moving(
-      new State.Player.Moving(
-        new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
-        nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions))
+    let collisions = detectCollisions player movingPlayers
+    // If the player is colliding on the front, then the player is crashing
+    if List.head collisions then
+      Player.Crashed(new State.Player.Crashed(player.boundingBox))
+    else
+      Player.Moving(
+        new State.Player.Moving(
+          new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
+          nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions))
   | Crashed _ -> player
 
 // ===================
