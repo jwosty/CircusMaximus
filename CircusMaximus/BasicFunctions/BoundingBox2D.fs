@@ -23,19 +23,20 @@ type BoundingBox2D =
     member this.HalfWidth with get() = this.Width / 2.0f
     member this.HalfHeight with get() = this.Height / 2.0f
     
-    /// The corners in clockwise order
+    /// The corners in clockwise order, starting at the top-left
     member this.Corners =
       let origin, direction = this.Center, this.Direction
       // Offsets from the center
-      [ -this.HalfWidth @@ -this.HalfHeight;
+      [ -this.HalfWidth @@ this.HalfHeight ;
+        -this.HalfWidth @@ -this.HalfHeight;
          this.HalfWidth @@ -this.HalfHeight;
-         this.HalfWidth @@ this.HalfHeight ;
-        -this.HalfWidth @@ this.HalfHeight ]
+         this.HalfWidth @@ this.HalfHeight ]
         //]
       // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
         |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
     
-    /// Edges specified as line segments that make up the rectangle, in the form of pairs of points
+    /// Edges specified as line segments that make up the rectangle, in the form of pairs of points,
+    /// starting with the player's left
     member this.Edges = this.Corners |> List.consecutivePairs
     
     /// Returns the indices of every edge that is intersecting the given line segment
