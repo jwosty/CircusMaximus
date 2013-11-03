@@ -157,4 +157,9 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
         (if isMainPlayer then Color.White else Color.OrangeRed)
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
-  | _ -> ()
+  | Crashed player ->
+    // Remind the player that they are crashed
+    FlatSpriteFont.drawString
+      font fontBatch "CRASHED" player.position 3.0f
+      (if isMainPlayer then Color.Red else (new Color(Color.Red, 63)))
+      (FlatSpriteFont.Center, FlatSpriteFont.Center)
