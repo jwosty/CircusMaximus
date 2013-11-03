@@ -46,7 +46,7 @@ type CircusMaximusGame() as this =
   override this.Initialize() =
     base.Initialize()
     this.IsMouseVisible <- true
-    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice
+    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice players.Length
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.

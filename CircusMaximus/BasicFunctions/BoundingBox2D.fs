@@ -31,12 +31,12 @@ type BoundingBox2D =
          this.HalfWidth @@ -this.HalfHeight;
          this.HalfWidth @@ this.HalfHeight ;
         -this.HalfWidth @@ this.HalfHeight ]
+        //]
       // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
         |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
     
     /// Edges specified as line segments that make up the rectangle, in the form of pairs of points
-    member this.Edges =
-      this.Corners |> List.consecutivePairs// |> List.map (fun seg -> seg, rotateLineSegments seg (float32 <| Math.PI / 2.0))
+    member this.Edges = this.Corners |> List.consecutivePairs
     
     /// Returns the indices of every edge that is intersecting the given line segment
     member this.FindIntersections lineSegment =
@@ -47,18 +47,6 @@ type BoundingBox2D =
     member this.FindIntersections (boundingBox: BoundingBox2D) : bool list =
       this.Edges
         |> List.map (fun edge -> edge |> boundingBox.FindIntersections |> List.exists id)
-    
-    /// Tests if this bounding box collides with a line segment
-    member this.Intersects lineSegment =
-      match (this.Edges |> List.tryFind (fun edge -> edge -+- lineSegment)) with
-        | Some _ -> true
-        | None -> false
-    
-    // Tests if this bounding box intersects the other bounding box
-    member this.Intersects (boundingBox: BoundingBox2D) =
-      match (this.Edges |> List.tryFind (fun edge -> boundingBox.Intersects edge)) with
-        | Some _ -> true
-        | None -> false
     
     /// Draws the bounding box's boundries
     member this.Draw(sb: SpriteBatch, pixelTexture, intersectingLines) =

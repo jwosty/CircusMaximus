@@ -59,7 +59,7 @@ let createScreen graphics playerNumber =
   spriteBatch, bounds
 
 // Returns a list of player screens
-let createScreens graphics = List.init 5 (createScreen graphics)
+let createScreens graphics quantity = List.init quantity (createScreen graphics)
 
 // Draw a single player's screen
 let drawSingle drawPredicate playerNumber (player: Player.Player) (screen: PlayerScreen) =
