@@ -92,7 +92,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
-    <Compile Include="BasicFunctions\LinearEquation.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
     <Compile Include="BasicFunctions\LineSegment.fs" />
     <Compile Include="BasicFunctions\BoundingBox2D.fs" />

@@ -50,7 +50,7 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
   else false
 
 /// Tests for a collision playerA and all other players
-let findCollisions (player: Player) (otherPlayers: Player list) =
+let detectCollisions (player: Player) (otherPlayers: Player list) =
   otherPlayers
     |> List.map (fun otherPlayer -> player.boundingBox.FindIntersections otherPlayer.boundingBox)
     |> List.combine (||)
@@ -81,6 +81,7 @@ let updateTaunt (player: Player) expectingTaunt =
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
 let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTaunt (racetrackCenter: Vector2) =
+  let collisions = detectCollisions player otherPlayers
   let position, direction = nextPositionDirection otherPlayers player Δdirection
   // If the player has crossed the threshhold not more than once in a row, increment the turn count
   let turns, lastTurnedLeft = updateLaps racetrackCenter player position
@@ -88,7 +89,7 @@ let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTa
   
   new Player(
     new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
-    nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, findCollisions player otherPlayers)
+    nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions)
 
 
 // ===================
