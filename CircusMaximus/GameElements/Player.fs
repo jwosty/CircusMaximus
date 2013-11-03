@@ -101,21 +101,6 @@ let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTa
         new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
         nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions))
   | Crashed _ -> player
-  (*
-  let collisions = detectCollisions player otherPlayers
-  // If the front is colliding, then the player is crashing
-  let crashing = List.head collisions
-  if crashing then
-    let position, direction = nextPositionDirection otherPlayers player Δdirection
-    // If the player has crossed the threshhold not more than once in a row, increment the turn count
-    let turns, lastTurnedLeft = updateLaps racetrackCenter player position
-    let taunt, tauntTimer = updateTaunt player expectingTaunt
-  else
-    
-  new Player(
-    new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
-    nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions)
-*)
 
 // ===================
 // == XNA DEPENDENT ==
@@ -148,7 +133,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
   let playerBB, playerIL =
     match player with
     | Moving player -> player.boundingBox, player.intersectingLines
-    | Crashed player -> player.boundingBox, []
+    | Crashed player -> player.boundingBox, [false; false; false; false]
   sb.Draw(
     texture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
     (float32 texture.Width / 1.75f @@ float32 texture.Height / 1.75f),
