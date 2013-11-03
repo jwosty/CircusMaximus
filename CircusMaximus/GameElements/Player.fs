@@ -141,7 +141,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     | Crashed player -> player.boundingBox, [false; false; false; false]
   sb.Draw(
     texture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
-    (float32 texture.Width / 1.75f @@ float32 texture.Height / 1.75f),
+    (float32 texture.Width / 2.0f @@ float32 texture.Height / 2.0f),
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
