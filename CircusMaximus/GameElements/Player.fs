@@ -54,14 +54,17 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
   else false
 
 /// Tests for a collision playerA and all other players
-let detectCollisions (player: State.Player.Moving) (otherPlayers: State.Player.Moving list) =
+let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
   otherPlayers
-    |> List.map (fun otherPlayer -> player.boundingBox.FindIntersections otherPlayer.boundingBox)
+    |> List.map
+         (fun otherPlayer ->
+            let otherPlayerBB = match otherPlayer with | Moving player -> player.boundingBox | Crashed player -> player.boundingBox
+            player.boundingBox.FindIntersections otherPlayerBB)
     |> List.combine (||)
 
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
-let nextPositionDirection otherPlayers (player: State.Player.Moving) Δdirection =
+let nextPositionDirection (player: State.Player.Moving) Δdirection =
   (player.position
     + (   cos player.direction * player.velocity
        @@ sin player.direction * player.velocity),
@@ -83,19 +86,17 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
   else
     None, player.tauntTimer - 1
 
-let filterMoving = List.choose (fun p -> match p with | Moving state -> Some state | Crashed _ -> None)
-
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
 let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTaunt (racetrackCenter: Vector2) =
   match player with
   | Moving player ->
-    let movingPlayers = filterMoving otherPlayers
-    let position, direction = nextPositionDirection movingPlayers player Δdirection
+    //let movingPlayers = filterMoving otherPlayers
+    let position, direction = nextPositionDirection player Δdirection
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
     let turns, lastTurnedLeft = updateLaps racetrackCenter player position
     let taunt, tauntTimer = updateTaunt player expectingTaunt
     
-    let collisions = detectCollisions player movingPlayers
+    let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
     if List.head collisions then
       Player.Crashed(new State.Player.Crashed(player.boundingBox))
