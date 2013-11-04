@@ -21,9 +21,9 @@ let toRoman =
   fun n ->
     List.fold acc (n, "") numerals |> snd
 
+let twice x = x, x
+
 module Tuple =
-  let twice x = x, x
-  
   let t2Init g = g 0, g 1
   let t3Init g = g 0, g 1, g 2
   let t4Init g = g 0, g 1, g 2, g 3
@@ -31,6 +31,10 @@ module Tuple =
   let t2Map p (a, b) = p a, p b
   let t3Map p (a, b, c) = p a, p b, p c
   let t4Map p (a, b, c, d) = p a, p b, p c, p d
+  
+  let t2Map2 p (a, b) (a', b') = p a a', p b b'
+  let t3Map2 p (a, b, c) (a', b', c') = p a a', p b b', p c c'
+  let t4Map2 p (a, b, c, d) (a', b', c', d') = p a a', p b b', p c c', p d d'
   
   let t2ConsecutivePairs (a, b) = (a, b), (b, a)
   let t3ConsecutivePairs (a, b, c) = (a, b), (b, c), (c, a)
@@ -41,5 +45,5 @@ module Tuple =
   let t4Iter p (a, b, c, d) = p a; p b; p c; p d; ()
   
   let t2Iter2 p (a, b) (a', b') = p a a'; p b b'; ()
-  let t3Iter2 p (a, b, c) (a', b', c') = p a a'; p b b'; p c c'
-  let t4Iter2 p (a, b, c, d) (a', b', c', d') = p a a'; p b b'; p c c'; p d d'
+  let t3Iter2 p (a, b, c) (a', b', c') = p a a'; p b b'; p c c'; ()
+  let t4Iter2 p (a, b, c, d) (a', b', c', d') = p a a'; p b b'; p c c'; p d d'; ()
