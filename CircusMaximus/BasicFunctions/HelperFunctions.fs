@@ -24,6 +24,10 @@ let toRoman =
 module Tuple =
   let twice x = x, x
   
+  let t2Init g = g 0, g 1
+  let t3Init g = g 0, g 1, g 2
+  let t4Init g = g 0, g 1, g 2, g 3
+  
   let t2Map p (a, b) = p a, p b
   let t3Map p (a, b, c) = p a, p b, p c
   let t4Map p (a, b, c, d) = p a, p b, p c, p d
