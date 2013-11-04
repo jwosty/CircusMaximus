@@ -1,4 +1,4 @@
-module CircusMaximus.BoundingBox2D
+namespace CircusMaximus
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
@@ -6,8 +6,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.LineSegment
 
-// Position, width, height
-type BoundingBox2D =
+type OrientedRectangle =
   struct
     val public Center: Vector2
     val public Width: float32
@@ -36,22 +35,12 @@ type BoundingBox2D =
     /// starting with the player's left
     member this.Edges = this.Corners |> List.consecutivePairs
     
-    /// Returns the indices of every edge that is intersecting the given line segment
-    member this.FindIntersections lineSegment =
-      this.Edges
-        |> List.map (fun edge -> edge -+- lineSegment)
-    
-    /// Returns the indices of every edge that is intersecting a bounding box
-    member this.FindIntersections (boundingBox: BoundingBox2D) : bool list =
-      this.Edges
-        |> List.map (fun edge -> edge |> boundingBox.FindIntersections |> List.exists id)
-    
     /// Draws the bounding box's boundries
-    member this.Draw(sb: SpriteBatch, pixelTexture, intersectingLines) =
+    member this.Draw(sb: SpriteBatch, pixelTexture, redLines) =
       List.iter2
-        (fun intersects (start, ``end``) ->
-          let color = if intersects then Color.Red else Color.White
+        (fun isRed (start, ``end``) ->
+          let color = if isRed then Color.Red else Color.White
           sb.DrawLine(pixelTexture, start, ``end``, color))
-        intersectingLines
+        redLines
         this.Edges
   end

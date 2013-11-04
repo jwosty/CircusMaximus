@@ -10,7 +10,6 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Media
 open Extensions
 open HelperFunctions
-open BoundingBox2D
 
 /// Default Project Template
 type CircusMaximusGame() as this =
@@ -25,7 +24,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new BoundingBox2D(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center)))
+    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center)))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>

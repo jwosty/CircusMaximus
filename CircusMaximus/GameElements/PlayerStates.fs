@@ -7,7 +7,7 @@ open CircusMaximus
 type Moving =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
-    val public boundingBox: BoundingBox2D.BoundingBox2D
+    val public boundingBox: OrientedRectangle
     val public velocity: float
     val public turns: int
     val public lastTurnedLeft: bool
@@ -38,7 +38,7 @@ type Moving =
 type Crashed =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
-    val public boundingBox: BoundingBox2D.BoundingBox2D
+    val public boundingBox: OrientedRectangle
     new(bb) = { boundingBox = bb }
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center

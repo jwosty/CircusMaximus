@@ -94,7 +94,7 @@
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
     <Compile Include="BasicFunctions\LineSegment.fs" />
-    <Compile Include="BasicFunctions\BoundingBox2D.fs" />
+    <Compile Include="BasicFunctions\OrientedRectangle.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
@@ -103,6 +103,7 @@
     <Compile Include="GameElements\PlayerScreen.fs" />
     <Compile Include="GameElements\Game.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="BasicFunctions\Collision.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

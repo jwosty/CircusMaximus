@@ -7,8 +7,6 @@ open System
 open Microsoft.Xna.Framework
 open Extensions
 open HelperFunctions
-open BoundingBox2D
-open LineSegment
 
 let tauntTime = 500
 
@@ -29,7 +27,7 @@ let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
     |> List.map
          (fun otherPlayer ->
             let otherPlayerBB = match otherPlayer with | Moving player -> player.boundingBox | Crashed player -> player.boundingBox
-            player.boundingBox.FindIntersections otherPlayerBB)
+            Collision.collide_ORect_ORect player.boundingBox otherPlayerBB)//player.boundingBox.FindIntersections otherPlayerBB)
     |> List.combine (||)
 
 #nowarn "49"
@@ -73,7 +71,7 @@ let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTa
     else
       Player.Moving(
         new State.Player.Moving(
-          new BoundingBox2D(position, direction, player.boundingBox.Width, player.boundingBox.Height),
+          new OrientedRectangle(position, direction, player.boundingBox.Width, player.boundingBox.Height),
           nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions))
   | Crashed _ -> player
 
