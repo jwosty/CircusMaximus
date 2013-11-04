@@ -1,6 +1,7 @@
 module CircusMaximus.HelperFunctions
 open System
 open Microsoft.Xna.Framework
+open CircusMaximus.TupleClassExtensions
 
 let inline (@@) a b = new Vector2(float32 a, float32 b)
 let inline (@~) a b = new Nullable<_>(new Vector2(float32 a, float32 b))
@@ -21,7 +22,11 @@ let toRoman =
   fun n ->
     List.fold acc (n, "") numerals |> snd
 
-let twice x = x, x
+let tup2 x = x, x
+let tup3 x = x, x, x
+let tup4 x = x, x, x, x
+let twice = tup2
+let thrice = tup3
 
 module Tuple =
   let t2Init g = g 0, g 1
@@ -56,3 +61,27 @@ module Tuple =
   let t2Unzip2 = t2Zip2
   let t3Unzip2 ((a, a'), (b, b'), (c, c')) = (a, b, c), (a', b', c')
   let t4Unzip2 ((a, a'), (b, b'), (c, c'), (d, d')) = (a, b, c, d), (a', b', c', d')
+  
+  let t2Combine predicate (tuples: (_ * _) list) =
+    List.init
+      2
+      (fun i ->
+        tuples
+        |> List.map (fun tup -> Tuple.get(i, tup))
+        |> List.reduce predicate)
+  
+  let t3Combine predicate (tuples: (_ * _ * )) list) =
+    List.init
+      3
+      (fun i ->
+        tuples
+        |> List.map (fun tup -> Tuple.get(i, tup))
+        |> List.reduce predicate)
+  
+  let t4Combine predicate (tuples: (_ * _ * _ * _) list) =
+    List.init
+      4
+      (fun i ->
+        tuples
+        |> List.map (fun tup -> Tuple.get(i, tup))
+        |> List.reduce predicate)
