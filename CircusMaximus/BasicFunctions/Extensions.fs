@@ -63,7 +63,8 @@ module List =
           |> List.reduce predicate)
   
   /// Returns a list containing all non-duplicate pairs of objects possible
-  let rec pairCombinations : 'a list -> ('a * 'a) list = function
-    | [] -> []
-    | [a; b] -> [a, b]
-    | head :: tail -> (List.map (fun x -> head, x) tail) @ pairCombinations tail
+  let rec pairCombinations list =
+    match list with
+      | [] -> []
+      | [a; b] -> [a, b]
+      | head :: tail -> (List.map (fun x -> head, x) tail) @ pairCombinations tail
