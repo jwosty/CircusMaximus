@@ -47,3 +47,12 @@ module Tuple =
   let t2Iter2 p (a, b) (a', b') = p a a'; p b b'; ()
   let t3Iter2 p (a, b, c) (a', b', c') = p a a'; p b b'; p c c'; ()
   let t4Iter2 p (a, b, c, d) (a', b', c', d') = p a a'; p b b'; p c c'; p d d'; ()
+  
+  let t2Zip2 ((a, b), (a', b')) = (a, a'), (b, b')
+  let t3Zip2 ((a, b, c), (a', b', c')) = (a, a'), (b, b'), (c, c')
+  let t4Zip2 ((a, b, c, d), (a', b', c', d')) = (a, a'), (b, b'), (c, c'), (d, d')
+  
+  // The definitions are actually the same, but only because we're working with pure tuple (no tuples + lists)
+  let t2Unzip2 = t2Zip2
+  let t3Unzip2 ((a, a'), (b, b'), (c, c')) = (a, b, c), (a', b', c')
+  let t4Unzip2 ((a, a'), (b, b'), (c, c'), (d, d')) = (a, b, c, d), (a', b', c', d')
