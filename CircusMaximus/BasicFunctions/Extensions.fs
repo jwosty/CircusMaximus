@@ -68,3 +68,7 @@ module List =
       | [] -> []
       | [a; b] -> [a, b]
       | head :: tail -> (List.map (fun x -> head, x) tail) @ pairCombinations tail
+  
+  let rec skip times list =
+    if times < 1 then list
+    else skip (times - 1) (List.tail list)
