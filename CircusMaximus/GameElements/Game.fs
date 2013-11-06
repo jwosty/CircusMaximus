@@ -64,7 +64,7 @@ type CircusMaximusGame() as this =
     
     let collisions =
       players
-        |> List.map (Player.playerBB >> Collision.BoundingRectangle)
+        |> List.map Player.playerBB
         |> Collision.collideWorld
         
     players <-
