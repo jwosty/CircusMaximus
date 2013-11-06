@@ -3,7 +3,9 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
-open HelperFunctions
+open CircusMaximus
+open CircusMaximus.HelperFunctions
+open CircusMaximus.Collision
 
 let center = 5418 @@ 1255
 
@@ -17,3 +19,14 @@ let loadContent (content: ContentManager) =
 // updated via copying every fram, it's still lightning fast on OSX. That's some good optimization.
 let drawSingle (sb: SpriteBatch) (texture: Texture2D) x y =
   sb.Draw(texture, (float32 <| x * texture.Width) @~ (float32 <| y * texture.Height))
+
+let collisionBounds =
+  // Tiles are 975x811 pixels
+  // 282, 358
+  // 803, 530
+  // Center rectangle
+  //[new OrientedRectangle(center, 0.0, 520.0f, 172.0f)]
+  [new OrientedRectangle(center, 0.0, 4420.0f, 172.0f)]
+  |> List.map BoundingRectangle
+
+let drawBounds collisionBounds pixelTexture sb = collisionBounds |> List.iter (drawUniformBounds pixelTexture sb Color.White)

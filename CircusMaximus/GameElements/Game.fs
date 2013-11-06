@@ -21,9 +21,9 @@ type CircusMaximusGame() as this =
     [
       x, 740.0f;
       x, 950.0f;
-      //x, 1160.0f;
-      //x, 1370.0f;
-      //x, 1580.0f;
+      x, 1160.0f;
+      x, 1370.0f;
+      x, 1580.0f;
     ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center)))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
@@ -63,10 +63,10 @@ type CircusMaximusGame() as this =
     if keyboard.IsKeyDown(Keys.Escape) then this.Exit()
     
     let collisions =
-      players
-        |> List.map Player.playerBB
+      (Racetrack.collisionBounds
+        @ (players |> List.map Player.playerBB))
         |> Collision.collideWorld
-        
+    
     players <-
       List.mapi2
         (fun i player collisionResult ->
@@ -77,7 +77,8 @@ type CircusMaximusGame() as this =
             let gamepad = GamePad.GetState(enum <| i - 1)
             Player.update (Player.getPowerTurnFromGamepad gamepad) player collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
         players
-        collisions
+        (collisions |> List.skip Racetrack.collisionBounds.Length)
+  
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
     // Since the borders btwn the player screens are merely trimmed edges, they show through to the
@@ -96,6 +97,9 @@ type CircusMaximusGame() as this =
     for x in 0..9 do
       for y in 0..2 do
         Racetrack.drawSingle sb racetrackTextures.[x, y] x y
+#if DEBUG
+    Racetrack.drawBounds Racetrack.collisionBounds pixelTexture sb
+#endif
     List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) playerTexture font fontBatch pixelTexture) players
   
   member this.DrawHUD player ((sb, rect): PlayerScreen.PlayerScreen) =

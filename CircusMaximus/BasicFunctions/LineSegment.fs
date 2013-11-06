@@ -1,8 +1,10 @@
 module CircusMaximus.LineSegment
 open System
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
+open CircusMaximus.Extensions
 
 type LineSegment = Vector2 * Vector2
 
@@ -28,3 +30,6 @@ let (-+-) ((p, pr): LineSegment) ((q, qs): LineSegment) =
       let u = qmpxr * rxsr
       
       t >=< (0.0f, 1.0f) && u >=< (0.0f, 1.0f)
+
+/// Draws a line segment. Simple.
+let drawLineSegment texture (sb: SpriteBatch) color (seg: LineSegment) = sb.DrawLine(texture, fst seg, snd seg, color)

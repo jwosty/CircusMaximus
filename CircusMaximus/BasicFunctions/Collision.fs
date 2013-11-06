@@ -1,6 +1,7 @@
 module CircusMaximus.Collision
 open System
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.LineSegment
@@ -10,6 +11,10 @@ open CircusMaximus.TupleClassExtensions
 type Bounds2D =
   | BoundingLineSegment of LineSegment
   | BoundingRectangle of OrientedRectangle
+
+let drawUniformBounds pixelTexture (sb: SpriteBatch) color = function
+  | BoundingLineSegment seg -> drawLineSegment pixelTexture sb color seg
+  | BoundingRectangle rect -> rect.Draw(sb, pixelTexture, (false, false, false, false))
 
 type CollisionResult =
   | Result_LR of bool
