@@ -21,29 +21,6 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
     lastPosition.Y < center.Y && position.Y > center.Y
   else false
 
-(*
-/// Tests for a collision playerA and all other players
-let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
-  otherPlayers
-    |> List.map
-         (fun otherPlayer ->
-            let otherPlayerBB = match otherPlayer with | Moving player -> player.boundingBox | Crashed player -> player.boundingBox
-            Collision.collide_ORect_ORect player.boundingBox otherPlayerBB)//player.boundingBox.FindIntersections otherPlayerBB)
-    |> List.combine (||)
-*)
-(*
-let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
-  let x = Collision.collide_ORect_ORect player.boundingBox player.boundingBox
-  let y = printfn "%s" otherPlayers
-  let getBB = function | Moving p -> p.boundingBox | Crashed p -> p.boundingBox
-  let func aIntersections bIntersections = Tuple.t4Zip2 (aIntersections, bIntersections) |> Tuple.t4Map (fun (a, b) -> a || b)
-  otherPlayers
-    |> List.map (fun otherPlayer -> Collision.collide_ORect_ORect player.boundingBox (getBB otherPlayer))
-    |> List.combine (function (coll1, coll2) -> )
-    //|> Tuple.t4Combine (||)
-  //printfn "%s" foo
-*)
-
 let playerBB = function
   | Moving player -> player.collisionBox
   | Crashed player -> player.collisionBox
