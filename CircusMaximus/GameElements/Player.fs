@@ -62,7 +62,7 @@ let update (Δdirection, nextVelocity) (player: Player) collisionResults expecti
     //let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
-      //| _ , _, _, _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox))
+      | _ , _, _, _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox))
       | _ ->
         Player.Moving(
           new State.Player.Moving(
