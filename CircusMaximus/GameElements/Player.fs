@@ -122,7 +122,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     | None -> ()
   | Crashed player ->
     // Remind the player that they are crashed
+    let message, color = if isMainPlayer then "Strepebas!", Color.Red else "Strepebant!", (new Color(Color.Red, 63))
     FlatSpriteFont.drawString
-      font fontBatch "CRASHED" player.position 3.0f
-      (if isMainPlayer then Color.Red else (new Color(Color.Red, 63)))
+      font fontBatch message player.position 3.0f color
       (FlatSpriteFont.Center, FlatSpriteFont.Center)
