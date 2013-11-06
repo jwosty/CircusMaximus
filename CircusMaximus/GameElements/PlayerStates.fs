@@ -26,7 +26,7 @@ type Moving =
       { boundingBox = bb; velocity = vel;
         turns = if bb.Center.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
-        lastTurnedLeft = bb.Center.X >= center.X;
+        lastTurnedLeft = bb.Center.Y >= center.Y;
         currentTaunt = None; tauntTimer = 0;
         intersectingLines = tup4 false }
     
