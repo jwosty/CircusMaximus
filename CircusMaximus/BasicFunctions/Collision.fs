@@ -5,6 +5,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.LineSegment
 open CircusMaximus.Extensions
+open CircusMaximus.TupleClassExtensions
 
 type Bounds2D =
   | BoundingLineSegment of LineSegment
@@ -59,8 +60,20 @@ let collide_ORect_LineSeg (rect: OrientedRectangle) (seg: LineSegment) =
 
 /// Returns a tuple containing the intersecting lines of each bounding box
 let collide_ORect_ORect (a: OrientedRectangle) (b: OrientedRectangle) =
-  Result_BR(Tuple.t4Map2 (fun aEdge bEdge -> testIntersection_LineSeg_LineSeg aEdge bEdge |> fst) a.Edges b.Edges),
-  Result_BR(Tuple.t4Map2 (fun bEdge aEdge -> testIntersection_LineSeg_LineSeg bEdge aEdge |> fst) b.Edges a.Edges)
+  Result_BR(
+    a.Edges
+      |> Tuple.t4Map
+          (fun aEdge ->
+            b.Edges
+              |> Tuple.t4Map (fun bEdge -> testIntersection_LineSeg_LineSeg aEdge bEdge |> fst)
+              |> Tuple.t4Reduce (||))),
+  Result_BR(
+    b.Edges
+      |> Tuple.t4Map
+          (fun bEdge ->
+            a.Edges
+              |> Tuple.t4Map (fun aEdge -> testIntersection_LineSeg_LineSeg bEdge aEdge |> fst)
+              |> Tuple.t4Reduce (||)))
 
 let collidePair a b =
   match a, b with
