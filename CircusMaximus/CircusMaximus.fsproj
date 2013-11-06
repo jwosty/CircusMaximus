@@ -94,9 +94,9 @@
     <Compile Include="BasicFunctions\TupleExtensions.fs" />
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
-    <Compile Include="BasicFunctions\LineSegment.fs" />
-    <Compile Include="BasicFunctions\OrientedRectangle.fs" />
-    <Compile Include="BasicFunctions\Collision.fs" />
+    <Compile Include="Collision\Shapes\LineSegment.fs" />
+    <Compile Include="Collision\OrientedRectangle.fs" />
+    <Compile Include="Collision\Shapes\Collision.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
@@ -117,6 +117,8 @@
     <Folder Include="Properties\" />
     <Folder Include="BasicFunctions\" />
     <Folder Include="GameElements\" />
+    <Folder Include="Collision\" />
+    <Folder Include="Collision\Shapes\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\chariot.png" />
