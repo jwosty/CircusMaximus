@@ -3,6 +3,7 @@ open System
 open Microsoft.Xna.Framework
 open CircusMaximus
 open CircusMaximus.HelperFunctions
+open CircusMaximus.Collision
 
 /// The moving player state, that is, one who is still in the race
 type Moving =
@@ -29,6 +30,7 @@ type Moving =
         currentTaunt = None; tauntTimer = 0;
         intersectingLines = tup4 false }
     
+    member this.collisionBox with get() = BoundingRectangle(this.boundingBox)
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center
     /// Player direction, in radians, obtained from the bounding box
@@ -41,6 +43,8 @@ type Crashed =
     /// The bounding box that stores the player's position, dimensions, and directions
     val public boundingBox: OrientedRectangle
     new(bb) = { boundingBox = bb }
+    
+    member this.collisionBox with get() = BoundingRectangle(this.boundingBox)
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center
     /// Player direction, in radians, obtained from the bounding box

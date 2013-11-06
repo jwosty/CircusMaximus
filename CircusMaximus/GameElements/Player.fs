@@ -45,8 +45,8 @@ let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
 *)
 
 let playerBB = function
-  | Moving player -> player.boundingBox
-  | Crashed player -> player.boundingBox
+  | Moving player -> player.collisionBox
+  | Crashed player -> player.collisionBox
 
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction

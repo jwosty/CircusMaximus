@@ -21,9 +21,9 @@ type CircusMaximusGame() as this =
     [
       x, 740.0f;
       x, 950.0f;
-      x, 1160.0f;
-      x, 1370.0f;
-      x, 1580.0f;
+      //x, 1160.0f;
+      //x, 1370.0f;
+      //x, 1580.0f;
     ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center)))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
