@@ -62,6 +62,10 @@ module Tuple =
   let t3Unzip2 ((a, a'), (b, b'), (c, c')) = (a, b, c), (a', b', c')
   let t4Unzip2 ((a, a'), (b, b'), (c, c'), (d, d')) = (a, b, c, d), (a', b', c', d')
   
+  let t2Reduce predicate (a, b) = predicate a b
+  let t3Reduce predicate (a, b, c) = predicate (predicate a b) c
+  let t4Reduce predicate (a, b, c, d) = predicate (predicate (predicate a b) c) d
+  
   let t2Combine predicate (tuples: (_ * _) list) =
     List.init
       2
@@ -70,7 +74,7 @@ module Tuple =
         |> List.map (fun tup -> Tuple.get(i, tup))
         |> List.reduce predicate)
   
-  let t3Combine predicate (tuples: (_ * _ * )) list) =
+  let t3Combine predicate (tuples: (_ * _ * _) list) =
     List.init
       3
       (fun i ->

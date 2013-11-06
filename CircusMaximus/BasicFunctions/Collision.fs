@@ -4,17 +4,29 @@ open Microsoft.Xna.Framework
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.LineSegment
+open CircusMaximus.Extensions
 
 type Bounds2D =
   | BoundingLineSegment of LineSegment
   | BoundingRectangle of OrientedRectangle
 
-type CollisionResults =
-  | Result_LS of bool
-  | Result_BR of bool list
+type CollisionResult =
+  | Result_LR of bool
+  | Result_BR of bool * bool * bool * bool
+
+/// Combines two collision results into one. Only works for the same type of result.
+let combineResultsPair a b =
+  match a, b with
+    | Result_LR a, Result_LR b -> Result_LR(a || b)
+    | Result_BR(a1, a2, a3, a4), Result_BR(b1, b2, b3, b4) -> Result_BR(a1 || b1, a2 || b2, a3 || b3, a4 || b4)
+    | _ -> raise (new ArgumentException(sprintf "Only two collision results of the same kind are compatible (got %s and %s)" (a.GetType().Name) (b.GetType().Name)))
+
+/// Combines multiple collision results into one, typically all of the same object
+let combineResults results = List.reduce combineResultsPair results
+//List.combine combineResultsPair results
 
 /// Tests if two line segments intersect (maths come from http://stackoverflow.com/a/565282/1231925)
-let collide_LineSeg_LineSeg ((p, pr): LineSegment) ((q, qs): LineSegment) =
+let testIntersection_LineSeg_LineSeg ((p, pr): LineSegment) ((q, qs): LineSegment) =
   let qp = q - p
   let r = pr - p
   let s = qs - q
@@ -24,28 +36,62 @@ let collide_LineSeg_LineSeg ((p, pr): LineSegment) ((q, qs): LineSegment) =
   let rxs = cross r s
   
   if qmpxr = 0.0f then
-       ((q.X - p.X < 0.0f) <> (q.X - pr.X < 0.0f))
-    || ((q.Y - p.Y < 0.0f) <> (q.Y - pr.Y < 0.0f))
+    (((q.X - p.X < 0.0f) <> (q.X - pr.X < 0.0f))
+      || ((q.Y - p.Y < 0.0f) <> (q.Y - pr.Y < 0.0f))) |> twice
   else
-    if rxs = 0.0f then
-      false
-    else
-      let rxsr = 1.0f / rxs
-      let t = qmpxs * rxsr
-      let u = qmpxr * rxsr
-      
-      t >=< (0.0f, 1.0f) && u >=< (0.0f, 1.0f)
+  if rxs = 0.0f then
+    false, false
+  else
+    let rxsr = 1.0f / rxs
+    let t = qmpxs * rxsr
+    let u = qmpxr * rxsr
+    
+    (t >=< (0.0f, 1.0f) && u >=< (0.0f, 1.0f)) |> twice
+
+let collide_LineSeg_LineSeg a b =
+  testIntersection_LineSeg_LineSeg a b |> Tuple.t2Map Result_LR
 
 /// Returns the indices of every edge that is intersecting the given line segment
 let collide_ORect_LineSeg (rect: OrientedRectangle) (seg: LineSegment) =
-  List.map (fun edge -> collide_LineSeg_LineSeg edge seg) rect.Edges
+  //List.map (fun edge -> collide_LineSeg_LineSeg edge seg) rect.Edges
+  let resultR, resultS =
+    Tuple.t4Map (fun edge -> testIntersection_LineSeg_LineSeg edge seg) rect.Edges
+      |> Tuple.t4Unzip2
+  Result_BR(resultR), Result_LR(Tuple.t4Reduce (||) resultS)
 
-/// Returns the indices of every edge that is intersecting a bounding box
+/// Returns a tuple containing the intersecting lines of each bounding box
 let collide_ORect_ORect (a: OrientedRectangle) (b: OrientedRectangle) =
-  List.map (fun edge -> edge |> (collide_ORect_LineSeg b) |> List.exists id) a.Edges
+  //List.map (fun edge -> edge |> (collide_ORect_LineSeg b) |> List.exists id) a.Edges
+  Result_BR(Tuple.t4Map2 (fun aEdge bEdge -> testIntersection_LineSeg_LineSeg aEdge bEdge |> fst) a.Edges b.Edges),
+  Result_BR(Tuple.t4Map2 (fun bEdge aEdge -> testIntersection_LineSeg_LineSeg bEdge aEdge |> fst) b.Edges a.Edges)
+  //|> Tuple.t4Unzip2
+  //|> Tuple.t4Combine (||)// |> Tuple.t4Map (Result_BR)
 
-let collide = function
-  | BoundingLineSegment a, BoundingLineSegment b -> Result_LS(collide_LineSeg_LineSeg a b)
-  | BoundingRectangle a, BoundingRectangle b -> Result_BR(collide_ORect_ORect a b)
-  | BoundingRectangle a, BoundingLineSegment b -> Result_BR(collide_ORect_LineSeg a b)
-  | BoundingLineSegment a, BoundingRectangle b -> Result_BR(collide_ORect_LineSeg b a)
+let private _collidePair getCollision a b (notifyACollision: 'a -> unit) (notifyBCollision: 'c -> unit) =
+  let aResult, bResult = getCollision a b
+  notifyACollision aResult
+  notifyBCollision bResult
+  let x = collide_ORect_ORect a b
+  ()
+
+let collidePair a b =
+  match a, b with
+    | BoundingLineSegment(a), BoundingLineSegment(b) -> collide_LineSeg_LineSeg a b
+    | BoundingRectangle(a), BoundingRectangle(b) -> collide_ORect_ORect a b
+    | BoundingRectangle(a), BoundingLineSegment(b) -> collide_ORect_LineSeg a b
+    | BoundingLineSegment(a), BoundingRectangle(b) -> collide_ORect_LineSeg b a
+
+(*
+/// Collides one object with many other objects, and returns the combined results
+let collideSingleAgainstSeveral obj others =
+  others
+    |> List.map (fun other -> collidePair (obj, other))
+*)
+
+/// Calculates the intersections of a list of items. Not optimized at all yet
+let collideWorld objects =
+  objects
+    // Collide all the objects together
+    |> List.mapi (fun i obj -> List.removeIndex i objects |> List.map (collidePair obj >> fst))
+    // Combine the results for each object together
+    |> List.map (fun objResults -> combineResults objResults)

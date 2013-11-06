@@ -62,15 +62,22 @@ type CircusMaximusGame() as this =
     let keyboard = Keyboard.GetState()
     if keyboard.IsKeyDown(Keys.Escape) then this.Exit()
     
-    players <- players |>
-      List.mapi
-        (fun i player ->
+    let collisions =
+      players
+        |> List.map (Player.playerBB >> Collision.BoundingRectangle)
+        |> Collision.collideWorld
+        
+    players <-
+      List.mapi2
+        (fun i player collisionResult ->
+          let collision = match collisionResult with | Collision.Result_BR(a, b, c, d) -> a, b, c, d | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
           let otherPlayers = List.removeIndex i players
-          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) otherPlayers player (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
+          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player collision (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
           else
             let gamepad = GamePad.GetState(enum <| i - 1)
-            Player.update (Player.getPowerTurnFromGamepad gamepad) otherPlayers player (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
-  
+            Player.update (Player.getPowerTurnFromGamepad gamepad) player collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
+        players
+        collisions
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
     // Since the borders btwn the player screens are merely trimmed edges, they show through to the

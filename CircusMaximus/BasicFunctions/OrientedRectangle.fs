@@ -24,20 +24,20 @@ type OrientedRectangle =
     member this.Corners =
       let origin, direction = this.Center, this.Direction
       // Offsets from the center
-      [  this.HalfWidth @@ -this.HalfHeight;
-         this.HalfWidth @@  this.HalfHeight;
-        -this.HalfWidth @@  this.HalfHeight;
-        -this.HalfWidth @@ -this.HalfHeight]
+      ( this.HalfWidth  @@ -this.HalfHeight,
+        this.HalfWidth  @@ this.HalfHeight,
+        -this.HalfWidth @@ this.HalfHeight,
+        -this.HalfWidth @@ -this.HalfHeight)
       // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
-        |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
+        |> Tuple.t4Map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
     
     /// Edges specified as line segments that make up the rectangle, in the form of pairs of points,
     /// starting with the player's left
-    member this.Edges = this.Corners |> List.consecutivePairs
+    member this.Edges = this.Corners |> Tuple.t4ConsecutivePairs
     
     /// Draws the bounding box's boundries
     member this.Draw(sb: SpriteBatch, pixelTexture, redLines) =
-      List.iter2
+      Tuple.t4Iter2
         (fun isRed (start, ``end``) ->
           let color = if isRed then Color.Red else Color.White
           sb.DrawLine(pixelTexture, start, ``end``, color))

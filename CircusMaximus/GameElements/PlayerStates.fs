@@ -2,6 +2,7 @@ namespace CircusMaximus.State.Player
 open System
 open Microsoft.Xna.Framework
 open CircusMaximus
+open CircusMaximus.HelperFunctions
 
 /// The moving player state, that is, one who is still in the race
 type Moving =
@@ -13,7 +14,7 @@ type Moving =
     val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
-    val public intersectingLines: bool list
+    val public intersectingLines: bool * bool * bool * bool
     
     new(bb, vel, turns, ltl, tnt, tntT, il) =
       { boundingBox = bb; velocity = vel; turns = turns;
@@ -26,7 +27,7 @@ type Moving =
         // Always start on the opposite side
         lastTurnedLeft = bb.Center.X >= center.X;
         currentTaunt = None; tauntTimer = 0;
-        intersectingLines = [] }
+        intersectingLines = tup4 false }
     
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center

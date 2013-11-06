@@ -21,6 +21,7 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
     lastPosition.Y < center.Y && position.Y > center.Y
   else false
 
+(*
 /// Tests for a collision playerA and all other players
 let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
   otherPlayers
@@ -29,6 +30,23 @@ let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
             let otherPlayerBB = match otherPlayer with | Moving player -> player.boundingBox | Crashed player -> player.boundingBox
             Collision.collide_ORect_ORect player.boundingBox otherPlayerBB)//player.boundingBox.FindIntersections otherPlayerBB)
     |> List.combine (||)
+*)
+(*
+let detectCollisions (player: State.Player.Moving) (otherPlayers: Player list) =
+  let x = Collision.collide_ORect_ORect player.boundingBox player.boundingBox
+  let y = printfn "%s" otherPlayers
+  let getBB = function | Moving p -> p.boundingBox | Crashed p -> p.boundingBox
+  let func aIntersections bIntersections = Tuple.t4Zip2 (aIntersections, bIntersections) |> Tuple.t4Map (fun (a, b) -> a || b)
+  otherPlayers
+    |> List.map (fun otherPlayer -> Collision.collide_ORect_ORect player.boundingBox (getBB otherPlayer))
+    |> List.combine (function (coll1, coll2) -> )
+    //|> Tuple.t4Combine (||)
+  //printfn "%s" foo
+*)
+
+let playerBB = function
+  | Moving player -> player.boundingBox
+  | Crashed player -> player.boundingBox
 
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
@@ -55,7 +73,7 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTaunt (racetrackCenter: Vector2) =
+let update (Δdirection, nextVelocity) (player: Player) collisionResults expectingTaunt (racetrackCenter: Vector2) =
   match player with
   | Moving player ->
     //let movingPlayers = filterMoving otherPlayers
@@ -64,15 +82,15 @@ let update (Δdirection, nextVelocity) otherPlayers (player: Player) expectingTa
     let turns, lastTurnedLeft = updateLaps racetrackCenter player position
     let taunt, tauntTimer = updateTaunt player expectingTaunt
     
-    let collisions = detectCollisions player otherPlayers
+    //let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
-    if List.head collisions then
-      Player.Crashed(new State.Player.Crashed(player.boundingBox))
-    else
-      Player.Moving(
-        new State.Player.Moving(
-          new OrientedRectangle(position, direction, player.boundingBox.Width, player.boundingBox.Height),
-          nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisions))
+    match collisionResults with
+      //| _ , _, _, _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox))
+      | _ ->
+        Player.Moving(
+          new State.Player.Moving(
+            new OrientedRectangle(position, direction, player.boundingBox.Width, player.boundingBox.Height),
+            nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults))
   | Crashed _ -> player
 
 // ===================
@@ -106,7 +124,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
   let playerBB, playerIL =
     match player with
     | Moving player -> player.boundingBox, player.intersectingLines
-    | Crashed player -> player.boundingBox, [false; false; false; false]
+    | Crashed player -> player.boundingBox, (tup4 false)
   sb.Draw(
     texture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
     (float32 texture.Width / 2.0f @@ float32 texture.Height / 2.0f),
