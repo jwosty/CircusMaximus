@@ -25,6 +25,6 @@ let collisionBounds =
   // 282, 358
   // 803, 530
   // Center rectangle
-  [BoundingPolygon(new RacetrackBoundries(center))]
+  [BoundingPolygon(new RacetrackShape(center))]
 
 let drawBounds collisionBounds pixelTexture sb = collisionBounds |> List.iter (drawUniformBounds pixelTexture sb Color.White)
