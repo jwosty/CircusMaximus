@@ -13,7 +13,8 @@ type Polygon(center) =
   abstract member Points: Vector2 list
   
   /// Decomposes the structure into the most primitive parts (line segments)
-  member this.Edges: CircusMaximus.LineSegment.LineSegment list = this.Points |> List.consecutivePairs
+  abstract member Edges: CircusMaximus.LineSegment.LineSegment list
+  default this.Edges: CircusMaximus.LineSegment.LineSegment list = this.Points |> List.consecutivePairs
   
   /// Draws edges
   member this.Draw(sb: SpriteBatch, pixelTexture, redLines) =

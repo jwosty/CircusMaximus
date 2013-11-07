@@ -2,28 +2,27 @@ namespace CircusMaximus
 open System
 open Microsoft.Xna.Framework
 open CircusMaximus.HelperFunctions
+open CircusMaximus.Extensions
 
 /// The shape of the racetrack boundries
 type RacetrackSpinaShape(center) =
   inherit Polygon(center)
   
+  // Center points
   override this.Points =
     [-2210 @@ -86;
       2210 @@ -86;
       2280 @@ -66;
       2304 @@  0;
-      2280 @@ 66;
+      2280 @@  66;
       2210 @@  86;
      -2210 @@  86;
      -2280 @@  66;
      -2304 @@  0;
      -2280 @@ -66]
      |> List.map ((+) this.Center)
-
-type RacetrackOuterShape() =
-  inherit Polygon(0 @@ 0)
   
-  override this.Points =
+  member this.OuterPoints =
     [938  @@ 702;
      938  @@ 688;
      // Bend at the end
@@ -52,3 +51,6 @@ type RacetrackOuterShape() =
      714  @@ 856;
      782  @@ 702;
      ]
+  
+  override this.Edges: CircusMaximus.LineSegment.LineSegment list =
+    (List.consecutivePairs this.Points) @ (List.consecutivePairs this.OuterPoints)

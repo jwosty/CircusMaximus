@@ -66,7 +66,7 @@ type CircusMaximusGame() as this =
     
     let collisions =
       (Racetrack.collisionBounds
-        @ (players |> List.map Player.playerBB))
+        :: (players |> List.map Player.playerBB))
         |> Collision.collideWorld
     
     players <-
@@ -82,7 +82,7 @@ type CircusMaximusGame() as this =
           match p with | Some placing -> (lastPlacing <- placing) | None -> ()
           player)
         players
-        (collisions |> List.skip Racetrack.collisionBounds.Length)
+        (collisions |> List.tail)
   
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
