@@ -95,6 +95,7 @@
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
     <Compile Include="Collision\Shapes\LineSegment.fs" />
+    <Compile Include="Collision\Shapes\Polygon.fs" />
     <Compile Include="Collision\Shapes\OrientedRectangle.fs" />
     <Compile Include="Collision\Collision.fs" />
     <Compile Include="GameElements\Taunt.fs" />

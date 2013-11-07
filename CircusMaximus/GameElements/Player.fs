@@ -62,11 +62,11 @@ let update (Δdirection, nextVelocity) (player: Player) collisionResults expecti
     //let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
-      | true, _, _, _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox))
+      | true :: _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox))
       | _ ->
         Player.Moving(
           new State.Player.Moving(
-            new OrientedRectangle(position, direction, player.boundingBox.Width, player.boundingBox.Height),
+            new OrientedRectangle(position, player.boundingBox.Width, player.boundingBox.Height, direction),
             nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults))
   | Crashed _ -> player
 
@@ -101,7 +101,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
   let playerBB, playerIL =
     match player with
     | Moving player -> player.boundingBox, player.intersectingLines
-    | Crashed player -> player.boundingBox, (tup4 false)
+    | Crashed player -> player.boundingBox, [false; false; false; false]
   sb.Draw(
     texture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
     (float32 texture.Width / 2.0f @@ float32 texture.Height / 2.0f),

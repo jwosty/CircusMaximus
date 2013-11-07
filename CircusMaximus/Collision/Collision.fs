@@ -10,58 +10,58 @@ open CircusMaximus.TupleClassExtensions
 
 type Bounds2D =
   | BoundingLineSegment of LineSegment
-  | BoundingRectangle of OrientedRectangle
+  | BoundingPolygon of Polygon
 
 let drawUniformBounds pixelTexture (sb: SpriteBatch) color = function
   | BoundingLineSegment seg -> drawLineSegment pixelTexture sb color seg
-  | BoundingRectangle rect -> rect.Draw(sb, pixelTexture, (false, false, false, false))
+  | BoundingPolygon poly -> poly.Draw(sb, pixelTexture, [false; false; false; false])
 
 type CollisionResult =
-  | Result_LR of bool
-  | Result_BR of bool * bool * bool * bool
+  | Result_Line of bool
+  | Result_Poly of bool list
 
 /// Combines two collision results into one. Only works for the same type of result.
 let combineResultsPair a b =
   match a, b with
-    | Result_LR a, Result_LR b -> Result_LR(a || b)
-    | Result_BR(a1, a2, a3, a4), Result_BR(b1, b2, b3, b4) -> Result_BR(a1 || b1, a2 || b2, a3 || b3, a4 || b4)
+    | Result_Line a, Result_Line b -> Result_Line(a || b)
+    | Result_Poly a, Result_Poly b -> Result_Poly(List.map2 (||) a b)
     | _ -> raise (new ArgumentException(sprintf "Only two collision results of the same kind are compatible (got %s and %s)" (a.GetType().Name) (b.GetType().Name)))
 
 /// Combines multiple collision results into one, typically all of the same object
 let combineResults results = List.reduce combineResultsPair results
 
-let collide_LineSeg_LineSeg a b = a -+- b |> twice |> Tuple.t2Map Result_LR
+let collide_LineSeg_LineSeg a b = a -+- b |> twice |> Tuple.t2Map Result_Line
 
 /// Returns the indices of every edge that is intersecting the given line segment
-let collide_ORect_LineSeg (rect: OrientedRectangle) (seg: LineSegment) =
-  let resultR, resultS =
-    Tuple.t4Map (fun edge -> edge -+- seg |> twice) rect.Edges
-      |> Tuple.t4Unzip2
-  Result_BR(resultR), Result_LR(Tuple.t4Reduce (||) resultS)
+let collide_Poly_LineSeg (poly: Polygon) (seg: LineSegment) =
+  let resultP, resultS =
+    List.map (fun edge -> edge -+- seg |> twice) poly.Edges
+      |> List.unzip
+  Result_Poly(resultP), Result_Line(List.reduce (||) [true; true; false])
 
 /// Returns a tuple containing the intersecting lines of each bounding box
-let collide_ORect_ORect (a: OrientedRectangle) (b: OrientedRectangle) =
-  Result_BR(
+let collide_Poly_Poly (a: Polygon) (b: Polygon) =
+  Result_Poly(
     a.Edges
-      |> Tuple.t4Map
+      |> List.map
           (fun aEdge ->
             b.Edges
-              |> Tuple.t4Map ((-+-) aEdge)
-              |> Tuple.t4Reduce (||))),
-  Result_BR(
+              |> List.map ((-+-) aEdge)
+              |> List.reduce (||))),
+  Result_Poly(
     b.Edges
-      |> Tuple.t4Map
+      |> List.map
           (fun bEdge ->
             a.Edges
-              |> Tuple.t4Map ((-+-) bEdge)
-              |> Tuple.t4Reduce (||)))
+              |> List.map ((-+-) bEdge)
+              |> List.reduce (||)))
 
 let collidePair a b =
   match a, b with
     | BoundingLineSegment(a), BoundingLineSegment(b) -> collide_LineSeg_LineSeg a b
-    | BoundingRectangle(a), BoundingRectangle(b) -> collide_ORect_ORect a b
-    | BoundingRectangle(a), BoundingLineSegment(b) -> collide_ORect_LineSeg a b
-    | BoundingLineSegment(a), BoundingRectangle(b) -> collide_ORect_LineSeg b a
+    | BoundingPolygon(a), BoundingPolygon(b) -> collide_Poly_Poly a b
+    | BoundingPolygon(a), BoundingLineSegment(b) -> collide_Poly_LineSeg a b
+    | BoundingLineSegment(a), BoundingPolygon(b) -> collide_Poly_LineSeg b a
 
 /// Calculates the intersections of a list of items. Not optimized at all yet
 let collideWorld objects =

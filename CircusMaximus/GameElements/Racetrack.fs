@@ -24,9 +24,8 @@ let collisionBounds =
   // Tiles are 975x811 pixels
   // 282, 358
   // 803, 530
+  List.map BoundingPolygon
   // Center rectangle
-  //[new OrientedRectangle(center, 0.0, 520.0f, 172.0f)]
-  [new OrientedRectangle(center, 0.0, 4420.0f, 172.0f)]
-  |> List.map BoundingRectangle
+    [new OrientedRectangle(center, 4420.0f, 172.0f, 0.0)]
 
 let drawBounds collisionBounds pixelTexture sb = collisionBounds |> List.iter (drawUniformBounds pixelTexture sb Color.White)

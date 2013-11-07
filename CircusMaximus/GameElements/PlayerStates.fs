@@ -15,7 +15,7 @@ type Moving =
     val public lastTurnedLeft: bool
     val public currentTaunt: string option
     val public tauntTimer: int
-    val public intersectingLines: bool * bool * bool * bool
+    val public intersectingLines: bool list
     
     new(bb, vel, turns, ltl, tnt, tntT, il) =
       { boundingBox = bb; velocity = vel; turns = turns;
@@ -28,9 +28,9 @@ type Moving =
         // Always start on the opposite side
         lastTurnedLeft = bb.Center.Y >= center.Y;
         currentTaunt = None; tauntTimer = 0;
-        intersectingLines = tup4 false }
+        intersectingLines = [false; false; false; false] }
     
-    member this.collisionBox with get() = BoundingRectangle(this.boundingBox)
+    member this.collisionBox with get() = BoundingPolygon(this.boundingBox)
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center
     /// Player direction, in radians, obtained from the bounding box
@@ -44,7 +44,7 @@ type Crashed =
     val public boundingBox: OrientedRectangle
     new(bb) = { boundingBox = bb }
     
-    member this.collisionBox with get() = BoundingRectangle(this.boundingBox)
+    member this.collisionBox with get() = BoundingPolygon(this.boundingBox)
     /// Player position, obtained from the bounding box
     member this.position with get() = this.boundingBox.Center
     /// Player direction, in radians, obtained from the bounding box

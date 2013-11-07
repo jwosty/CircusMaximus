@@ -24,7 +24,7 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 0.0, 64.0f, 29.0f), 0.0, Racetrack.center)))
+    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 64.0f, 29.0f, 0.0), 0.0, Racetrack.center)))
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
@@ -70,7 +70,7 @@ type CircusMaximusGame() as this =
     players <-
       List.mapi2
         (fun i player collisionResult ->
-          let collision = match collisionResult with | Collision.Result_BR(a, b, c, d) -> a, b, c, d | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
+          let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
           let otherPlayers = List.removeIndex i players
           if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player collision (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
           else
