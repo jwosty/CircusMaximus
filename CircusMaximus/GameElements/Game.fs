@@ -117,10 +117,11 @@ type CircusMaximusGame() as this =
           3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
         match player.placing with
         | Some placing ->
+            let color = match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray
             FlatSpriteFont.drawString
               font fontBatch
               (sprintf "Locus: %s" (toRoman placing))
               (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + (24))
-              3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
+              3.0f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
         | None -> ()
     | _ -> ()
