@@ -16,19 +16,20 @@ type Moving =
     val public currentTaunt: string option
     val public tauntTimer: int
     val public intersectingLines: bool list
+    val public placing: int option
     
-    new(bb, vel, turns, ltl, tnt, tntT, il) =
+    new(bb, vel, turns, ltl, tnt, tntT, il, p) =
       { boundingBox = bb; velocity = vel; turns = turns;
       lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT;
-      intersectingLines = il }
+      intersectingLines = il; placing = p }
     
-    new(bb, vel, center: Vector2) =
+    new(bb, vel, center: Vector2, p) =
       { boundingBox = bb; velocity = vel;
         turns = if bb.Center.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
         lastTurnedLeft = bb.Center.Y >= center.Y;
         currentTaunt = None; tauntTimer = 0;
-        intersectingLines = [false; false; false; false] }
+        intersectingLines = [false; false; false; false]; placing = p }
     
     member this.collisionBox with get() = BoundingPolygon(this.boundingBox)
     /// Player position, obtained from the bounding box
@@ -42,7 +43,8 @@ type Crashed =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
     val public boundingBox: OrientedRectangle
-    new(bb) = { boundingBox = bb }
+    val public placing: int option
+    new(bb, p) = { boundingBox = bb; placing = p }
     
     member this.collisionBox with get() = BoundingPolygon(this.boundingBox)
     /// Player position, obtained from the bounding box

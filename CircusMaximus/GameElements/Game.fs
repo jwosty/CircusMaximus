@@ -24,7 +24,9 @@ type CircusMaximusGame() as this =
       x, 1160.0f;
       x, 1370.0f;
       x, 1580.0f;
-    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 64.0f, 29.0f, 0.0), 0.0, Racetrack.center)))
+    ] |> List.map (fun (x, y) -> Player.Moving(new State.Player.Moving(new OrientedRectangle(x@@y, 64.0f, 29.0f, 0.0), 0.0, Racetrack.center, None)))
+  // 1st place, 2nd place, etc
+  let mutable lastPlacing = 0
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable pixelTexture = Unchecked.defaultof<_>
   let mutable playerTexture = Unchecked.defaultof<_>
@@ -72,10 +74,13 @@ type CircusMaximusGame() as this =
         (fun i player collisionResult ->
           let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
           let otherPlayers = List.removeIndex i players
-          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player collision (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
-          else
-            let gamepad = GamePad.GetState(enum <| i - 1)
-            Player.update (Player.getPowerTurnFromGamepad gamepad) player collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center)
+          let player, p =
+            if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player collision lastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
+            else
+              let gamepad = GamePad.GetState(enum <| i - 1)
+              Player.update (Player.getPowerTurnFromGamepad gamepad) player collision lastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center
+          match p with | Some placing -> (lastPlacing <- placing) | None -> ()
+          player)
         players
         (collisions |> List.skip Racetrack.collisionBounds.Length)
   
@@ -109,6 +114,13 @@ type CircusMaximusGame() as this =
           font fontBatch
           (sprintf "Flexus: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
           (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
-          3.0f Color.White
-          (FlatSpriteFont.Center, FlatSpriteFont.Min)
+          3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
+        match player.placing with
+        | Some placing ->
+            FlatSpriteFont.drawString
+              font fontBatch
+              (sprintf "Locus: %s" (toRoman placing))
+              (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + (24))
+              3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
+        | None -> ()
     | _ -> ()

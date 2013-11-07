@@ -25,6 +25,10 @@ let playerBB = function
   | Moving player -> player.collisionBox
   | Crashed player -> player.collisionBox
 
+let playerPlacing = function
+  | Moving player -> player.placing
+  | Crashed player -> player.placing
+
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
 let nextPositionDirection (player: State.Player.Moving) Δdirection =
@@ -50,7 +54,7 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (Δdirection, nextVelocity) (player: Player) collisionResults expectingTaunt (racetrackCenter: Vector2) =
+let update (Δdirection, nextVelocity) (player: Player) collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) =
   match player with
   | Moving player ->
     //let movingPlayers = filterMoving otherPlayers
@@ -58,17 +62,21 @@ let update (Δdirection, nextVelocity) (player: Player) collisionResults expecti
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
     let turns, lastTurnedLeft = updateLaps racetrackCenter player position
     let taunt, tauntTimer = updateTaunt player expectingTaunt
+    let placing, nextPlacing =
+      match player.placing with
+        | Some _ -> player.placing, None
+        | None -> if turns >= 1 then twice(Some(lastPlacing + 1)) else twice(None)
     
     //let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
-      | true :: _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox))
+      | true :: _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox, player.placing)), None
       | _ ->
         Player.Moving(
           new State.Player.Moving(
             new OrientedRectangle(position, player.boundingBox.Width, player.boundingBox.Height, direction),
-            nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults))
-  | Crashed _ -> player
+            nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
+  | Crashed _ -> player, None
 
 // ===================
 // == XNA DEPENDENT ==
@@ -81,7 +89,7 @@ open Microsoft.Xna.Framework.Input
 
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
-let private maxTurn, maxSpeed = 1.0, 4.0
+let private maxTurn, maxSpeed = 1.0, 14.0
 
 // Returns change in direction and power (in that order) based on the given game pad state
 let getPowerTurnFromGamepad(gamepad: GamePadState) =
