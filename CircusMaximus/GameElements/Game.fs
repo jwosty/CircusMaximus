@@ -107,7 +107,7 @@ type CircusMaximusGame() as this =
     | Player.Moving player ->
         FlatSpriteFont.drawString
           font fontBatch
-          (sprintf "Turns: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
+          (sprintf "Flexus: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
           (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
           3.0f Color.White
           (FlatSpriteFont.Center, FlatSpriteFont.Min)
