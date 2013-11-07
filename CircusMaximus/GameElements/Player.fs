@@ -8,7 +8,7 @@ open Microsoft.Xna.Framework
 open Extensions
 open HelperFunctions
 
-let tauntTime = 500
+let tauntTime = 1000
 
 type Player =
   | Moving of State.Player.Moving
@@ -54,7 +54,7 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (Δdirection, nextVelocity) (player: Player) collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) =
+let update (Δdirection, targetVelocity) (player: Player) collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) =
   match player with
   | Moving player ->
     //let movingPlayers = filterMoving otherPlayers
@@ -65,7 +65,8 @@ let update (Δdirection, nextVelocity) (player: Player) collisionResults lastPla
     let placing, nextPlacing =
       match player.placing with
         | Some _ -> player.placing, None
-        | None -> if turns >= 1 then twice(Some(lastPlacing + 1)) else twice(None)
+        // 3 turns only for the presentation of this project
+        | None -> if turns >= 3 then twice(Some(lastPlacing + 1)) else twice(None)
     
     //let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
@@ -75,7 +76,7 @@ let update (Δdirection, nextVelocity) (player: Player) collisionResults lastPla
         Player.Moving(
           new State.Player.Moving(
             new OrientedRectangle(position, player.boundingBox.Width, player.boundingBox.Height, direction),
-            nextVelocity, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
+            ((player.velocity * 128.0) + targetVelocity) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
   | Crashed _ -> player, None
 
 // ===================
@@ -89,7 +90,7 @@ open Microsoft.Xna.Framework.Input
 
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
-let private maxTurn, maxSpeed = 1.0, 14.0
+let private maxTurn, maxSpeed = 1.0, 4.0
 
 // Returns change in direction and power (in that order) based on the given game pad state
 let getPowerTurnFromGamepad(gamepad: GamePadState) =
