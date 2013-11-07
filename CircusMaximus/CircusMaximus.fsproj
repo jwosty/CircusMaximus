@@ -106,6 +106,7 @@
     <Compile Include="GameElements\PlayerScreen.fs" />
     <Compile Include="GameElements\Game.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="Collision\Shapes\RacetrackShape.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

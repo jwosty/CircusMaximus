@@ -14,7 +14,7 @@ type Bounds2D =
 
 let drawUniformBounds pixelTexture (sb: SpriteBatch) color = function
   | BoundingLineSegment seg -> drawLineSegment pixelTexture sb color seg
-  | BoundingPolygon poly -> poly.Draw(sb, pixelTexture, [false; false; false; false])
+  | BoundingPolygon poly -> poly.Draw(sb, pixelTexture, List.init (poly.Edges.Length) (fun _ -> false))
 
 type CollisionResult =
   | Result_Line of bool
