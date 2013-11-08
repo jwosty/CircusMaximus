@@ -65,8 +65,14 @@ let collidePair a b =
 
 /// Calculates the intersections of a list of items. Not optimized at all yet
 let collideWorld objects =
-  objects
-    // Collide all the objects together
-    |> List.mapi (fun i obj -> objects |> List.removeIndex i |> List.map (fun othObj -> collidePair obj othObj |> fst))
-    // Combine the results for each object together
+  // Imperitive optimized code
+  let results = Array.create (List.length objects) List.empty
+  for iA in 0..(objects.Length - 1) do
+    for iB in 0..(objects.Length - 1) do
+      if iA < iB then
+        let rA, rB = collidePair objects.[iA] objects.[iB]
+        results.[iA] <- rA :: results.[iA]
+        results.[iB] <- rB :: results.[iB]
+  results
+    |> List.ofArray
     |> List.map (fun objResults -> combineResults objResults)
