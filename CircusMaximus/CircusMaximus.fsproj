@@ -105,6 +105,7 @@
     <Compile Include="GameElements\PlayerStates.fs" />
     <Compile Include="GameElements\Player.fs" />
     <Compile Include="GameElements\PlayerScreen.fs" />
+    <Compile Include="GameElements\GameStates.fs" />
     <Compile Include="GameElements\Game.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
