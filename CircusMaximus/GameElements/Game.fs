@@ -68,7 +68,7 @@ type CircusMaximusGame() as this =
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
-    match State.Game.update gameState with
+    match State.Game.update gameState (Keyboard.GetState()) GamePad.GetState with
       | Some newState -> (gameState <- newState)
       | None -> this.Exit()
   

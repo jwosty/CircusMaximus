@@ -13,17 +13,17 @@ type MidRaceData =
     val timer: int
     val lastPlacing: int
     
-    new(players, timer, lastPlacing) =  { players = players; timer = timer; lastPlacing = lastPlacing }
+    new(players, timer, lastPlacing) = { players = players; timer = timer; lastPlacing = lastPlacing }
   end
 
-type Game = | MidRace of MidRaceData
+type Game =
+  | MidRace of MidRaceData
 
 /// Update a gameState, returning an option of the new state; the Some case here represents that the game
 /// shall continue and None indicating that the whole game should stop
-let update gameState =
+let update gameState (keyboard: KeyboardState) (getGamepad: PlayerIndex -> _) =
   match gameState with
     | MidRace raceData ->
-        let keyboard = Keyboard.GetState()
         if keyboard.IsKeyDown(Keys.Escape) then
           None  // Indicate that we want to exit
         else
@@ -42,7 +42,7 @@ let update gameState =
                 let player, p =
                   if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player collision raceData.lastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
                   else
-                    let gamepad = GamePad.GetState(enum <| i - 1)
+                    let gamepad = getGamepad(enum <| i - 1)
                     Player.update (Player.getPowerTurnFromGamepad gamepad) player collision raceData.lastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center
                 // TODO: Not functional. Fix it!!
                 match p with | Some placing -> (lastPlacing := placing) | None -> ()
