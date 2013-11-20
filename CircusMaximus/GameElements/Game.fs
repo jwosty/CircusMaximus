@@ -100,11 +100,17 @@ type CircusMaximusGame() as this =
       this.FontBatchDo fontBatch
         (fun (fb: SpriteBatch) ->
           FlatSpriteFont.drawString
-            font fontBatch (State.Game.preRaceMaxCount - (raceData.timer / State.Game.ticksPerCount) |> string)
+            font fontBatch (State.Game.preRaceMaxCount - (raceData.timer / State.Game.preRaceTicksPerCount) |> toRoman)
             this.WindowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     | MidRace raceData ->
       this.DrawScreens(raceData.players)
-      this.FontBatchDo fontBatch (fun fb -> List.iter2 (this.DrawHUD fb) raceData.players playerScreens)
+      this.FontBatchDo fontBatch
+        (fun fb ->
+          List.iter2 (this.DrawHUD fb) raceData.players playerScreens
+          if raceData.timer <= State.Game.midRaceBeginPeriod then
+            FlatSpriteFont.drawString
+              font fontBatch "Vaditis!" this.WindowCenter 8.0f Color.ForestGreen
+              (FlatSpriteFont.Center, FlatSpriteFont.Center))
   
   member this.DrawScreens(players) =
     this.FontBatchDo fontBatch

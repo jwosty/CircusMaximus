@@ -28,8 +28,11 @@ type Game =
   | PreRace of PreRaceData
   | MidRace of MidRaceData
 
-let preRaceTicks, preRaceMaxCount = 175, 3
-let ticksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |> int
+let preRaceTicks, preRaceMaxCount = 200, 3
+let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |> int
+
+/// The amount of time into the race that it can still be said that it has "just begun"
+let midRaceBeginPeriod = preRaceTicksPerCount * 2
 
 /// Update a gameState, returning an option of the new state; the Some case here represents that the game
 /// shall continue and None indicating that the whole game should stop
