@@ -14,19 +14,23 @@ type PlayerInputState =
     val power: float
     /// Turn amount
     val turn: float
+    /// Debug input to advance one lap
+    val advanceLap: bool
     
-    new(keyboard: KeyboardState, maxTurn, maxSpeed) =
+    new(lastKeyboard: KeyboardState, keyboard: KeyboardState, maxTurn, maxSpeed) =
       { power = if keyboard.IsKeyDown(Keys.W) then maxSpeed else 0.0;
         turn =
           (  if keyboard.IsKeyDown(Keys.A) then -maxTurn else 0.0)
           + (if keyboard.IsKeyDown(Keys.D) then maxTurn else 0.0)
-          |> degreesToRadians }
-    new(keyboard: KeyboardState) = PlayerInputState(keyboard, maxTurn, maxSpeed)
+          |> degreesToRadians;
+        advanceLap = lastKeyboard.IsKeyDown(Keys.L) && keyboard.IsKeyUp(Keys.L) }
+    new(lastKeyboard: KeyboardState, keyboard) = PlayerInputState(keyboard, lastKeyboard, maxTurn, maxSpeed)
     
-    new(gamepad: GamePadState, maxTurn, maxSpeed) =
+    new(lastGamepad: GamePadState, gamepad: GamePadState, maxTurn, maxSpeed) =
       { power = float gamepad.Triggers.Right * maxSpeed;
-        turn = float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians }
-    new(gamepad: GamePadState) = PlayerInputState(gamepad, maxTurn, maxSpeed)
+        turn = float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians;
+        advanceLap = lastGamepad.IsButtonDown(Buttons.Y) && gamepad.IsButtonUp(Buttons.Y) }
+    new(lastGamepad: GamePadState, gamepad) = PlayerInputState(gamepad, lastGamepad, maxTurn, maxSpeed)
     
-    new(power, turn) = { power = power; turn = turn }
+    new(power, turn, advanceLap) = { power = power; turn = turn; advanceLap = advanceLap }
   end

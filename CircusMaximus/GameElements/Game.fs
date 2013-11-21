@@ -38,7 +38,10 @@ type CircusMaximusGame() as this =
   let mutable playerTexture = Unchecked.defaultof<_>
   let mutable racetrackTextures = Unchecked.defaultof<_>
   let mutable font = Unchecked.defaultof<_>
-
+  
+  let mutable lastKeyboard = Keyboard.GetState()
+  let mutable lastGamepads = [for i in 0..3 -> GamePad.GetState(enum i)]
+  
   do
     this.Content.RootDirectory <- "Content"
 #if DEBUG
@@ -79,10 +82,13 @@ type CircusMaximusGame() as this =
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
-    match State.Game.update gameState (Keyboard.GetState()) GamePad.GetState with
+    let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
+    match State.Game.update gameState (lastKeyboard, keyboard) (lastGamepads, gamepads) with
       | Some newState -> (gameState <- newState)
       | None -> this.Exit()
-  
+    lastKeyboard <- keyboard
+    lastGamepads <- gamepads
+
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
     // Since the borders btwn the player screens are merely trimmed edges, they show through to the
@@ -113,7 +119,7 @@ type CircusMaximusGame() as this =
               (FlatSpriteFont.Center, FlatSpriteFont.Center))
     | PostRace raceData ->
       this.DrawScreens(raceData.players)
-
+  
   member this.DrawScreens(players) =
     this.FontBatchDo fontBatch
       (fun fb ->

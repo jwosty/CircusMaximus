@@ -39,8 +39,8 @@ let nextPositionDirection (player: State.Player.Moving) Δdirection =
    player.direction + Δdirection)
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
-let updateLaps racetrackCenter (player: State.Player.Moving) nextPosition =
-  if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition then
+let updateLaps racetrackCenter (input: PlayerInputState) (player: State.Player.Moving) nextPosition =
+  if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition || input.advanceLap then
     player.turns + 1, not player.lastTurnedLeft
   else
     player.turns, player.lastTurnedLeft
@@ -61,7 +61,7 @@ let update (input: PlayerInputState) (player: Player) collisionResults lastPlaci
     //let movingPlayers = filterMoving otherPlayers
     let position, direction = nextPositionDirection player input.turn
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
-    let turns, lastTurnedLeft = updateLaps racetrackCenter player position
+    let turns, lastTurnedLeft = updateLaps racetrackCenter input player position
     let taunt, tauntTimer = updateTaunt player expectingTaunt
     let placing, nextPlacing =
       match player.placing with

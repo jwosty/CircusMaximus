@@ -44,7 +44,7 @@ let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |>
 /// The amount of time into the race that it can still be said that it has "just begun"
 let midRaceBeginPeriod = preRaceTicksPerCount * 2
 
-let updateMovingRace (keyboard: KeyboardState) (getGamepad: PlayerIndex -> GamePadState) players raceLastPlacing timer =
+let updateMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) players raceLastPlacing timer =
   // A list of collision results (more like intersection results)
   let collisions =
     (Racetrack.collisionBounds
@@ -58,10 +58,10 @@ let updateMovingRace (keyboard: KeyboardState) (getGamepad: PlayerIndex -> GameP
         let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
         let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
         let player, p =
-          if i = 0 then Player.update (new PlayerInputState(keyboard)) player collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
+          if i = 0 then Player.update (new PlayerInputState(lastKeyboard, keyboard)) player collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
           else
-            let gamepad = getGamepad(enum <| i - 1)
-            Player.update (new PlayerInputState(gamepad)) player collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center
+            let lastGamepad, gamepad = lastGamepads.[i - 1], gamepads.[i - 1]
+            Player.update (new PlayerInputState(lastGamepad, gamepad)) player collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center
         // TODO: Not functional. Fix it!!
         match p with | Some placing -> (lastPlacing := placing) | None -> ()
         player)
@@ -72,7 +72,7 @@ let updateMovingRace (keyboard: KeyboardState) (getGamepad: PlayerIndex -> GameP
 
 /// Updates a gameState, returning an option of the new state; the Some case here represents that the game
 /// shall continue and None indicating that the whole game should stop
-let update gameState (keyboard: KeyboardState) (getGamepad: PlayerIndex -> _) =
+let update gameState (lastKeyboard, keyboard: KeyboardState) (lastGamepad, gamepad) =
   if keyboard.IsKeyDown(Keys.Escape) then
     None  // Indicate that we want to exit
   else
@@ -82,5 +82,5 @@ let update gameState (keyboard: KeyboardState) (getGamepad: PlayerIndex -> _) =
         Some(MidRace(MidRaceData(raceData.players, 0, 0)))
       else
         Some(PreRace(PreRaceData(raceData.players, raceData.timer + 1)))
-    | MidRace raceData -> updateMovingRace (Keyboard.GetState()) GamePad.GetState raceData.players raceData.lastPlacing raceData.timer
-    | PostRace raceData -> updateMovingRace (Keyboard.GetState()) GamePad.GetState raceData.players (raceData.players.Length - 1) raceData.timer
+    | MidRace raceData -> updateMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players raceData.lastPlacing raceData.timer
+    | PostRace raceData -> updateMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players (raceData.players.Length - 1) raceData.timer
