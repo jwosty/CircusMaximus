@@ -99,6 +99,7 @@
     <Compile Include="Collision\Shapes\OrientedRectangle.fs" />
     <Compile Include="Collision\Shapes\RacetrackShape.fs" />
     <Compile Include="Collision\Collision.fs" />
+    <Compile Include="GameElements\PlayerInput.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />

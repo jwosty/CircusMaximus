@@ -7,6 +7,7 @@ open System
 open Microsoft.Xna.Framework
 open Extensions
 open HelperFunctions
+open PlayerInput
 
 let tauntTime = 1000
 
@@ -54,11 +55,11 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (Δdirection, targetVelocity) (player: Player) collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) =
+let update (input: PlayerInputState) (player: Player) collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) =
   match player with
   | Moving player ->
     //let movingPlayers = filterMoving otherPlayers
-    let position, direction = nextPositionDirection player Δdirection
+    let position, direction = nextPositionDirection player input.turn
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
     let turns, lastTurnedLeft = updateLaps racetrackCenter player position
     let taunt, tauntTimer = updateTaunt player expectingTaunt
@@ -76,7 +77,7 @@ let update (Δdirection, targetVelocity) (player: Player) collisionResults lastP
         Player.Moving(
           new State.Player.Moving(
             new OrientedRectangle(position, player.boundingBox.Width, player.boundingBox.Height, direction),
-            ((player.velocity * 128.0) + targetVelocity) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
+            ((player.velocity * 128.0) + input.power) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
   | Crashed _ -> player, None
 
 // ===================
@@ -87,20 +88,6 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Input
-
-let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
-
-let private maxTurn, maxSpeed = 1.0, 4.0
-
-// Returns change in direction and power (in that order) based on the given game pad state
-let getPowerTurnFromGamepad(gamepad: GamePadState) =
-  (float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians, float gamepad.Triggers.Right * maxSpeed)
-
-// Returns change in direction and power (in that order) based on the given keyboard state
-let getPowerTurnFromKeyboard(keyboard: KeyboardState) =
-  ( (if keyboard.IsKeyDown(Keys.A) then -maxTurn else 0.0) + (if keyboard.IsKeyDown(Keys.D) then maxTurn else 0.0)
-      |> degreesToRadians,
-    (if keyboard.IsKeyDown(Keys.W) then maxSpeed else 0.0))
 
 let loadContent (content: ContentManager) =
   content.Load<Texture2D>("chariot")

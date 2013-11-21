@@ -6,6 +6,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Collision
+open CircusMaximus.PlayerInput
 
 type PreRaceData =
   struct
@@ -43,7 +44,7 @@ let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |>
 /// The amount of time into the race that it can still be said that it has "just begun"
 let midRaceBeginPeriod = preRaceTicksPerCount * 2
 
-let updateMovingRace (keyboard: KeyboardState) (getGamepad: PlayerIndex -> _) players raceLastPlacing timer =
+let updateMovingRace (keyboard: KeyboardState) (getGamepad: PlayerIndex -> GamePadState) players raceLastPlacing timer =
   // A list of collision results (more like intersection results)
   let collisions =
     (Racetrack.collisionBounds
@@ -57,10 +58,10 @@ let updateMovingRace (keyboard: KeyboardState) (getGamepad: PlayerIndex -> _) pl
         let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
         let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
         let player, p =
-          if i = 0 then Player.update (Player.getPowerTurnFromKeyboard keyboard) player collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
+          if i = 0 then Player.update (new PlayerInputState(keyboard)) player collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center
           else
             let gamepad = getGamepad(enum <| i - 1)
-            Player.update (Player.getPowerTurnFromGamepad gamepad) player collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center
+            Player.update (new PlayerInputState(gamepad)) player collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center
         // TODO: Not functional. Fix it!!
         match p with | Some placing -> (lastPlacing := placing) | None -> ()
         player)
