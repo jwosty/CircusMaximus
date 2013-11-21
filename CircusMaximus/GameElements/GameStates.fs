@@ -32,10 +32,6 @@ type PostRaceData =
     new(players, timer) = { players = players; timer = timer }
   end
 
-type MovingRace =
-  | MidRace of MidRaceData
-  | PostRace of PostRaceData
-
 type Game =
   | PreRace of PreRaceData
   | MidRace of MidRaceData

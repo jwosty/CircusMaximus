@@ -66,7 +66,7 @@ let update (Δdirection, targetVelocity) (player: Player) collisionResults lastP
       match player.placing with
         | Some _ -> player.placing, None
         // 3 turns only for the presentation of this project
-        | None -> if turns >= 3 then twice(Some(lastPlacing + 1)) else twice(None)
+        | None -> if turns >= 13 then twice(Some(lastPlacing + 1)) else twice(None)
     
     //let collisions = detectCollisions player otherPlayers
     // If the player is colliding on the front, then the player is crashing
