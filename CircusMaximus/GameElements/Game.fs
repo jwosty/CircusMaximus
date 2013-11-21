@@ -17,7 +17,6 @@ type CircusMaximusGame() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  //let mutable players =
   let mutable gameState =
     let x = 820.0f
     PreRace(
@@ -64,7 +63,8 @@ type CircusMaximusGame() as this =
         this.GraphicsDevice
         (match gameState with
           | PreRace raceData -> raceData.players.Length
-          | MidRace raceData -> raceData.players.Length)
+          | MidRace raceData -> raceData.players.Length
+          | PostRace raceData -> raceData.players.Length)
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
@@ -111,7 +111,9 @@ type CircusMaximusGame() as this =
             FlatSpriteFont.drawString
               font fontBatch "Vaditis!" this.WindowCenter 8.0f Color.ForestGreen
               (FlatSpriteFont.Center, FlatSpriteFont.Center))
-  
+    | PostRace raceData ->
+      this.DrawScreens(raceData.players)
+
   member this.DrawScreens(players) =
     this.FontBatchDo fontBatch
       (fun fb ->
