@@ -1,12 +1,11 @@
-namespace CircusMaximus.State.Player
+module CircusMaximus.State.Player
 open System
 open Microsoft.Xna.Framework
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Collision
 
-/// The moving player state, that is, one who is still in the race
-type Moving =
+type MovingData =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
     val public boundingBox: OrientedRectangle
@@ -38,8 +37,7 @@ type Moving =
     member this.direction with get() = this.boundingBox.Direction
   end
 
-/// The Crashed player state, which occurs when a player, well, crashes
-type Crashed =
+type CrashedData =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
     val public boundingBox: OrientedRectangle
@@ -52,3 +50,11 @@ type Crashed =
     /// Player direction, in radians, obtained from the bounding box
     member this.direction with get() = this.boundingBox.Direction
   end
+
+/// Player state machine
+type PlayerState =
+  /// A player state that's still in the race
+  | Moving of MovingData
+  | Crashed of CrashedData
+
+type Player = PlayerState

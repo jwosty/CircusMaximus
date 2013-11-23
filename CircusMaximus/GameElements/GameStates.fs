@@ -7,10 +7,11 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Collision
 open CircusMaximus.PlayerInput
+open CircusMaximus.State.Player
 
 type PreRaceData =
   struct
-    val players: Player.Player list
+    val players: Player list
     val timer: int
     
     new(players, timer) = { players = players; timer = timer }
@@ -18,7 +19,7 @@ type PreRaceData =
 
 type MidRaceData =
   struct
-    val players: Player.Player list
+    val players: Player list
     val timer: int
     val lastPlacing: int
     
@@ -27,16 +28,19 @@ type MidRaceData =
 
 type PostRaceData =
   struct
-    val players: Player.Player list
+    val players: Player list
     val timer: int
     
     new(players, timer) = { players = players; timer = timer }
   end
 
-type Game =
+/// Game state machine
+type GameState =
   | PreRace of PreRaceData
   | MidRace of MidRaceData
   | PostRace of PostRaceData
+
+type Game = GameState
 
 let preRaceTicks, preRaceMaxCount = 200, 3
 let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |> int

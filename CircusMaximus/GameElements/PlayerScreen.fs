@@ -2,6 +2,7 @@ module CircusMaximus.PlayerScreen
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
+open CircusMaximus.State.Player
 
 type PlayerScreen = SpriteBatch * Rectangle
 
@@ -62,7 +63,7 @@ let createScreen graphics playerNumber =
 let createScreens graphics quantity = List.init quantity (createScreen graphics)
 
 // Draw a single player's screen
-let drawSingle drawPredicate playerNumber (player: Player.Player) (screen: PlayerScreen) =
+let drawSingle drawPredicate playerNumber player (screen: PlayerScreen) =
   let sb, rect = screen
   let sr = sb.GraphicsDevice.ScissorRectangle
   let playerBB =

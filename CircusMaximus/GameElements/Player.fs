@@ -6,15 +6,12 @@ open System
 // =====================
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
-open Extensions
-open HelperFunctions
-open PlayerInput
+open CircusMaximus.Extensions
+open CircusMaximus.HelperFunctions
+open CircusMaximus.PlayerInput
+open CircusMaximus.State.Player
 
 let tauntTime = 1000
-
-type Player =
-  | Moving of State.Player.Moving
-  | Crashed of State.Player.Crashed
 
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
   if lastTurnedLeft && position.X > center.X then
@@ -24,30 +21,30 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
   else false
 
 let playerBB = function
-  | Moving player -> player.collisionBox
-  | Crashed player -> player.collisionBox
+  | Player.Moving player -> player.collisionBox
+  | Player.Crashed player -> player.collisionBox
 
 let playerPlacing = function
-  | Moving player -> player.placing
-  | Crashed player -> player.placing
+  | Player.Moving player -> player.placing
+  | Player.Crashed player -> player.placing
 
 #nowarn "49"
 /// Returns the next position and direction of the player and change in direction
-let nextPositionDirection (player: State.Player.Moving) Δdirection =
+let nextPositionDirection (player: MovingData) Δdirection =
   (player.position
     + (   cos player.direction * player.velocity
        @@ sin player.direction * player.velocity),
    player.direction + Δdirection)
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
-let updateLaps racetrackCenter (input: PlayerInputState) (player: State.Player.Moving) nextPosition =
+let updateLaps racetrackCenter (input: PlayerInputState) (player: MovingData) nextPosition =
   if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition || input.advanceLap then
     player.turns + 1, not player.lastTurnedLeft
   else
     player.turns, player.lastTurnedLeft
 
 /// Returns a new taunt if needed, otherwise none
-let updateTaunt (player: State.Player.Moving) expectingTaunt =
+let updateTaunt (player: MovingData) expectingTaunt =
   if player.tauntTimer > 0 then
     player.currentTaunt, player.tauntTimer - 1
   elif expectingTaunt then
@@ -56,9 +53,9 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (input: PlayerInputState) (player: Player) playerIndex collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
+let update (input: PlayerInputState) player playerIndex collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
   match player with
-  | Moving player ->
+  | Player.Moving player ->
     let snd = assets.ChariotSound.[playerIndex]
     // Warning: mutable code; a necessary evil here...
     if player.velocity >= 3.0 then
@@ -82,10 +79,10 @@ let update (input: PlayerInputState) (player: Player) playerIndex collisionResul
           else twice(None)
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
-      | true :: _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox, player.placing)), None
+      | true :: _ -> Player.Crashed(new CrashedData(player.boundingBox, player.placing)), None
       | _ ->
         Player.Moving(
-          new State.Player.Moving(
+          new MovingData(
             new OrientedRectangle(position, player.boundingBox.Width, player.boundingBox.Height, direction),
             ((player.velocity * 128.0) + input.power) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
   | Crashed _ -> player, None
@@ -99,7 +96,7 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
 // Renders a player, assuming spriteBatch.Begin has already been called
-let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (assets: GameContent) fontBatch =
+let draw (sb: SpriteBatch, rect: Rectangle) player isMainPlayer (assets: GameContent) fontBatch =
   let playerBB, playerIL =
     match player with
     | Moving player -> player.boundingBox, player.intersectingLines
