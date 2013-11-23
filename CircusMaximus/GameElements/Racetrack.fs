@@ -11,7 +11,7 @@ let center = 5418 @@ 1255
 
 // Wow, even though the textures collectively contain about 25 million pixels, and the players are
 // updated via copying every fram, it's still lightning fast on OSX. That's some good optimization.
-let drawSingle (sb: SpriteBatch) (texture: Texture2D) x y =
+let drawSingle (sb: SpriteBatch) texture x y =
   sb.Draw(texture, (float32 <| x * texture.Width) @~ (float32 <| y * texture.Height))
 
 let collisionBounds =

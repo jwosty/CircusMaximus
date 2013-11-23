@@ -89,18 +89,18 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
 // Renders a player, assuming spriteBatch.Begin has already been called
-let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (texture: Texture2D) font fontBatch pixelTexture =
+let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (assets: GameContent) fontBatch =
   let playerBB, playerIL =
     match player with
     | Moving player -> player.boundingBox, player.intersectingLines
     | Crashed player -> player.boundingBox, [false; false; false; false]
   sb.Draw(
-    texture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
-    (float32 texture.Width / 2.0f @@ float32 texture.Height / 2.0f),
+    assets.ChariotTexture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
+    (float32 assets.ChariotTexture.Width / 2.0f @@ float32 assets.ChariotTexture.Height / 2.0f),
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
-  playerBB.Draw(sb, pixelTexture, playerIL)
+  playerBB.Draw(sb, assets.Pixel, playerIL)
 #endif
   match player with
   | Moving player ->
@@ -108,7 +108,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     match player.currentTaunt with
     | Some taunt ->
       FlatSpriteFont.drawString
-        font fontBatch taunt player.position 2.0f
+        assets.Font fontBatch taunt player.position 2.0f
         (if isMainPlayer then Color.White else Color.OrangeRed)
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
@@ -116,5 +116,5 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     // Remind the player that they are crashed
     let message, color = if isMainPlayer then "Strepebas!", Color.Red else "Strepebat!", (new Color(Color.Red, 63))
     FlatSpriteFont.drawString
-      font fontBatch message player.position 3.0f color
+      assets.Font fontBatch message player.position 3.0f color
       (FlatSpriteFont.Center, FlatSpriteFont.Center)

@@ -134,7 +134,7 @@ type CircusMaximusGame() as this =
 #if DEBUG
     Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
 #endif
-    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) assets.ChariotTexture assets.Font fontBatch assets.Pixel) players
+    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) assets fontBatch) players
   
   member this.DrawHUD fb player ((sb, rect): PlayerScreen.PlayerScreen) =
     match player with
