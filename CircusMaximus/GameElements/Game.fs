@@ -69,14 +69,14 @@ type CircusMaximusGame() as this =
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
-  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice
+  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice (State.Game.playerQuantity gameState)
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
     let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match State.Game.update gameState (lastKeyboard, keyboard) (lastGamepads, gamepads) with
+    match State.Game.update gameState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
       | Some newState -> (gameState <- newState)
       | None -> this.Exit()
     lastKeyboard <- keyboard

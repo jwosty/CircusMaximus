@@ -5,6 +5,7 @@ open System
 // == XNA INDEPENDENT ==
 // =====================
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Audio
 open Extensions
 open HelperFunctions
 open PlayerInput
@@ -55,9 +56,17 @@ let updateTaunt (player: State.Player.Moving) expectingTaunt =
     None, player.tauntTimer - 1
 
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
-let update (input: PlayerInputState) (player: Player) collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) =
+let update (input: PlayerInputState) (player: Player) playerIndex collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
   match player with
   | Moving player ->
+    let snd = assets.ChariotSound.[playerIndex]
+    // Warning: mutable code; a necessary evil here...
+    if player.velocity >= 3.0 then
+      if not (snd.State = SoundState.Playing) then
+        snd.Resume()
+    elif player.velocity < 3.0 then
+      if snd.State = SoundState.Playing then
+        snd.Pause()
     //let movingPlayers = filterMoving otherPlayers
     let position, direction = nextPositionDirection player input.turn
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
@@ -66,10 +75,11 @@ let update (input: PlayerInputState) (player: Player) collisionResults lastPlaci
     let placing, nextPlacing =
       match player.placing with
         | Some _ -> player.placing, None
-        // 3 turns only for the presentation of this project
-        | None -> if turns >= 13 then twice(Some(lastPlacing + 1)) else twice(None)
-    
-    //let collisions = detectCollisions player otherPlayers
+        | None ->
+          if turns >= 13 then
+            assets.CrowdCheerSound.Play() |> ignore // make the crowd cheer to congradulate the player for finishing
+            twice(Some(lastPlacing + 1))
+          else twice(None)
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
       | true :: _ -> Player.Crashed(new State.Player.Crashed(player.boundingBox, player.placing)), None
