@@ -106,10 +106,11 @@
     <Compile Include="GameElements\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
     <Compile Include="GameElements\PlayerStates.fs" />
-    <Compile Include="GameElements\Player.fs" />
+    <Compile Include="GameElements\PlayerFunctions.fs" />
     <Compile Include="GameElements\PlayerScreen.fs" />
     <Compile Include="GameElements\GameStates.fs" />
-    <Compile Include="GameElements\Game.fs" />
+    <Compile Include="GameElements\GameFunctions.fs" />
+    <Compile Include="GameElements\GameWindow.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

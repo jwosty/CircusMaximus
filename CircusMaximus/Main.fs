@@ -6,7 +6,7 @@ type AppDelegate() =
   inherit NSApplicationDelegate()
   
   override x.FinishedLaunching(notification) =
-    let game = new CircusMaximusGame()
+    let game = new GameWindow()
     game.Run()
     
   override x.ApplicationShouldTerminateAfterLastWindowClosed(sender) =

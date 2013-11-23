@@ -10,11 +10,11 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Media
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
-open CircusMaximus.State.Game
-open CircusMaximus.State.Player
+open CircusMaximus.Game
+open CircusMaximus.Player
 
 /// Default Project Template
-type CircusMaximusGame() as this =
+type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
@@ -70,14 +70,14 @@ type CircusMaximusGame() as this =
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
-  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice (State.Game.playerQuantity gameState)
+  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice (playerQuantity gameState)
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
     let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match State.Game.update gameState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
+    match nextGame gameState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
       | Some newState -> (gameState <- newState)
       | None -> this.Exit()
     lastKeyboard <- keyboard
@@ -100,14 +100,14 @@ type CircusMaximusGame() as this =
       this.FontBatchDo fontBatch
         (fun (fb: SpriteBatch) ->
           FlatSpriteFont.drawString
-            assets.Font fontBatch (State.Game.preRaceMaxCount - (raceData.timer / State.Game.preRaceTicksPerCount) |> toRoman)
+            assets.Font fontBatch (preRaceMaxCount - (raceData.timer / preRaceTicksPerCount) |> toRoman)
             this.WindowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     | MidRace raceData ->
       this.DrawScreens(raceData.players)
       this.FontBatchDo fontBatch
         (fun fb ->
           List.iter2 (this.DrawHUD fb) raceData.players playerScreens
-          if raceData.timer <= State.Game.midRaceBeginPeriod then
+          if raceData.timer <= midRaceBeginPeriod then
             FlatSpriteFont.drawString
               assets.Font fontBatch "Vaditis!" this.WindowCenter 8.0f Color.ForestGreen
               (FlatSpriteFont.Center, FlatSpriteFont.Center))
@@ -135,7 +135,7 @@ type CircusMaximusGame() as this =
 #if DEBUG
     Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
 #endif
-    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) assets fontBatch) players
+    List.iteri (fun i player -> drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch) players
   
   member this.DrawHUD fb player ((sb, rect): PlayerScreen.PlayerScreen) =
     match player with
