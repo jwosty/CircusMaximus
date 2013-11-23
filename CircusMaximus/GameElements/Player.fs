@@ -86,10 +86,7 @@ let update (input: PlayerInputState) (player: Player) collisionResults lastPlaci
 
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
-open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Input
-
-let loadContent: ContentManager -> _ = loadImage "chariot"
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (texture: Texture2D) font fontBatch pixelTexture =
@@ -117,7 +114,7 @@ let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (textu
     | None -> ()
   | Crashed player ->
     // Remind the player that they are crashed
-    let message, color = if isMainPlayer then "Strepebas!", Color.Red else "Strepebant!", (new Color(Color.Red, 63))
+    let message, color = if isMainPlayer then "Strepebas!", Color.Red else "Strepebat!", (new Color(Color.Red, 63))
     FlatSpriteFont.drawString
       font fontBatch message player.position 3.0f color
       (FlatSpriteFont.Center, FlatSpriteFont.Center)

@@ -11,6 +11,7 @@
     <RootNamespace>CircusMaximus</RootNamespace>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <AssemblyName>CircusMaximus</AssemblyName>
+    <SuppressXamMacUpsell>True</SuppressXamMacUpsell>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -99,6 +100,7 @@
     <Compile Include="Collision\Shapes\OrientedRectangle.fs" />
     <Compile Include="Collision\Shapes\RacetrackShape.fs" />
     <Compile Include="Collision\Collision.fs" />
+    <Compile Include="GameElements\GameContent.fs" />
     <Compile Include="GameElements\Input.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\FlatSpriteFont.fs" />

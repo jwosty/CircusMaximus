@@ -4,11 +4,6 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus.HelperFunctions
 
-let loadContent graphicsDevice =
-  let t = new Texture2D(graphicsDevice, 1, 1)
-  t.SetData([|Color.White|])
-  t
-
 type Microsoft.Xna.Framework.Graphics.SpriteBatch with
   member this.DrawStringCentered(font: SpriteFont, string: string, position, color) =
     this.DrawString(font, string, font.MeasureString(string) / (2 @@ 2), color)

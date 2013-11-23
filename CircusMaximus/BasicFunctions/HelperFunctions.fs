@@ -1,6 +1,7 @@
 module CircusMaximus.HelperFunctions
 open System
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus.TupleClassExtensions
@@ -12,8 +13,6 @@ let inline (@~) a b = new Nullable<_>(new Vector2(float32 a, float32 b))
 /// Vector2 cross product
 let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
-let loadImage img (content: ContentManager) = content.Load<Texture2D>("images/" + img)
-let loadSound snd (content: ContentManager) = content.Load<Texture2D>("sounds/" + snd)
 
 /// Exclusive 'between' operator
 let (><) x (a, b) = (x > a && x < b) || (x < a && x > b)

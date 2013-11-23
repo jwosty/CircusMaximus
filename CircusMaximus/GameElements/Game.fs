@@ -34,10 +34,7 @@ type CircusMaximusGame() as this =
   // A general-purpose sprite batch
   let mutable generalBatch = Unchecked.defaultof<_>
   let mutable fontBatch = Unchecked.defaultof<_>
-  let mutable pixelTexture = Unchecked.defaultof<_>
-  let mutable playerTexture = Unchecked.defaultof<_>
-  let mutable racetrackTextures = Unchecked.defaultof<_>
-  let mutable font = Unchecked.defaultof<_>
+  let mutable assets = Unchecked.defaultof<_>
   
   let mutable lastKeyboard = Keyboard.GetState()
   let mutable lastGamepads = [for i in 0..3 -> GamePad.GetState(enum i)]
@@ -72,11 +69,7 @@ type CircusMaximusGame() as this =
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
-  override this.LoadContent() =
-    pixelTexture <- Extensions.loadContent this.GraphicsDevice
-    playerTexture <- Player.loadContent this.Content
-    racetrackTextures <- Racetrack.loadContent this.Content
-    font <- this.Content.Load<Texture2D>("images/font")
+  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
@@ -100,13 +93,13 @@ type CircusMaximusGame() as this =
       this.DrawScreens(raceData.players)
       // Draw a dark overlay to indicate that the game hasn't started yet
       generalBatch.Begin()
-      generalBatch.Draw(pixelTexture, this.WindowRect, new Color(Color.Black, 192))
+      generalBatch.Draw(assets.Pixel, this.WindowRect, new Color(Color.Black, 192))
       generalBatch.End()
       // Draw a countdown
       this.FontBatchDo fontBatch
         (fun (fb: SpriteBatch) ->
           FlatSpriteFont.drawString
-            font fontBatch (State.Game.preRaceMaxCount - (raceData.timer / State.Game.preRaceTicksPerCount) |> toRoman)
+            assets.Font fontBatch (State.Game.preRaceMaxCount - (raceData.timer / State.Game.preRaceTicksPerCount) |> toRoman)
             this.WindowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     | MidRace raceData ->
       this.DrawScreens(raceData.players)
@@ -115,7 +108,7 @@ type CircusMaximusGame() as this =
           List.iter2 (this.DrawHUD fb) raceData.players playerScreens
           if raceData.timer <= State.Game.midRaceBeginPeriod then
             FlatSpriteFont.drawString
-              font fontBatch "Vaditis!" this.WindowCenter 8.0f Color.ForestGreen
+              assets.Font fontBatch "VADITIS!" this.WindowCenter 8.0f Color.ForestGreen
               (FlatSpriteFont.Center, FlatSpriteFont.Center))
     | PostRace raceData ->
       this.DrawScreens(raceData.players)
@@ -137,17 +130,17 @@ type CircusMaximusGame() as this =
   member this.DrawWorld(players, mainPlayer, ((sb, rect): PlayerScreen.PlayerScreen)) =
     for x in 0..9 do
       for y in 0..2 do
-        Racetrack.drawSingle sb racetrackTextures.[x, y] x y
+        Racetrack.drawSingle sb assets.RacetrackTextures.[x, y] x y
 #if DEBUG
-    Racetrack.drawBounds Racetrack.collisionBounds pixelTexture sb
+    Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
 #endif
-    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) playerTexture font fontBatch pixelTexture) players
+    List.iteri (fun i player -> Player.draw (sb, rect) player (i = mainPlayer) assets.ChariotTexture assets.Font fontBatch assets.Pixel) players
   
   member this.DrawHUD fb player ((sb, rect): PlayerScreen.PlayerScreen) =
     match player with
     | Player.Moving player ->
         FlatSpriteFont.drawString
-          font fb
+          assets.Font fb
           (sprintf "Flexus: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
           (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
           3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
@@ -155,7 +148,7 @@ type CircusMaximusGame() as this =
         | Some placing ->
             let color = match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray
             FlatSpriteFont.drawString
-              font fb
+              assets.Font fb
               (sprintf "Locus: %s" (toRoman placing))
               (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + (24))
               3.0f color (FlatSpriteFont.Center, FlatSpriteFont.Min)

@@ -9,12 +9,6 @@ open CircusMaximus.Collision
 
 let center = 5418 @@ 1255
 
-let loadContent (content: ContentManager) =
-  // Use a 2D array because there aren't 2D lists, and a 1D list would be harder to deal with here
-  // The GIMP plugin that split the image generates the files in the format y-x.png -- I should fix
-  // that sometime
-  Array2D.init 10 3 (fun x y -> loadImage (sprintf "racetrack/%i-%i.png" y x) content)
-
 // Wow, even though the textures collectively contain about 25 million pixels, and the players are
 // updated via copying every fram, it's still lightning fast on OSX. That's some good optimization.
 let drawSingle (sb: SpriteBatch) (texture: Texture2D) x y =
