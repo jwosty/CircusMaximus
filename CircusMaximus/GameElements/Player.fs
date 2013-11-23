@@ -89,8 +89,7 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Input
 
-let loadContent (content: ContentManager) =
-  content.Load<Texture2D>("chariot")
+let loadContent: ContentManager -> _ = loadImage "chariot"
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let draw (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (texture: Texture2D) font fontBatch pixelTexture =

@@ -76,7 +76,7 @@ type CircusMaximusGame() as this =
     pixelTexture <- Extensions.loadContent this.GraphicsDevice
     playerTexture <- Player.loadContent this.Content
     racetrackTextures <- Racetrack.loadContent this.Content
-    font <- this.Content.Load<Texture2D>("font")
+    font <- this.Content.Load<Texture2D>("images/font")
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
