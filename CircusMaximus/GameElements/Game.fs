@@ -108,7 +108,7 @@ type CircusMaximusGame() as this =
           List.iter2 (this.DrawHUD fb) raceData.players playerScreens
           if raceData.timer <= State.Game.midRaceBeginPeriod then
             FlatSpriteFont.drawString
-              assets.Font fontBatch "VADITIS!" this.WindowCenter 8.0f Color.ForestGreen
+              assets.Font fontBatch "Vaditis!" this.WindowCenter 8.0f Color.ForestGreen
               (FlatSpriteFont.Center, FlatSpriteFont.Center))
     | PostRace raceData ->
       this.DrawScreens(raceData.players)
