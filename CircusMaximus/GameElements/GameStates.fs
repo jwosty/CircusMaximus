@@ -6,7 +6,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Collision
-open CircusMaximus.PlayerInput
+open CircusMaximus.Input
 open CircusMaximus.Player
 
 type PreRaceData =

@@ -1,4 +1,4 @@
-module CircusMaximus.PlayerInput
+module CircusMaximus.Input
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
