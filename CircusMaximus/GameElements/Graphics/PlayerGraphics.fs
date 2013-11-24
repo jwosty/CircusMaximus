@@ -1,3 +1,4 @@
+/// A module to draw player states. It's dirty because it, by nature, has side effects
 module CircusMaximus.PlayerGraphics
 open System
 open Microsoft.Xna.Framework

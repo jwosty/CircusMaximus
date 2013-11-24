@@ -16,6 +16,14 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
       new Nullable<Rectangle>(), color_,
       atan2 edge.Y edge.X,  // angle
       0 @@ 0, SpriteEffects.None, 0.0f)
+  
+  /// Begins the sprite batch in point clamp mode and calls the predicate with the sprite batch
+  /// before ending
+  member this.DoWithPointClamp predicate =
+    // SamplerState.PointClamp disables anti-aliasing, which just looks horrible on scaled bitmap fonts
+    this.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null)
+    predicate this |> ignore
+    this.End()
 
 module List =
   /// Returns the consecutive pairs of a list (including the first and last elements together)

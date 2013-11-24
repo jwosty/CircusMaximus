@@ -10,8 +10,8 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Media
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
-open CircusMaximus.Game
 open CircusMaximus.Player
+open CircusMaximus.Game
 
 /// Default Project Template
 type GameWindow() as this =
@@ -88,70 +88,5 @@ type GameWindow() as this =
     // Since the borders btwn the player screens are merely trimmed edges, they show through to the
     // background and become whatever color the screen is cleared with
     graphics.GraphicsDevice.Clear (Color.Black)
-    base.Draw (gameTime)
-    match gameState with
-    | PreRace raceData ->
-      this.DrawScreens(raceData.players)
-      // Draw a dark overlay to indicate that the game hasn't started yet
-      generalBatch.Begin()
-      generalBatch.Draw(assets.Pixel, this.WindowRect, new Color(Color.Black, 192))
-      generalBatch.End()
-      // Draw a countdown
-      this.FontBatchDo fontBatch
-        (fun (fb: SpriteBatch) ->
-          FlatSpriteFont.drawString
-            assets.Font fontBatch (preRaceMaxCount - (raceData.timer / preRaceTicksPerCount) |> toRoman)
-            this.WindowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
-    | MidRace(raceData, _) ->
-      this.DrawScreens(raceData.players)
-      this.FontBatchDo fontBatch
-        (fun fb ->
-          List.iter2 (this.DrawHUD fb) raceData.players playerScreens
-          if raceData.timer <= midRaceBeginPeriod then
-            FlatSpriteFont.drawString
-              assets.Font fontBatch "Vaditis!" this.WindowCenter 8.0f Color.ForestGreen
-              (FlatSpriteFont.Center, FlatSpriteFont.Center))
-    | PostRace raceData ->
-      this.DrawScreens(raceData.players)
-  
-  member this.DrawScreens(players) =
-    this.FontBatchDo fontBatch
-      (fun fb ->
-        List.iteri2
-          (PlayerScreen.drawSingle
-            (fun (a, b) -> this.DrawWorld(players, a, b)))
-            players playerScreens)
-  
-  member this.FontBatchDo (fb: SpriteBatch) predicate =
-    // SamplerState.PointClamp disables anti-aliasing, which just looks horrible on scaled bitmap fonts
-    fb.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null)
-    predicate fb |> ignore
-    fb.End()
-  
-  member this.DrawWorld(players, mainPlayer, ((sb, rect): PlayerScreen.PlayerScreen)) =
-    for x in 0..9 do
-      for y in 0..2 do
-        Racetrack.drawSingle sb assets.RacetrackTextures.[x, y] x y
-#if DEBUG
-    Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
-#endif
-    List.iteri (fun i player -> drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch) players
-  
-  member this.DrawHUD fb player ((sb, rect): PlayerScreen.PlayerScreen) =
-    match player with
-    | Player.Moving player ->
-        FlatSpriteFont.drawString
-          assets.Font fb
-          (sprintf "Flexus: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
-          (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
-          3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
-        match player.placing with
-        | Some placing ->
-            let color = match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray
-            FlatSpriteFont.drawString
-              assets.Font fb
-              (sprintf "Locus: %s" (toRoman placing))
-              (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + (24))
-              3.0f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
-        | None -> ()
-    | _ -> ()
+    base.Draw(gameTime)
+    GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch gameState

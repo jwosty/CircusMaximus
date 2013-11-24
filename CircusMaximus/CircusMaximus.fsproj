@@ -107,12 +107,13 @@
     <Compile Include="GameElements\Racetrack.fs" />
     <Compile Include="GameElements\StateMachines\PlayerStates.fs" />
     <Compile Include="GameElements\StateMachines\PlayerFunctions.fs" />
-    <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
     <Compile Include="GameElements\StateMachines\GameStates.fs" />
     <Compile Include="GameElements\StateMachines\GameFunctions.fs" />
+    <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
+    <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
+    <Compile Include="GameElements\Graphics\GameGraphics.fs" />
     <Compile Include="GameElements\Graphics\GameWindow.fs" />
     <Compile Include="Main.fs" />
-    <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
