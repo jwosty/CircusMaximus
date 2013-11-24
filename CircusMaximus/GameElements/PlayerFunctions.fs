@@ -31,6 +31,7 @@ let playerPlacing = function
   | Player.Crashed player -> player.placing
 
 /// Returns the next position and direction of the player and change in direction
+#nowarn "49"
 let nextPositionDirection (player: MovingData) Δdirection =
   (player.position
     + (   cos player.direction * player.velocity
@@ -80,7 +81,9 @@ let nextPlayer (input: PlayerInputState) player playerIndex collisionResults las
           else twice(None)
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
-      | true :: _ -> Player.Crashed(new CrashedData(player.boundingBox, player.placing)), None
+      | true :: _ ->
+        snd.Stop()
+        Player.Crashed(new CrashedData(player.boundingBox, player.placing)), None
       | _ ->
         Player.Moving(
           new MovingData(
