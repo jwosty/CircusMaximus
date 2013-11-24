@@ -1,9 +1,6 @@
 /// Contains functions and constants pertaining to players
 [<CompilationRepresentationAttribute(CompilationRepresentationFlags.ModuleSuffix)>]
 module CircusMaximus.Player
-// =====================
-// == XNA INDEPENDENT ==
-// =====================
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
@@ -66,7 +63,6 @@ let nextPlayer (input: PlayerInputState) player playerIndex collisionResults las
     elif player.velocity < 3.0 then
       if snd.State = SoundState.Playing then
         snd.Pause()
-    //let movingPlayers = filterMoving otherPlayers
     let position, direction = nextPositionDirection player input.turn
     // If the player has crossed the threshhold not more than once in a row, increment the turn count
     let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
@@ -76,7 +72,7 @@ let nextPlayer (input: PlayerInputState) player playerIndex collisionResults las
         | Some _ -> player.placing, None
         | None ->
           if turns >= 13 then
-            assets.CrowdCheerSound.Play() |> ignore // make the crowd cheer to congradulate the player for finishing
+            if lastPlacing < 3 then assets.CrowdCheerSound.Play() |> ignore // make the crowd cheer to congradulate the player for finishing in the top 3
             twice(Some(lastPlacing + 1))
           else twice(None)
     // If the player is colliding on the front, then the player is crashing
