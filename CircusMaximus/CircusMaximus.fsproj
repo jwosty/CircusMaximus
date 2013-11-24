@@ -103,14 +103,14 @@
     <Compile Include="GameElements\GameContent.fs" />
     <Compile Include="GameElements\Input.fs" />
     <Compile Include="GameElements\Taunt.fs" />
-    <Compile Include="GameElements\FlatSpriteFont.fs" />
+    <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
-    <Compile Include="GameElements\PlayerStates.fs" />
-    <Compile Include="GameElements\PlayerFunctions.fs" />
-    <Compile Include="GameElements\PlayerScreen.fs" />
-    <Compile Include="GameElements\GameStates.fs" />
-    <Compile Include="GameElements\GameFunctions.fs" />
-    <Compile Include="GameElements\GameWindow.fs" />
+    <Compile Include="GameElements\StateMachines\PlayerStates.fs" />
+    <Compile Include="GameElements\StateMachines\PlayerFunctions.fs" />
+    <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
+    <Compile Include="GameElements\StateMachines\GameStates.fs" />
+    <Compile Include="GameElements\StateMachines\GameFunctions.fs" />
+    <Compile Include="GameElements\Graphics\GameWindow.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +125,8 @@
     <Folder Include="GameElements\" />
     <Folder Include="Collision\" />
     <Folder Include="Collision\Shapes\" />
+    <Folder Include="GameElements\StateMachines\" />
+    <Folder Include="GameElements\Graphics\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\images\chariot.png" />
