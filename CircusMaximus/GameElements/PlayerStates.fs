@@ -8,7 +8,7 @@ open CircusMaximus.Collision
 type MovingData =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
-    val public boundingBox: OrientedRectangle
+    val public bounds: PlayerShape
     val public velocity: float
     val public turns: int
     val public lastTurnedLeft: bool
@@ -17,38 +17,38 @@ type MovingData =
     val public intersectingLines: bool list
     val public placing: int option
     
-    new(bb, vel, turns, ltl, tnt, tntT, il, p) =
-      { boundingBox = bb; velocity = vel; turns = turns;
+    new(b, vel, turns, ltl, tnt, tntT, il, p) =
+      { bounds = b; velocity = vel; turns = turns;
       lastTurnedLeft = ltl; currentTaunt = tnt; tauntTimer = tntT;
       intersectingLines = il; placing = p }
     
-    new(bb, vel, center: Vector2, p) =
-      { boundingBox = bb; velocity = vel;
-        turns = if bb.Center.Y >= center.Y then 0 else -1;
+    new(b, vel, center: Vector2, p) =
+      { bounds = b; velocity = vel;
+        turns = if b.Center.Y >= center.Y then 0 else -1;
         // Always start on the opposite side
-        lastTurnedLeft = bb.Center.Y >= center.Y;
+        lastTurnedLeft = b.Center.Y >= center.Y;
         currentTaunt = None; tauntTimer = 0;
         intersectingLines = [false; false; false; false]; placing = p }
     
-    member this.collisionBox with get() = BoundingPolygon(this.boundingBox)
+    member this.collisionBox with get() = BoundingPolygon(this.bounds)
     /// Player position, obtained from the bounding box
-    member this.position with get() = this.boundingBox.Center
+    member this.position with get() = this.bounds.Center
     /// Player direction, in radians, obtained from the bounding box
-    member this.direction with get() = this.boundingBox.Direction
+    member this.direction with get() = this.bounds.Direction
   end
 
 type CrashedData =
   struct
     /// The bounding box that stores the player's position, dimensions, and directions
-    val public boundingBox: OrientedRectangle
+    val public bounds: PlayerShape
     val public placing: int option
-    new(bb, p) = { boundingBox = bb; placing = p }
+    new(b, p) = { bounds = b; placing = p }
     
-    member this.collisionBox with get() = BoundingPolygon(this.boundingBox)
+    member this.collisionBox with get() = BoundingPolygon(this.bounds)
     /// Player position, obtained from the bounding box
-    member this.position with get() = this.boundingBox.Center
+    member this.position with get() = this.bounds.Center
     /// Player direction, in radians, obtained from the bounding box
-    member this.direction with get() = this.boundingBox.Direction
+    member this.direction with get() = this.bounds.Direction
   end
 
 /// Player state machine

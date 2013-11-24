@@ -66,16 +66,16 @@ let createScreens graphics quantity = List.init quantity (createScreen graphics)
 let drawSingle drawPredicate playerNumber player (screen: PlayerScreen) =
   let sb, rect = screen
   let sr = sb.GraphicsDevice.ScissorRectangle
-  let playerBB =
+  let playerBounds =
     match player with
-    | Player.Moving player -> player.boundingBox
-    | Player.Crashed player -> player.boundingBox
+    | Player.Moving player -> player.bounds
+    | Player.Crashed player -> player.bounds
   sb.Begin(
     SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, rasterizerState, null,
     // Use a simple translation matrix based on the player's position to produce scrolling
     Matrix.CreateTranslation(
-      float32 rect.X + (float32 rect.Width / 2.0f) - playerBB.Center.X,
-      float32 rect.Y + (float32 rect.Height / 2.0f) - playerBB.Center.Y, 0.0f))
+      float32 rect.X + (float32 rect.Width / 2.0f) - playerBounds.Center.X,
+      float32 rect.Y + (float32 rect.Height / 2.0f) - playerBounds.Center.Y, 0.0f))
   // Cuts off anything outside the screen's bounds, thus stopping screens from drawing on top of each other
   sb.GraphicsDevice.ScissorRectangle <- rect
   // Call the custom drawing code

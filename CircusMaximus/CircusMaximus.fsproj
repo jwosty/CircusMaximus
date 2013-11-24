@@ -97,7 +97,7 @@
     <Compile Include="BasicFunctions\Extensions.fs" />
     <Compile Include="Collision\Shapes\LineSegment.fs" />
     <Compile Include="Collision\Shapes\Polygon.fs" />
-    <Compile Include="Collision\Shapes\OrientedRectangle.fs" />
+    <Compile Include="Collision\Shapes\PlayerShape.fs" />
     <Compile Include="Collision\Shapes\RacetrackShape.fs" />
     <Compile Include="Collision\Collision.fs" />
     <Compile Include="GameElements\GameContent.fs" />

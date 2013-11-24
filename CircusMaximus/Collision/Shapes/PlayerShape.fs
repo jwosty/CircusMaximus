@@ -7,7 +7,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.LineSegment
 
-type OrientedRectangle(center, width, height, direction) =
+type PlayerShape(center, width, height, direction) =
   inherit Polygon(center)
   
   member this.Width: float32 = width

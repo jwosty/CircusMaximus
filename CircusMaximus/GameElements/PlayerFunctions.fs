@@ -83,11 +83,11 @@ let nextPlayer (input: PlayerInputState) player playerIndex collisionResults las
     match collisionResults with
       | true :: _ ->
         snd.Stop()
-        Player.Crashed(new CrashedData(player.boundingBox, player.placing)), None
+        Player.Crashed(new CrashedData(player.bounds, player.placing)), None
       | _ ->
         Player.Moving(
           new MovingData(
-            new OrientedRectangle(position, player.boundingBox.Width, player.boundingBox.Height, direction),
+            new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction),
             ((player.velocity * 128.0) + input.power) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults, placing)), nextPlacing
   | Crashed _ -> player, None
 
@@ -99,17 +99,17 @@ open Microsoft.Xna.Framework.Input
 
 // Renders a player, assuming spriteBatch.Begin has already been called
 let drawPlayer (sb: SpriteBatch, rect: Rectangle) player isMainPlayer (assets: GameContent) fontBatch =
-  let playerBB, playerIL =
+  let playerBounds, playerIL =
     match player with
-    | Moving player -> player.boundingBox, player.intersectingLines
-    | Crashed player -> player.boundingBox, [false; false; false; false]
+    | Moving player -> player.bounds, player.intersectingLines
+    | Crashed player -> player.bounds, [false; false; false; false]
   sb.Draw(
-    assets.ChariotTexture, playerBB.Center, new Nullable<_>(), Color.White, single playerBB.Direction,
+    assets.ChariotTexture, playerBounds.Center, new Nullable<_>(), Color.White, single playerBounds.Direction,
     (float32 assets.ChariotTexture.Width / 2.0f @@ float32 assets.ChariotTexture.Height / 2.0f),
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
-  playerBB.Draw(sb, assets.Pixel, playerIL)
+  playerBounds.Draw(sb, assets.Pixel, playerIL)
 #endif
   match player with
   | Moving player ->
