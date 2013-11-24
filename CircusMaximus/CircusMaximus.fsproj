@@ -112,6 +112,7 @@
     <Compile Include="GameElements\StateMachines\GameFunctions.fs" />
     <Compile Include="GameElements\Graphics\GameWindow.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
