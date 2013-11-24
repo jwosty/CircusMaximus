@@ -17,10 +17,10 @@ let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |>
 /// The amount of time into the race that it can still be said that it has "just begun"
 let midRaceBeginPeriod = preRaceTicksPerCount * 2
 
-let playerQuantity = function
-  | PreRace raceData -> raceData.players.Length
-  | MidRace raceData -> raceData.players.Length
-  | PostRace raceData -> raceData.players.Length
+let baseRaceData = function
+  | PreRace raceData -> raceData
+  | MidRace(raceData, _) -> raceData
+  | PostRace raceData -> raceData
 
 let nextMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) players raceLastPlacing timer assets =
   // A list of collision results (more like intersection results)
@@ -46,7 +46,7 @@ let nextMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastG
       players
       (collisions |> List.tail)
   // Return the new and improved game state
-  Some(MidRace(MidRaceData(updatedPlayers, timer + 1, !lastPlacing)))
+  Some(MidRace(CommonRaceData(updatedPlayers, timer + 1), !lastPlacing))
 
 /// Returns an option of a new game state (based on the input game state); None indicating
 /// that the game should stop
@@ -57,10 +57,10 @@ let nextGame gameState (lastKeyboard, keyboard: KeyboardState) (lastGamepad, gam
     match gameState with
     | PreRace raceData ->
       if raceData.timer >= preRaceTicks then
-        Some(MidRace(MidRaceData(raceData.players, 0, 0)))
+        Some(MidRace(CommonRaceData(raceData.players, 0), 0))
       else
-        Some(PreRace(PreRaceData(raceData.players, raceData.timer + 1)))
-    | MidRace raceData ->
+        Some(PreRace(CommonRaceData(raceData.players, raceData.timer + 1)))
+    | MidRace(raceData, lastPlacing) ->
       if raceData.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
-      nextMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players raceData.lastPlacing raceData.timer assets
+      nextMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players lastPlacing raceData.timer assets
     | PostRace raceData -> nextMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players (raceData.players.Length - 1) raceData.timer assets

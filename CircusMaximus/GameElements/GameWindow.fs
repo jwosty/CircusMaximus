@@ -21,7 +21,7 @@ type GameWindow() as this =
   let mutable gameState =
     let x = 820.0f
     PreRace(
-      PreRaceData(
+      CommonRaceData(
         [
           x, 740.0f;
           x, 950.0f;
@@ -64,13 +64,13 @@ type GameWindow() as this =
         this.GraphicsDevice
         (match gameState with
           | PreRace raceData -> raceData.players.Length
-          | MidRace raceData -> raceData.players.Length
+          | MidRace(raceData, _) -> raceData.players.Length
           | PostRace raceData -> raceData.players.Length)
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
-  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice (playerQuantity gameState)
+  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice ((baseRaceData gameState).players.Length)
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
@@ -102,7 +102,7 @@ type GameWindow() as this =
           FlatSpriteFont.drawString
             assets.Font fontBatch (preRaceMaxCount - (raceData.timer / preRaceTicksPerCount) |> toRoman)
             this.WindowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
-    | MidRace raceData ->
+    | MidRace(raceData, _) ->
       this.DrawScreens(raceData.players)
       this.FontBatchDo fontBatch
         (fun fb ->
