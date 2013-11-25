@@ -12,13 +12,13 @@ open CircusMaximus.Game
 
 let drawHUD fb (assets: GameContent) player ((sb, rect): PlayerScreen.PlayerScreen) =
   match player with
-  | Player.Moving player ->
+  | Player.Moving(commonData, movingData) ->
     FlatSpriteFont.drawString
       assets.Font fb
-      (sprintf "Flexus: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
+      (sprintf "Flexus: %s" (MathHelper.Clamp(movingData.turns, 0, Int32.MaxValue) |> toRoman))
       (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
       3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
-    match player.placing with
+    match commonData.placing with
     | Some placing ->
         let color = match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray
         FlatSpriteFont.drawString

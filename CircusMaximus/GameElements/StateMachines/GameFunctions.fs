@@ -35,18 +35,31 @@ let nextMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastG
       (fun i player collisionResult ->
         let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
         let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
-        let player, p =
+        let player =
           if i = 0 then nextPlayer (new PlayerInputState(lastKeyboard, keyboard)) player i collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
           else
             let lastGamepad, gamepad = lastGamepads.[i - 1], gamepads.[i - 1]
             nextPlayer (new PlayerInputState(lastGamepad, gamepad)) player i collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
         // TODO: Not functional. Fix it!!
-        match p with | Some placing -> (lastPlacing := placing) | None -> ()
+        match ((commonPlayerData player).placing)
+          with | Some placing -> (lastPlacing := placing) | None -> ()
         player)
       players
       (collisions |> List.tail)
   // Return the new and improved game state
-  Some(MidRace(CommonRaceData(updatedPlayers, timer + 1), !lastPlacing))
+  Some(CommonRaceData(updatedPlayers, timer + 1), !lastPlacing)
+
+let nextMidRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets =
+  let result = nextMovingRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets
+  match result with
+  | Some(nextState, lastPlacing) -> Some(MidRace(nextState, lastPlacing))
+  | None -> None
+
+let nextPostRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets =
+  let result = nextMovingRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets
+  match result with
+  | Some(nextState, _) -> Some(PostRace(nextState))
+  | None -> None
 
 /// Returns an option of a new game state (based on the input game state); None indicating
 /// that the game should stop
@@ -62,5 +75,6 @@ let nextGame gameState (lastKeyboard, keyboard: KeyboardState) (lastGamepad, gam
         Some(PreRace(CommonRaceData(raceData.players, raceData.timer + 1)))
     | MidRace(raceData, lastPlacing) ->
       if raceData.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
-      nextMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players lastPlacing raceData.timer assets
-    | PostRace raceData -> nextMovingRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players (raceData.players.Length - 1) raceData.timer assets
+      nextMidRace(lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players lastPlacing raceData.timer assets
+    | PostRace raceData ->
+      nextPostRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players (raceData.players.Length - 1) raceData.timer assets

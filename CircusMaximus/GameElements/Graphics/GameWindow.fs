@@ -28,7 +28,10 @@ type GameWindow() as this =
           x, 1160.0f;
           x, 1370.0f;
           x, 1580.0f;
-        ] |> List.map (fun (x, y) -> Player.Moving(new MovingData(new PlayerShape(x@@y, 64.0f, 29.0f, 0.0), 0.0, Racetrack.center, None))),
+        ] |> List.map
+            (fun (x, y) ->
+              let playerShape = new PlayerShape(x@@y, 64.0f, 29.0f, 0.0)
+              Player.Moving(CommonPlayerData(playerShape, None), new MovingPlayerData(playerShape, 0.0, Racetrack.center))),//Player.Moving(new MovingPlayerData(new PlayerShape(x@@y, 64.0f, 29.0f, 0.0), 0.0, Racetrack.center, None))),
         0))
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0

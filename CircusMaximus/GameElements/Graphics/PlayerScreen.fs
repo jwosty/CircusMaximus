@@ -68,8 +68,8 @@ let drawSingle drawPredicate playerNumber player (screen: PlayerScreen) =
   let sr = sb.GraphicsDevice.ScissorRectangle
   let playerBounds =
     match player with
-    | Player.Moving player -> player.bounds
-    | Player.Crashed player -> player.bounds
+    | Player.Moving(commonData, movingData) -> commonData.bounds
+    | Player.Crashed commonData -> commonData.bounds
   sb.Begin(
     SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, rasterizerState, null,
     // Use a simple translation matrix based on the player's position to produce scrolling

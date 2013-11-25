@@ -11,7 +11,7 @@ open CircusMaximus.Player
 let drawPlayer (sb: SpriteBatch, rect: Rectangle) player isMainPlayer (assets: GameContent) fontBatch =
   let playerBounds, playerIL =
     match player with
-    | Moving player -> player.bounds, player.intersectingLines
+    | Moving(commonData, movingData) -> commonData.bounds, movingData.intersectingLines
     | Crashed player -> player.bounds, [false; false; false; false]
   sb.Draw(
     assets.ChariotTexture, playerBounds.Center, new Nullable<_>(), Color.White, single playerBounds.Direction,
@@ -22,12 +22,12 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) player isMainPlayer (assets: G
   playerBounds.Draw(sb, assets.Pixel, playerIL)
 #endif
   match player with
-  | Moving player ->
+  | Moving(commonData, movingData) ->
     // Draw the player's taunt, if any
-    match player.currentTaunt with
+    match movingData.currentTaunt with
     | Some taunt ->
       FlatSpriteFont.drawString
-        assets.Font fontBatch taunt player.position 2.0f
+        assets.Font fontBatch taunt commonData.position 2.0f
         (if isMainPlayer then Color.White else Color.OrangeRed)
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
