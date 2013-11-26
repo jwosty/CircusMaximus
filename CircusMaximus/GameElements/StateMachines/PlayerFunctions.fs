@@ -55,37 +55,40 @@ let nextTauntState (player: MovingPlayerData) expectingTaunt =
   else
     None, player.tauntTimer - 1
 
+let nextMoving (input: PlayerInputState) (commonData: CommonPlayerData, movingData: MovingPlayerData) playerIndex collisionResults lastPlacing expectingTaunt racetrackCenter (assets: GameContent) =
+  let snd = assets.ChariotSound.[playerIndex]
+  // Warning: mutable code; a necessary evil here...
+  if movingData.velocity >= 3.0 then
+    if not (snd.State = SoundState.Playing) then
+      snd.Resume()
+  elif movingData.velocity < 3.0 then
+    if snd.State = SoundState.Playing then
+      snd.Pause()
+  let position, direction = nextPositionDirection (commonData, movingData) input.turn
+  // If the player has crossed the threshhold not more than once in a row, increment the turn count
+  let turns, lastTurnedLeft = nextLaps racetrackCenter input (commonData, movingData) position
+  let taunt, tauntTimer = nextTauntState movingData expectingTaunt
+  let placing, nextPlacing =
+    match commonData.placing with
+    | Some _ -> commonData.placing, None
+    | None ->
+      if turns >= 13 then
+        if lastPlacing < 3 then assets.CrowdCheerSound.Play() |> ignore // make the crowd cheer to congradulate the player for finishing in the top 3
+        twice(Some(lastPlacing + 1))
+      else twice(None)
+  
+  Player.Moving(
+    new CommonPlayerData(new PlayerShape(position, commonData.bounds.Width, commonData.bounds.Height, direction), placing),
+    new MovingPlayerData(((movingData.velocity * 128.0) + input.power) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults))
+
 /// Update the player with the given parameters, but this is functional, so it won't actually modify anything
 let nextPlayer (input: PlayerInputState) player playerIndex collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
   match player with
   | Player.Moving(commonData, movingData) ->
-    let snd = assets.ChariotSound.[playerIndex]
-    // Warning: mutable code; a necessary evil here...
-    if movingData.velocity >= 3.0 then
-      if not (snd.State = SoundState.Playing) then
-        snd.Resume()
-    elif movingData.velocity < 3.0 then
-      if snd.State = SoundState.Playing then
-        snd.Pause()
-    let position, direction = nextPositionDirection (commonData, movingData) input.turn
-    // If the player has crossed the threshhold not more than once in a row, increment the turn count
-    let turns, lastTurnedLeft = nextLaps racetrackCenter input (commonData, movingData) position
-    let taunt, tauntTimer = nextTauntState movingData expectingTaunt
-    let placing, nextPlacing =
-      match commonData.placing with
-        | Some _ -> commonData.placing, None
-        | None ->
-          if turns >= 13 then
-            if lastPlacing < 3 then assets.CrowdCheerSound.Play() |> ignore // make the crowd cheer to congradulate the player for finishing in the top 3
-            twice(Some(lastPlacing + 1))
-          else twice(None)
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
       | true :: _ ->
-        snd.Stop()
+        assets.ChariotSound.[playerIndex].Stop()
         Player.Crashed(new CommonPlayerData(commonData.bounds, commonData.placing))
-      | _ ->
-        Player.Moving(
-          new CommonPlayerData(new PlayerShape(position, commonData.bounds.Width, commonData.bounds.Height, direction), placing),
-          new MovingPlayerData(((movingData.velocity * 128.0) + input.power) / 129.0, turns, lastTurnedLeft, taunt, tauntTimer, collisionResults))
+      | _ -> nextMoving input (commonData, movingData) playerIndex collisionResults lastPlacing expectingTaunt racetrackCenter assets
   | Crashed _ -> player
