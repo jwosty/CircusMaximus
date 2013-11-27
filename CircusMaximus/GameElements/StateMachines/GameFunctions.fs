@@ -26,7 +26,7 @@ let nextMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastG
   // A list of collision results (more like intersection results)
   let collisions =
     (Racetrack.collisionBounds
-      :: (players |> List.map Player.playerBB))
+      :: (players |> List.map Player.getBB))
       |> Collision.collideWorld
   let lastPlacing = ref raceLastPlacing
   // Update the players (collision and input)
@@ -36,13 +36,13 @@ let nextMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastG
         let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
         let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
         let player =
-          if i = 0 then nextPlayer (new PlayerInputState(lastKeyboard, keyboard)) player i collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
+          if i = 0 then Player.next (new PlayerInputState(lastKeyboard, keyboard)) player i collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
           else
             let lastGamepad, gamepad = lastGamepads.[i - 1], gamepads.[i - 1]
-            nextPlayer (new PlayerInputState(lastGamepad, gamepad)) player i collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
+            Player.next (new PlayerInputState(lastGamepad, gamepad)) player i collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
         // TODO: Not functional. Fix it!!
-        match ((commonPlayerData player).placing)
-          with | Some placing -> (lastPlacing := placing) | None -> ()
+        match player.finishState
+          with | Finished placing -> (lastPlacing := placing) | Racing -> ()
         player)
       players
       (collisions |> List.tail)

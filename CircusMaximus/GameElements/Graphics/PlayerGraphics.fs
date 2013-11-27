@@ -8,30 +8,26 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Player
 
 /// Renders a player, assuming spriteBatch.Begin has already been called
-let drawPlayer (sb: SpriteBatch, rect: Rectangle) player isMainPlayer (assets: GameContent) fontBatch =
-  let playerBounds, playerIL =
-    match player with
-    | Moving(commonData, movingData) -> commonData.bounds, movingData.intersectingLines
-    | Crashed player -> player.bounds, [false; false; false; false]
+let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (assets: GameContent) fontBatch =
   sb.Draw(
-    assets.ChariotTexture, playerBounds.Center, new Nullable<_>(), Color.White, single playerBounds.Direction,
+    assets.ChariotTexture, player.position, new Nullable<_>(), Color.White, single player.direction,
     (float32 assets.ChariotTexture.Width / 2.0f @@ float32 assets.ChariotTexture.Height / 2.0f),
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
-  playerBounds.Draw(sb, assets.Pixel, playerIL)
+  player.bounds.Draw(sb, assets.Pixel, player.intersectingLines)
 #endif
-  match player with
-  | Moving(commonData, movingData) ->
+  match player.motionState with
+  | Moving velocity ->
     // Draw the player's taunt, if any
-    match movingData.currentTaunt with
-    | Some taunt ->
+    match player.tauntState with
+    | Some(taunt, _) ->
       FlatSpriteFont.drawString
-        assets.Font fontBatch taunt commonData.position 2.0f
+        assets.Font fontBatch taunt player.position 2.0f
         (if isMainPlayer then Color.White else Color.OrangeRed)
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
-  | Crashed player ->
+  | Crashed ->
     // Remind the player that they are crashed
     let message, color = if isMainPlayer then "Strepebas!", Color.Red else "Strepebat!", (new Color(Color.Red, 63))
     FlatSpriteFont.drawString

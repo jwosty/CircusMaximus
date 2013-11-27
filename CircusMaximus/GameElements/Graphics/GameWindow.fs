@@ -19,6 +19,11 @@ type GameWindow() as this =
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
   let mutable gameState =
+    let initPlayer (bounds: PlayerShape) =
+      { motionState = Moving(0.); finishState = Racing; tauntState = None
+        bounds = bounds; intersectingLines = [false; false; false; false]
+        turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
+        lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
     let x = 820.0f
     PreRace(
       CommonRaceData(
@@ -28,10 +33,7 @@ type GameWindow() as this =
           x, 1160.0f;
           x, 1370.0f;
           x, 1580.0f;
-        ] |> List.map
-            (fun (x, y) ->
-              let playerShape = new PlayerShape(x@@y, 64.0f, 29.0f, 0.0)
-              Player.Moving(CommonPlayerData(playerShape, None), new MovingPlayerData(playerShape, 0.0, Racetrack.center))),//Player.Moving(new MovingPlayerData(new PlayerShape(x@@y, 64.0f, 29.0f, 0.0), 0.0, Racetrack.center, None))),
+        ] |> List.map (fun (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.))),
         0))
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
