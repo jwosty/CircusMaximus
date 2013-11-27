@@ -17,64 +17,47 @@ let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |>
 /// The amount of time into the race that it can still be said that it has "just begun"
 let midRaceBeginPeriod = preRaceTicksPerCount * 2
 
-let baseRaceData = function
-  | PreRace raceData -> raceData
-  | MidRace(raceData, _) -> raceData
-  | PostRace raceData -> raceData
+/// Calculates the intersections for all objects
+let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
 
-let nextMovingRace (lastKeyboard: KeyboardState, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) players raceLastPlacing timer assets =
-  // A list of collision results (more like intersection results)
-  let collisions =
-    (Racetrack.collisionBounds
-      :: (players |> List.map Player.getBB))
-      |> Collision.collideWorld
-  let lastPlacing = ref raceLastPlacing
-  // Update the players (collision and input)
-  let updatedPlayers =
-    List.mapi2
-      (fun i player collisionResult ->
-        let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
-        let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
-        let player =
-          if i = 0 then Player.next (new PlayerInputState(lastKeyboard, keyboard)) player i collision raceLastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
-          else
-            let lastGamepad, gamepad = lastGamepads.[i - 1], gamepads.[i - 1]
-            Player.next (new PlayerInputState(lastGamepad, gamepad)) player i collision raceLastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
-        // TODO: Not functional. Fix it!!
-        match player.finishState
-          with | Finished placing -> (lastPlacing := placing) | Racing -> ()
-        player)
-      players
-      (collisions |> List.tail)
-  // Return the new and improved game state
-  Some(CommonRaceData(updatedPlayers, timer + 1), !lastPlacing)
-
-let nextMidRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets =
-  let result = nextMovingRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets
-  match result with
-  | Some(nextState, lastPlacing) -> Some(MidRace(nextState, lastPlacing))
-  | None -> None
-
-let nextPostRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets =
-  let result = nextMovingRace (lastKeyboard, keyboard) (lastGamepads, gamepads) players raceLastPlacing timer assets
-  match result with
-  | Some(nextState, _) -> Some(PostRace(nextState))
-  | None -> None
+/// Updates players (collision and input)
+let updatePlayers lastPlacing (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) players collisions assets =
+  let newLastPlacing = ref lastPlacing
+  (List.mapi2
+    (fun i player collisionResult ->
+      let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
+      let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
+      let player =
+        if i = 0 then Player.next (new PlayerInputState(lastKeyboard, keyboard)) player i collision lastPlacing (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
+        else
+          let lastGamepad, gamepad = lastGamepads.[i - 1], gamepads.[i - 1]
+          Player.next (new PlayerInputState(lastGamepad, gamepad)) player i collision lastPlacing (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
+      // TODO: Not functional. Fix it!!
+      match player.finishState with | Finished placing -> (newLastPlacing := placing) | Racing -> ()
+      player)
+    players
+    (collisions |> List.tail)),
+  !newLastPlacing
 
 /// Returns an option of a new game state (based on the input game state); None indicating
 /// that the game should stop
-let nextGame gameState (lastKeyboard, keyboard: KeyboardState) (lastGamepad, gamepad) (assets: GameContent) =
+let nextRace (race: Race) (lastKeyboard, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) (assets: GameContent) =
+  let testDoCheer() = if race.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
   if keyboard.IsKeyDown(Keys.Escape) then
     None  // Indicate that we want to exit
   else
-    match gameState with
-    | PreRace raceData ->
-      if raceData.timer >= preRaceTicks then
-        Some(MidRace(CommonRaceData(raceData.players, 0), 0))
+    match race.raceState with
+    | PreRace ->
+      if race.timer >= preRaceTicks then
+        Some({raceState = MidRace(0); players = race.players; timer = 0})
       else
-        Some(PreRace(CommonRaceData(raceData.players, raceData.timer + 1)))
-    | MidRace(raceData, lastPlacing) ->
-      if raceData.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
-      nextMidRace(lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players lastPlacing raceData.timer assets
-    | PostRace raceData ->
-      nextPostRace (lastKeyboard, keyboard) (lastGamepad, gamepad) raceData.players (raceData.players.Length - 1) raceData.timer assets
+        Some({race with timer = race.timer + 1})
+    | MidRace lastPlacing ->
+      testDoCheer()
+      let collisions = collideWorld race.players Racetrack.collisionBounds
+      let updatedPlayers, lastPlacing = updatePlayers lastPlacing (lastKeyboard, keyboard) (lastGamepads, gamepads) race.players collisions assets
+      Some({raceState = MidRace(lastPlacing); players = updatedPlayers; timer = race.timer + 1})
+    | PostRace ->
+      let collisions = collideWorld race.players Racetrack.collisionBounds
+      let updatedPlayers, _ = updatePlayers 0 (lastKeyboard, keyboard) (lastGamepads, gamepads) race.players collisions assets
+      Some({raceState = PostRace; players = updatedPlayers; timer = race.timer + 1})

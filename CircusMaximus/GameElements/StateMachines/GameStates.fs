@@ -9,19 +9,8 @@ open CircusMaximus.Collision
 open CircusMaximus.Input
 open CircusMaximus.Player
 
-type CommonRaceData =
-  struct
-    val players: Player list
-    val timer: int
-    
-    new(players, timer) = { players = players; timer = timer }
-  end
+type LastPlacing = int
 
-/// Game state machine
-type GameState =
-  | PreRace of CommonRaceData
-  /// int parameter is the index of the player most recently finished
-  | MidRace of CommonRaceData * int
-  | PostRace of CommonRaceData
+type RaceState = | PreRace | MidRace of LastPlacing | PostRace
 
-type Game = GameState
+type Race = { raceState: RaceState; players: Player list; timer: int }

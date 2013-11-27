@@ -18,23 +18,23 @@ type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable gameState =
+  let mutable raceState =
     let initPlayer (bounds: PlayerShape) =
       { motionState = Moving(0.); finishState = Racing; tauntState = None
         bounds = bounds; intersectingLines = [false; false; false; false]
         turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
         lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
     let x = 820.0f
-    PreRace(
-      CommonRaceData(
+    { raceState = PreRace
+      players =
         [
           x, 740.0f;
           x, 950.0f;
           x, 1160.0f;
           x, 1370.0f;
           x, 1580.0f;
-        ] |> List.map (fun (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.))),
-        0))
+        ] |> List.map (fun (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)))
+      timer = 0 }
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
   // A general-purpose sprite batch
@@ -64,26 +64,20 @@ type GameWindow() as this =
   override this.Initialize() =
     base.Initialize()
     this.IsMouseVisible <- true
-    playerScreens <-
-      PlayerScreen.createScreens
-        this.GraphicsDevice
-        (match gameState with
-          | PreRace raceData -> raceData.players.Length
-          | MidRace(raceData, _) -> raceData.players.Length
-          | PostRace raceData -> raceData.players.Length)
+    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice raceState.players.Length
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
-  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice ((baseRaceData gameState).players.Length)
+  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice (raceState.players.Length)
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
     let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match nextGame gameState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
-      | Some newState -> (gameState <- newState)
+    match nextRace raceState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
+      | Some newState -> (raceState <- newState)
       | None -> this.Exit()
     lastKeyboard <- keyboard
     lastGamepads <- gamepads
@@ -94,4 +88,4 @@ type GameWindow() as this =
     // background and become whatever color the screen is cleared with
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw(gameTime)
-    GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch gameState
+    GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch raceState

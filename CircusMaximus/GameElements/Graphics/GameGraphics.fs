@@ -47,10 +47,10 @@ let drawScreens playerScreens assets (fontBatch: SpriteBatch) players =
           players playerScreens)
 
 /// Draw a game state
-let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) gameState =
-  match gameState with
-  | PreRace raceData ->
-    drawScreens playerScreens assets fontBatch raceData.players
+let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (race: Race) =
+  match race.raceState with
+  | PreRace ->
+    drawScreens playerScreens assets fontBatch race.players
     // Draw a dark overlay to indicate that the game hasn't started yet
     generalBatch.Begin()
     generalBatch.Draw(assets.Pixel, windowRect, new Color(Color.Black, 192))
@@ -59,16 +59,16 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
     fontBatch.DoWithPointClamp
       (fun (fb: SpriteBatch) ->
         FlatSpriteFont.drawString
-          assets.Font fontBatch (preRaceMaxCount - (raceData.timer / preRaceTicksPerCount) |> toRoman)
+          assets.Font fontBatch (preRaceMaxCount - (race.timer / preRaceTicksPerCount) |> toRoman)
           windowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
-  | MidRace(raceData, _) ->
-    drawScreens playerScreens assets fontBatch raceData.players
+  | MidRace lastPlacing ->
+    drawScreens playerScreens assets fontBatch race.players
     fontBatch.DoWithPointClamp
       (fun fb ->
-        List.iter2 (drawHUD fb assets) raceData.players playerScreens
-        if raceData.timer <= midRaceBeginPeriod then
+        List.iter2 (drawHUD fb assets) race.players playerScreens
+        if race.timer <= midRaceBeginPeriod then
           FlatSpriteFont.drawString
             assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen
             (FlatSpriteFont.Center, FlatSpriteFont.Center))
-  | PostRace raceData ->
-    drawScreens playerScreens assets fontBatch raceData.players
+  | PostRace ->
+    drawScreens playerScreens assets fontBatch race.players
