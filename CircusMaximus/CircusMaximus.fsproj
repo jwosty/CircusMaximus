@@ -166,5 +166,6 @@
     <BundleResource Include="Content\images\font.png" />
     <BundleResource Include="Content\sounds\cheer1.wav" />
     <BundleResource Include="Content\sounds\chariot.wav" />
+    <BundleResource Include="Content\images\placingbg.png" />
   </ItemGroup>
 </Project>
