@@ -20,35 +20,31 @@ let midRaceBeginPeriod = preRaceTicksPerCount * 2
 /// Calculates the intersections for all objects
 let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
 
-/// Updates players (collision and input)
-let nextPlayers (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) players collisions assets =
-  List.mapi2
-    (fun i player collisionResult ->
-      let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen... It's probably a bug!"
-      let otherPlayers = List.removeIndex i players // eww... better / more efficient way to do this?
-      let player =
-        if i = 0 then Player.next (new PlayerInputState(lastKeyboard, keyboard)) player i collision (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
-        else
-          let lastGamepad, gamepad = lastGamepads.[i - 1], gamepads.[i - 1]
-          Player.next (new PlayerInputState(lastGamepad, gamepad)) player i collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
-      player)
-    players
-    (collisions |> List.tail)
-
 /// Finishes players that made the last lap
+let maxTurns = 13
+
 let nextPlayerFinish lastPlacing (player: Player) =
   match player.finishState with
   | Racing ->
-    if player.turns >= 13 then
+    if player.turns >= maxTurns then
       {player with finishState = Finished(lastPlacing + 1)}, lastPlacing + 1
     else
       player, lastPlacing
   | Finished _ -> player, lastPlacing
 
-/// Returns an option of a new game state (based on the input game state); None indicating
-/// that the game should stop
+let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) assets playerIndex player collisionResult =
+  let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
+  let player =
+    if playerIndex = 0 then Player.next (new PlayerInputState(lastKeyboard, keyboard)) player playerIndex collision (keyboard.IsKeyDown(Keys.Q)) Racetrack.center assets
+    else
+      let lastGamepad, gamepad = lastGamepads.[playerIndex - 1], gamepads.[playerIndex - 1]
+      Player.next (new PlayerInputState(lastGamepad, gamepad)) player playerIndex collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
+  player
+
+/// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
 let nextRace (race: Race) (lastKeyboard, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) (assets: GameContent) =
   let testDoCheer() = if race.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
+  let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) assets
   if keyboard.IsKeyDown(Keys.Escape) then
     None  // Indicate that we want to exit
   else
@@ -60,19 +56,22 @@ let nextRace (race: Race) (lastKeyboard, keyboard: KeyboardState) (lastGamepads:
         Some({race with timer = race.timer + 1})
     | DynamicRace dynamicRace ->
       testDoCheer()
-      let collisions = collideWorld race.players Racetrack.collisionBounds
-      let players = nextPlayers (lastKeyboard, keyboard) (lastGamepads, gamepads) race.players collisions assets
+      let playerCollisions = collideWorld race.players Racetrack.collisionBounds |> List.tail
+      // Dynamic races, by definition, require player updates, but player placings are only used before the race is over. These two conditions
+      // mean that Player.next can't do placings, so we have to do it down there somewhere.
       let dynamicRaceState, players =
         match dynamicRace with
         | MidRace oldLastPlacing ->
-          let players, lastPlacing =
-            // Pretty much a map and fold at the same time
-            List.foldBack
-              (fun player (players, lastPlacing) ->
+          let _, players, lastPlacing =
+            // Acts as a simeltanious map and fold (map for player updating, fold for keeping track of the last placing)
+            List.foldBack2
+              (fun player collision (i, players, lastPlacing) ->
+                let player = nextPlayer i player collision
                 let player, newLastPlacing = nextPlayerFinish lastPlacing player
-                (player :: players), newLastPlacing)
-              players ([], oldLastPlacing)
+                i - 1, (player :: players), newLastPlacing)
+              race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congradulate the player for finishing in the top 3
           MidRace(lastPlacing), players
-        | PostRace -> PostRace, players
+        // No player placings
+        | PostRace -> PostRace, List.mapi2 nextPlayer race.players playerCollisions
       Some({raceState = DynamicRace(dynamicRaceState); players = players; timer = race.timer + 1})

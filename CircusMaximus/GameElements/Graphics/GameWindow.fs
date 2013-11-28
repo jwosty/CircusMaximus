@@ -20,12 +20,12 @@ type GameWindow() as this =
   let mutable playerScreens = Unchecked.defaultof<_>
   let mutable raceState =
     let initPlayer (bounds: PlayerShape) =
-      { motionState = Moving(0.); finishState = Racing; tauntState = None
+      { motionState = Moving(0.); finishState = Finished(0); tauntState = None
         bounds = bounds; intersectingLines = [false; false; false; false]
         turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
         lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
     let x = 820.0f
-    { raceState = PreRace
+    { raceState = DynamicRace(PostRace)
       players =
         [
           x, 740.0f;
