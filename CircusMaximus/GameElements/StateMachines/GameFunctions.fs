@@ -77,6 +77,7 @@ let nextRace (race: Race) (lastKeyboard, keyboard: KeyboardState) (lastGamepads:
                 let player, newLastPlacing = nextPlayerFinish lastPlacing player
                 (player :: players), newLastPlacing)
               players ([], oldLastPlacing)
+          if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congradulate the player for finishing in the top 3
           MidRace(lastPlacing), players
         | PostRace -> PostRace, players
       Some({raceState = DynamicRace(dynamicRaceState); players = players; timer = race.timer + 1})
