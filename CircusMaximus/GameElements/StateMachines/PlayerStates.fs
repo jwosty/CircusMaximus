@@ -26,3 +26,4 @@ type Player =
   member this.direction = this.bounds.Direction
   member this.velocity = match this.motionState with | Moving v -> v | Crashed -> 0.
   member this.collisionBox = BoundingPolygon(this.bounds)
+  member this.finished = match this.finishState with | Racing -> false | _ -> true

@@ -61,14 +61,15 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
         FlatSpriteFont.drawString
           assets.Font fontBatch (preRaceMaxCount - (race.timer / preRaceTicksPerCount) |> toRoman)
           windowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
-  | MidRace lastPlacing ->
+  | DynamicRace dynamicRaceState ->
     drawScreens playerScreens assets fontBatch race.players
-    fontBatch.DoWithPointClamp
-      (fun fb ->
-        List.iter2 (drawHUD fb assets) race.players playerScreens
-        if race.timer <= midRaceBeginPeriod then
-          FlatSpriteFont.drawString
-            assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen
-            (FlatSpriteFont.Center, FlatSpriteFont.Center))
-  | PostRace ->
-    drawScreens playerScreens assets fontBatch race.players
+    match dynamicRaceState with
+    | MidRace lastPlacing ->
+      fontBatch.DoWithPointClamp
+        (fun fb ->
+          List.iter2 (drawHUD fb assets) race.players playerScreens
+          if race.timer <= midRaceBeginPeriod then
+            FlatSpriteFont.drawString
+              assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen
+              (FlatSpriteFont.Center, FlatSpriteFont.Center))
+    | _ -> ()

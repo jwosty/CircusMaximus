@@ -22,6 +22,8 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
     lastPosition.Y < center.Y && position.Y > center.Y
   else false
 
+let justFinished (oldPlayer: Player) (player: Player) = (not oldPlayer.finished) && player.finished
+
 /// Returns the next position and direction of the player and change in direction
 #nowarn "49"
 let nextPositionDirection (player: Player) Δdirection =
@@ -51,7 +53,7 @@ let nextTauntState expectingTaunt = function
       None
 
 /// Returns an updated version of the given player model
-let next (input: PlayerInputState) (player: Player) playerIndex collisionResults lastPlacing expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
+let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
   match player.motionState with
   | Moving velocity ->
     // If the player is colliding on the front, then the player is crashing
@@ -66,15 +68,7 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         let position, direction = nextPositionDirection player input.turn
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
         let tauntState = nextTauntState expectingTaunt player.tauntState
-        let finishState =
-          match player.finishState with
-          | Finished _ -> player.finishState
-          | Racing ->
-            if turns >= 13 then
-              if lastPlacing < 3 then assets.CrowdCheerSound.Play() |> ignore // make the crowd cheer to congradulate the player for finishing in the top 3
-              Finished(lastPlacing + 1)
-            else Racing
-        { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = finishState
+        { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
           turns = turns; lastTurnedLeft = lastTurnedLeft
           tauntState = tauntState
