@@ -28,6 +28,12 @@ let toRoman =
   fun n ->
     List.fold acc (n, "") numerals |> snd
 
+let placingColor = function
+  | 1 -> Color.Gold
+  | 2 -> Color.Orange
+  | 3 -> Color.OrangeRed
+  | _ -> Color.Gray
+
 let tup2 x = x, x
 let tup3 x = x, x, x
 let tup4 x = x, x, x, x

@@ -22,7 +22,7 @@ let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.
     | Finished placing ->
         drawString
           (sprintf "Locus: %s" (toRoman placing)) 2.
-          (match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray)
+          (placingColor placing)
     | Racing -> ()
   | Crashed -> ()
 
