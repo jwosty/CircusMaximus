@@ -8,7 +8,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.State
 
 let drawOverlay (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (screenWidth, screenHeight) (assets: GameContent) players =
-  let padding = 8
+  let padding = 16
   let spacing = float (screenHeight / (List.length players + padding))
   let placing (player: Player) = match player.finishState with | Finished placing -> placing | Racing -> 0
   players
