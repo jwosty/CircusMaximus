@@ -52,7 +52,7 @@ let nextTauntState expectingTaunt = function
     else
       None
 
-/// Returns an updated version of the given player model
+/// Returns an updated version of the given player model. Players are not given a placing here.
 let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
   match player.motionState with
   | Moving velocity ->
