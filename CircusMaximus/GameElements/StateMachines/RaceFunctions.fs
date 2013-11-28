@@ -87,7 +87,7 @@ let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets:
                 i - 1, (player :: players), newLastPlacing)
               race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congradulate the player for finishing in the top 3
-          if lastPlacing = 4//players.Length
+          if lastPlacing = players.Length
             then PostRace, players
             else MidRace(lastPlacing), players
         // No player placings
