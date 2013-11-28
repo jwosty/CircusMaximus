@@ -9,12 +9,14 @@ open CircusMaximus.State
 
 let drawOverlay (fontBatch: SpriteBatch) (screenWidth, screenHeight) (assets: GameContent) players =
   let spacing = float (screenHeight / (List.length players + 2))
-  players |> List.iteri
-    (fun i (player: Player) ->
-      fontBatch.DoWithPointClamp
-        (fun fontBatch ->
-          let place = match player.finishState with | Finished place -> place | Racing -> 0
-          let str = "Locus Histrio " + (i + 1 |> toRoman) + ": " + (toRoman place)
-          FlatSpriteFont.drawString
-            assets.Font fontBatch str (screenWidth / 2 @@ spacing * (float i + 1.5)) 4.0f Color.White
-            (FlatSpriteFont.Alignment.Center, FlatSpriteFont.Alignment.Max)))
+  let placing (player: Player) = match player.finishState with | Finished placing -> placing | Racing -> 0
+  players
+    |> List.sortBy placing
+    |> List.iteri
+      (fun i player ->
+        fontBatch.DoWithPointClamp
+          (fun fontBatch ->
+            let str = "Locus " + (player |> placing |> toRoman) + ":      Histrio " + (player.index |> string)
+            FlatSpriteFont.drawString
+              assets.Font fontBatch str (screenWidth / 2 @@ spacing * (float i + 0.5)) 4.0f Color.White
+              (FlatSpriteFont.Alignment.Center, FlatSpriteFont.Alignment.Max)))
