@@ -19,9 +19,9 @@ let midRaceBeginPeriod = preRaceTicksPerCount * 2
 let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
 
 let init () =
-  let initPlayer (bounds: PlayerShape) =
+  let initPlayer (bounds: PlayerShape) index =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      bounds = bounds; intersectingLines = [false; false; false; false]
+      bounds = bounds; index = index + 1; intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
   let x = 820.0f
@@ -33,7 +33,7 @@ let init () =
         x, 1160.0f;
         x, 1370.0f;
         x, 1580.0f;
-      ] |> List.map (fun (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)))
+      ] |> List.mapi (fun i (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) i)
     timer = 0 }
 
 /// Finishes players that made the last lap
