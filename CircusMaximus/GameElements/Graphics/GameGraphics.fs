@@ -71,4 +71,4 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
             FlatSpriteFont.drawString
               assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen
               (FlatSpriteFont.Center, FlatSpriteFont.Center))
-    | _ -> ()
+    | PostRace -> PlacingOverlayGraphics.drawOverlay fontBatch (windowRect.Width, windowRect.Height) assets race.players

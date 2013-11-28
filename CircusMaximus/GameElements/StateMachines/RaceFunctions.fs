@@ -87,7 +87,9 @@ let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets:
                 i - 1, (player :: players), newLastPlacing)
               race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congradulate the player for finishing in the top 3
-          MidRace(lastPlacing), players
+          if lastPlacing = players.Length
+            then PostRace, players
+            else MidRace(lastPlacing), players
         // No player placings
         | PostRace -> PostRace, List.mapi2 nextPlayer race.players playerCollisions
       Some({raceState = DynamicRace(dynamicRaceState); players = players; timer = race.timer + 1})

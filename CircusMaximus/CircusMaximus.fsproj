@@ -111,6 +111,7 @@
     <Compile Include="GameElements\StateMachines\RaceFunctions.fs" />
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
+    <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />
     <Compile Include="GameElements\Graphics\GameGraphics.fs" />
     <Compile Include="GameElements\Graphics\GameWindow.fs" />
     <Compile Include="Main.fs" />
