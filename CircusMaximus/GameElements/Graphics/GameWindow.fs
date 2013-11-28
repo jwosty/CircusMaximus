@@ -18,23 +18,7 @@ type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable raceState =
-    let initPlayer (bounds: PlayerShape) =
-      { motionState = Moving(0.); finishState = Finished(0); tauntState = None
-        bounds = bounds; intersectingLines = [false; false; false; false]
-        turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
-        lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
-    let x = 820.0f
-    { raceState = DynamicRace(PostRace)
-      players =
-        [
-          x, 740.0f;
-          x, 950.0f;
-          x, 1160.0f;
-          x, 1370.0f;
-          x, 1580.0f;
-        ] |> List.map (fun (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)))
-      timer = 0 }
+  let mutable raceState = Game.initRace ()
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
   // A general-purpose sprite batch
