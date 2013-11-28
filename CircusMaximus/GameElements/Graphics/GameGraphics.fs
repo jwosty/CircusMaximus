@@ -10,21 +10,19 @@ open CircusMaximus.Graphics
 open CircusMaximus.State
 
 let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) =
+  let drawString str vertPos color =
+    FlatSpriteFont.drawString
+      assets.Font fb str (float rect.X + (float rect.Width / 2.0) @@ (float rect.Y + vertPos * 24.0))
+      3.f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
   match player.motionState with
   | Moving velocity ->
-    FlatSpriteFont.drawString
-      assets.Font fb
-      (sprintf "Flexus: %s" (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman))
-      (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y)
-      3.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Min)
+    drawString ("Histrio " + (player.index |> toRoman)) 0. Color.White
+    drawString ("Flexus: " + (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman)) 1. Color.White
     match player.finishState with
     | Finished placing ->
-        let color = match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray
-        FlatSpriteFont.drawString
-          assets.Font fb
-          (sprintf "Locus: %s" (toRoman placing))
-          (float32 rect.X + (float32 rect.Width / 2.0f) @@ rect.Y + (24))
-          3.0f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
+        drawString
+          (sprintf "Locus: %s" (toRoman placing)) 2.
+          (match placing with | 1 -> Color.Gold | 2 -> Color.Orange | 3 -> Color.OrangeRed | _ -> Color.Gray)
     | Racing -> ()
   | Crashed -> ()
 

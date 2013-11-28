@@ -16,6 +16,7 @@ type Player =
   { motionState: MotionState
     finishState: FinishState
     bounds: PlayerShape
+    index: int
     turns: int
     lastTurnedLeft: bool
     tauntState: Taunt option

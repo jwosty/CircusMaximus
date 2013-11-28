@@ -68,7 +68,6 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         let tauntState = nextTauntState expectingTaunt player.tauntState
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
-          turns = turns; lastTurnedLeft = lastTurnedLeft
-          tauntState = tauntState
-          intersectingLines = collisionResults }
+          index = player.index; turns = turns; lastTurnedLeft = lastTurnedLeft
+          tauntState = tauntState; intersectingLines = collisionResults }
   | Crashed -> player
