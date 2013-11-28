@@ -45,11 +45,6 @@ let nextPlayerFinish lastPlacing (player: Player) =
       player, lastPlacing
   | Finished _ -> player, lastPlacing
 
-let map predicate stuff =
-  List.foldBack
-    (fun x results -> predicate x :: results)
-    stuff []
-
 /// Returns an option of a new game state (based on the input game state); None indicating
 /// that the game should stop
 let nextRace (race: Race) (lastKeyboard, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) (assets: GameContent) =
