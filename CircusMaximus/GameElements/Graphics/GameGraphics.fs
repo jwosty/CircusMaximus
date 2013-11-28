@@ -6,9 +6,8 @@ open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.Player
 open CircusMaximus.PlayerGraphics
-open CircusMaximus.Game
+open CircusMaximus.State
 
 let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) =
   match player.motionState with

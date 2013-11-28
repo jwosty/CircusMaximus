@@ -1,12 +1,10 @@
-/// Contains functions and constants pertaining to players
-[<CompilationRepresentationAttribute(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Contains functions and constants operating on players
 module CircusMaximus.Player
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open CircusMaximus
-open CircusMaximus.Player
-open CircusMaximus.Extensions
+open CircusMaximus.State
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
 open CircusMaximus.Collision

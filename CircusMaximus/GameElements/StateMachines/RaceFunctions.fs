@@ -1,5 +1,4 @@
-/// Contains functions and constants pertaining to players
-[<CompilationRepresentationAttribute(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Contains functions and constants operating on races
 module CircusMaximus.Race
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
@@ -7,8 +6,7 @@ open Microsoft.Xna.Framework.Input
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.Game
-open CircusMaximus.Player
+open CircusMaximus.State
 open CircusMaximus.Input
 
 let preRaceTicks, preRaceMaxCount = 200, 3

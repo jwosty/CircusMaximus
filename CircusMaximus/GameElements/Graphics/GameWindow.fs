@@ -11,7 +11,7 @@ open Microsoft.Xna.Framework.Media
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Player
-open CircusMaximus.Game
+open CircusMaximus.Race
 
 /// Default Project Template
 type GameWindow() as this =

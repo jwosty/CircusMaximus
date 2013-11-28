@@ -1,4 +1,4 @@
-namespace CircusMaximus.Player
+namespace CircusMaximus.State
 open System
 open Microsoft.Xna.Framework
 open CircusMaximus
