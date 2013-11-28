@@ -1,12 +1,12 @@
 /// A module to draw game states. It's dirty because it, by nature, has side effects
-module CircusMaximus.GameGraphics
+module CircusMaximus.Graphics.GameGraphics
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.PlayerGraphics
+open CircusMaximus.Graphics
 open CircusMaximus.State
 
 let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) =
@@ -35,7 +35,7 @@ let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets fontBatch players m
   #if DEBUG
   Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
   #endif
-  List.iteri (fun i player -> drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch) players
+  List.iteri (fun i player -> PlayerGraphics.drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch) players
 
 let drawScreens playerScreens assets (fontBatch: SpriteBatch) players =
   fontBatch.DoWithPointClamp
