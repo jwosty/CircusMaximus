@@ -30,9 +30,9 @@ let toRoman =
 
 let placingColor = function
   | 1 -> Color.Gold
-  | 2 -> Color.Orange
-  | 3 -> Color.OrangeRed
-  | _ -> Color.Gray
+  | 2 -> Color.Silver
+  | 3 -> new Color(205, 127, 50)
+  | _ -> Color.White
 
 let tup2 x = x, x
 let tup3 x = x, x, x

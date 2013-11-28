@@ -16,7 +16,7 @@ let drawOverlay (fontBatch: SpriteBatch) (screenWidth, screenHeight) (assets: Ga
       (fun i player ->
         fontBatch.DoWithPointClamp
           (fun fontBatch ->
-            let str = "Locus " + (player |> placing |> toRoman) + ":      Histrio " + (player.index |> string)
+            let str = "Locus " + (player |> placing |> toRoman) + ":      Histrio " + (player.index |> toRoman)
             FlatSpriteFont.drawString
               assets.Font fontBatch str (screenWidth / 2 @@ spacing * (float i + 1.5)) 4.0f
               (player |> placing |> placingColor)
