@@ -18,7 +18,7 @@ type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable raceState = Game.initRace ()
+  let mutable raceState = Race.init ()
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
   // A general-purpose sprite batch
@@ -60,7 +60,7 @@ type GameWindow() as this =
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
     let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match nextRace raceState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
+    match Race.next raceState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
       | Some newState -> (raceState <- newState)
       | None -> this.Exit()
     lastKeyboard <- keyboard

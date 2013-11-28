@@ -1,6 +1,6 @@
 /// Contains functions and constants pertaining to players
 [<CompilationRepresentationAttribute(CompilationRepresentationFlags.ModuleSuffix)>]
-module CircusMaximus.Game
+module CircusMaximus.Race
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Input
@@ -20,7 +20,7 @@ let midRaceBeginPeriod = preRaceTicksPerCount * 2
 /// Calculates the intersections for all objects
 let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
 
-let initRace () =
+let init () =
   let initPlayer (bounds: PlayerShape) =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
       bounds = bounds; intersectingLines = [false; false; false; false]
@@ -60,7 +60,7 @@ let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadSta
   player
 
 /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
-let nextRace (race: Race) (lastKeyboard, keyboard: KeyboardState) (lastGamepads: GamePadState list, gamepads: GamePadState list) (assets: GameContent) =
+let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets: GameContent) =
   let testDoCheer() = if race.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
   let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) assets
   if keyboard.IsKeyDown(Keys.Escape) then
