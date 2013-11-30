@@ -21,7 +21,8 @@ let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.g
 let init () =
   let initPlayer (bounds: PlayerShape) index =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      bounds = bounds; index = index + 1; intersectingLines = [false; false; false; false]
+      bounds = bounds; index = index + 1; effects = [];
+      intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
   let x = 820.0f
