@@ -13,6 +13,8 @@ let tauntTime = 1000
 
 let getBB (player: Player) = BoundingPolygon(player.bounds)
 
+let addEffect player effect = {player with effects = effect :: player.effects}
+
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
   if lastTurnedLeft && position.X > center.X then
     lastPosition.Y > center.Y && position.Y < center.Y
@@ -22,13 +24,29 @@ let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (
 
 let justFinished (oldPlayer: Player) (player: Player) = (not oldPlayer.finished) && player.finished
 
+/// Finds the effect that matches the given effect, using the one with the greatest remaining duration
+let findLongestEffect (effects: (Effect * Duration) list) key =
+  let effects = List.filter (fun (e, _) -> e = key) effects
+  match effects with
+  | [] -> None
+  | _ -> Some(List.maxBy snd effects)
+
+let nextEffects (effects: (Effect * Duration) list) =
+  effects
+    |> List.map (fun (e, d) -> e, d - 1)
+    |> List.filter (fun (_, d) -> d > 0)
+
 /// Returns the next position and direction of the player and change in direction
 #nowarn "49"
 let nextPositionDirection (player: Player) Δdirection =
-  (player.position
-    + (   cos player.direction * player.velocity
-       @@ sin player.direction * player.velocity),
-   player.direction + Δdirection)
+  let Δdirection =
+    // Taunting affects players' turning ability
+    match findLongestEffect player.effects Effect.Taunt with
+    | Some _ -> Δdirection * 0.75
+    | None -> Δdirection
+  player.position
+    + ( cos player.direction * player.velocity @@ sin player.direction * player.velocity),
+  player.direction + Δdirection
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
 let nextLaps racetrackCenter (input: PlayerInputState) (player: Player) nextPosition =
@@ -66,8 +84,9 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         let position, direction = nextPositionDirection player input.turn
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
         let tauntState = nextTauntState expectingTaunt player.tauntState
+        let effects = nextEffects player.effects
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
           index = player.index; turns = turns; lastTurnedLeft = lastTurnedLeft
-          tauntState = tauntState; intersectingLines = collisionResults }
+          tauntState = tauntState; effects = effects; intersectingLines = collisionResults }
   | Crashed -> player

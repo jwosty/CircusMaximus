@@ -8,9 +8,11 @@ open CircusMaximus.Collision
 type Velocity = float
 type Placing = int
 type Taunt = string * int
+type Duration = int
 
 type MotionState = Moving of Velocity | Crashed
 type FinishState = | Racing | Finished of Placing
+type Effect = | Taunt
 
 type Player =
   { motionState: MotionState
@@ -20,6 +22,7 @@ type Player =
     turns: int
     lastTurnedLeft: bool
     tauntState: Taunt option
+    effects: (Effect * Duration) list
     intersectingLines: bool list }
 
   member this.position = this.bounds.Center
