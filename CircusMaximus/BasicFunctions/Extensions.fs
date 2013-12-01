@@ -47,7 +47,6 @@ module List =
   
   /// Returns a list without the element at the index
   let removeIndex index list =
-    // Written in the imperitive style for the sake of efficiency
     let mutable result = []
     let mutable erodingList = list
     for i in 0 .. List.length list - 1 do
