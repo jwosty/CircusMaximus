@@ -13,7 +13,11 @@ let tauntTime = 1000
 
 let getBB (player: Player) = BoundingPolygon(player.bounds)
 
-let addEffect player effect = {player with effects = effect :: player.effects}
+/// Returns a list of effects that the source player imposes on the destination player
+let applyEffects (source: Player) (destination: Player) =
+  match source.tauntState with
+  | Some(_, _) when source <> destination -> [Effect.Taunt, tauntTime]
+  | _ -> []
 
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
   if lastTurnedLeft && position.X > center.X then

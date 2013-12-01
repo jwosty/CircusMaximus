@@ -58,6 +58,16 @@ let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadSta
       Player.next (new PlayerInputState(lastGamepad, gamepad)) player playerIndex collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center assets
   player
 
+/// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
+let applyPlayerEffects players =
+  players
+    |> List.map (fun dst ->
+      let effects =
+        players
+          |> List.map (fun src -> Player.applyEffects src dst)
+          |> List.reduce (fun totalEffects effects -> totalEffects @ effects)
+      {dst with effects = effects})
+
 /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
 let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets: GameContent) =
   let testDoCheer() = if race.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
@@ -93,4 +103,5 @@ let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets:
             else MidRace(lastPlacing), players
         // No player placings
         | PostRace -> PostRace, List.mapi2 nextPlayer race.players playerCollisions
+      let players = applyPlayerEffects players
       Some({raceState = DynamicRace(dynamicRaceState); players = players; timer = race.timer + 1})

@@ -7,8 +7,8 @@ open CircusMaximus.Collision
 
 type Velocity = float
 type Placing = int
-type Taunt = string * int
 type Duration = int
+type Taunt = string * Duration
 
 type MotionState = Moving of Velocity | Crashed
 type FinishState = | Racing | Finished of Placing
