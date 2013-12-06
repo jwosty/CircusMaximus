@@ -105,6 +105,7 @@
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
+    <Compile Include="GameElements\StateMachines\Particle.fs" />
     <Compile Include="GameElements\StateMachines\PlayerStates.fs" />
     <Compile Include="GameElements\StateMachines\PlayerFunctions.fs" />
     <Compile Include="GameElements\StateMachines\RaceStates.fs" />

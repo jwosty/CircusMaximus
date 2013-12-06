@@ -20,7 +20,7 @@ type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable raceState = Race.init ()
+  let mutable raceState = Race.init (new Random(42))
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
   // A general-purpose sprite batch

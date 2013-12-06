@@ -60,7 +60,7 @@ let nextLaps racetrackCenter (input: PlayerInputState) (player: Player) nextPosi
     player.turns, player.lastTurnedLeft
 
 /// Returns a new taunt if needed, otherwise none
-let nextTauntState expectingTaunt = function
+let nextTauntState expectingTaunt rand = function
   | Some(taunt, tauntTimer) ->
     if tauntTimer >= 0 then
       Some(taunt, tauntTimer - 1)
@@ -68,12 +68,12 @@ let nextTauntState expectingTaunt = function
       None
   | None ->
     if expectingTaunt then
-      Some(Taunt.pickTaunt (), tauntTime)
+      Some(Taunt.pickTaunt rand, tauntTime)
     else
       None
 
 /// Returns an updated version of the given player model. Players are not given a placing here.
-let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) (assets: GameContent) =
+let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
   match player.motionState with
   | Moving velocity ->
     // If the player is colliding on the front, then the player is crashing
@@ -87,7 +87,7 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
           snd.Pause()
         let position, direction = nextPositionDirection player input.turn
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
-        let tauntState = nextTauntState expectingTaunt player.tauntState
+        let tauntState = nextTauntState expectingTaunt rand player.tauntState
         let effects = nextEffects player.effects
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)

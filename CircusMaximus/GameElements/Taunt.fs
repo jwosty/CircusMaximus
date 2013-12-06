@@ -9,6 +9,6 @@ let taunts =
     "Equi vel Cereberus quadrigam trahunt?",              "Is that your horse or is it Cerberus pulling your chariot?";
     "Salio celerior quam equus tuus!",                    "I can hop faster than your horse!" ]
 
-let random = new Random()
-
-let pickTaunt () = fst taunts.[random.Next(taunts.Length)]
+/// Warning! Mutability right here! Nothing we can do other than write our own random function...
+/// I'll save that for another day ;)
+let pickTaunt (rand: Random) = fst taunts.[rand.Next(taunts.Length)]
