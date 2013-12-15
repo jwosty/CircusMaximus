@@ -81,6 +81,16 @@ let updateParticle particle =
 
 /// Returns an updated version of the given player model. Players are not given a placing here.
 let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
+  let particles =
+    player.particles
+      // Add some particles if necessary
+      |> List.appendFrontIf
+        (findLongestEffect player.effects Effect.Taunt |> isSome)
+        (BoundParticle.RandBatchInit ...<| rand)
+      // Update particles
+      |> List.map updateParticle
+      // Delete old particles
+      |> List.filter (fun p -> p.age < 100.53)
   match player.motionState with
   | Moving velocity ->
     // If the player is colliding on the front, then the player is crashing
@@ -97,19 +107,9 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
         let tauntState = nextTauntState expectingTaunt rand player.tauntState
         let effects = nextEffects player.effects
-        let particles =
-          player.particles
-            // Add some particles if necessary
-            |> List.appendFrontIf
-              (findLongestEffect player.effects Effect.Taunt |> isSome)
-              (BoundParticle.RandBatchInit ...<| rand)
-            // Update particles
-            |> List.map updateParticle
-            // Delete old particles
-            |> List.filter (fun p -> p.age < 100.53)
         
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
           index = player.index; turns = turns; age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
           tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults }
-  | Crashed -> player
+  | Crashed -> { player with particles = particles }
