@@ -81,6 +81,9 @@ let updateParticle particle =
 
 /// Returns an updated version of the given player model. Players are not given a placing here.
 let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
+  // Common code between crashed and moving players
+  let tauntState = nextTauntState expectingTaunt rand player.tauntState
+  let effects = nextEffects player.effects
   let particles =
     player.particles
       // Add some particles if necessary
@@ -108,11 +111,13 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         
         let position, direction = nextPositionDirection player input.turn
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
-        let tauntState = nextTauntState expectingTaunt rand player.tauntState
-        let effects = nextEffects player.effects
-        
+
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
           index = player.index; turns = turns; age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
           tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults }
-  | Crashed -> { player with particles = particles }
+  | Crashed ->
+    { player with
+        tauntState = tauntState;
+        effects = effects;
+        particles = particles }
