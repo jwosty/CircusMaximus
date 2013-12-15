@@ -5,6 +5,7 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open CircusMaximus
 open CircusMaximus.State
+open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
 open CircusMaximus.Collision
@@ -40,6 +41,8 @@ let nextEffects (effects: (Effect * Duration) list) =
     |> List.map (fun (e, d) -> e, d - 1)
     |> List.filter (fun (_, d) -> d > 0)
 
+let positionForward position direction distance = position + (cos direction * distance @@ sin direction * distance)
+
 /// Returns the next position and direction of the player and change in direction
 #nowarn "49"
 let nextPositionDirection (player: Player) Δdirection =
@@ -48,9 +51,7 @@ let nextPositionDirection (player: Player) Δdirection =
     match findLongestEffect player.effects Effect.Taunt with
     | Some _ -> Δdirection * 0.75
     | None -> Δdirection
-  player.position
-    + ( cos player.direction * player.velocity @@ sin player.direction * player.velocity),
-  player.direction + Δdirection
+  positionForward player.position player.direction player.velocity, player.direction + Δdirection
 
 /// Returns the next number of laps and whether or not the player last turned on the left side of the map
 let nextLaps racetrackCenter (input: PlayerInputState) (player: Player) nextPosition =
@@ -72,6 +73,12 @@ let nextTauntState expectingTaunt rand = function
     else
       None
 
+let updateParticle particle =
+  { particle with
+      position = positionForward particle.position particle.direction (cos(particle.age / 64.))
+      direction = particle.direction
+      age = particle.age + 1. }
+
 /// Returns an updated version of the given player model. Players are not given a placing here.
 let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
   match player.motionState with
@@ -85,12 +92,24 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
           snd.Resume()
         if (player.velocity < 3.) && (snd.State = SoundState.Playing) then
           snd.Pause()
+        
         let position, direction = nextPositionDirection player input.turn
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
         let tauntState = nextTauntState expectingTaunt rand player.tauntState
         let effects = nextEffects player.effects
+        let particles =
+          player.particles
+            // Add some particles if necessary
+            |> List.appendFrontIf
+              (findLongestEffect player.effects Effect.Taunt |> isSome)
+              (BoundParticle.RandBatchInit ...<| rand)
+            // Update particles
+            |> List.map updateParticle
+            // Delete old particles
+            |> List.filter (fun p -> p.age < 100.53)
+        
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
-          index = player.index; turns = turns; lastTurnedLeft = lastTurnedLeft
-          tauntState = tauntState; effects = effects; intersectingLines = collisionResults }
+          index = player.index; turns = turns; age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
+          tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults }
   | Crashed -> player

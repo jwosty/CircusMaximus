@@ -14,6 +14,12 @@ let inline (@~) a b = new Nullable<_>(new Vector2(float32 a, float32 b))
 let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
+/// Creates a sort of lazy evaluation by "delaying" the result
+let (...<|) f x = fun () -> f x
+let (|>...) x f = fun () -> f x
+
+let isSome = function | Some _ -> true | None -> false
+
 /// Exclusive 'between' operator
 let (><) x (a, b) = (x > a && x < b) || (x < a && x > b)
 /// Inclusive 'between' operator

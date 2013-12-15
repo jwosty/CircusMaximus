@@ -84,3 +84,6 @@ module List =
   let rec skip times list =
     if times < 1 then list
     else skip (times - 1) (List.tail list)
+  
+  let inline addIf cond createThing list = if cond then createThing() :: list else list
+  let inline appendFrontIf cond createThings list = if cond then createThings() @ list else list

@@ -11,6 +11,7 @@ type GameContent =
     ChariotTexture: Texture2D
     Font: Texture2D
     PlacingBackground: Texture2D
+    Particle: Texture2D
     
     ChariotSound: SoundEffectInstance list
     CrowdCheerSound: SoundEffect }
@@ -33,6 +34,7 @@ module GameContentFunctions =
       ChariotTexture = loadImage "chariot"
       Font = loadImage "font"
       PlacingBackground = loadImage "placingbg"
+      Particle = loadImage "particle"
       
       ChariotSound =
         let snd = loadSound "chariot"

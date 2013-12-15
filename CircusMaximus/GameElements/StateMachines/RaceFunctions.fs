@@ -21,9 +21,10 @@ let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.g
 let init rand =
   let initPlayer (bounds: PlayerShape) index =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      bounds = bounds; index = index + 1; effects = [];
+      bounds = bounds; index = index + 1; age = 0.; effects = [];
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
+      particles = []
       lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
   let x = 820.0f
   { rand = rand

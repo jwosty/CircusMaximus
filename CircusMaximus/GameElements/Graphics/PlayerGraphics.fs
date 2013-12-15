@@ -4,6 +4,7 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
+open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.State
 
@@ -17,6 +18,7 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
 #if DEBUG
   player.bounds.Draw(sb, assets.Pixel, player.intersectingLines)
 #endif
+  player.particles |> List.iter (fun p -> sb.DrawCentered(assets.Particle, player.position + p.position, Color.White))
   match player.motionState with
   | Moving velocity ->
     // Draw the player's taunt, if any

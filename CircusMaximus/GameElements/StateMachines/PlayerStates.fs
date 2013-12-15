@@ -19,10 +19,12 @@ type Player =
     finishState: FinishState
     bounds: PlayerShape
     index: int
+    age: float
     turns: int
     lastTurnedLeft: bool
     tauntState: Taunt option
     effects: (Effect * Duration) list
+    particles: BoundParticle list
     intersectingLines: bool list }
 
   member this.position = this.bounds.Center
