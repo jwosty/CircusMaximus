@@ -91,13 +91,16 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
       |> List.map updateParticle
       // Delete old particles
       |> List.filter (fun p -> p.age < 100.53)
+  
   match player.motionState with
   | Moving velocity ->
+    let snd = assets.ChariotSound.[playerIndex]
     // If the player is colliding on the front, then the player is crashing
     match collisionResults with
-      | true :: _ -> { player with motionState = Crashed }
+      | true :: _ ->
+        snd.Stop()
+        { player with motionState = Crashed }
       | _ ->
-        let snd = assets.ChariotSound.[playerIndex]
         if (player.velocity >= 3.) && (snd.State <> SoundState.Playing) then
           snd.Resume()
         if (player.velocity < 3.) && (snd.State = SoundState.Playing) then
