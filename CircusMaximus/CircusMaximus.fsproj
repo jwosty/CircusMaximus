@@ -92,6 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.fs" />
+    <Compile Include="BasicFunctions\LazyList.fsi" />
+    <Compile Include="BasicFunctions\LazyList.fs" />
     <Compile Include="BasicFunctions\TupleExtensions.fs" />
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
