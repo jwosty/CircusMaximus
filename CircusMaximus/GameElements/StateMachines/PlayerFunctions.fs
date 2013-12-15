@@ -10,7 +10,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
 open CircusMaximus.Collision
 
-let tauntTime = 1000
+let tauntTime = 750
 
 let getBB (player: Player) = BoundingPolygon(player.bounds)
 
@@ -40,8 +40,6 @@ let nextEffects (effects: (Effect * Duration) list) =
   effects
     |> List.map (fun (e, d) -> e, d - 1)
     |> List.filter (fun (_, d) -> d > 0)
-
-let positionForward position direction distance = position + (cos direction * distance @@ sin direction * distance)
 
 /// Returns the next position and direction of the player and change in direction
 #nowarn "49"
@@ -73,12 +71,6 @@ let nextTauntState expectingTaunt rand = function
     else
       None
 
-let updateParticle particle =
-  { particle with
-      position = positionForward particle.position particle.direction (cos(particle.age / 64.))
-      direction = particle.direction
-      age = particle.age + 1. }
-
 /// Returns an updated version of the given player model. Players are not given a placing here.
 let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
   // Common code between crashed and moving players
@@ -91,7 +83,7 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         (findLongestEffect player.effects Effect.Taunt |> isSome)
         (BoundParticle.RandBatchInit ...<| rand)
       // Update particles
-      |> List.map updateParticle
+      |> List.map BoundParticle.nextParticle
       // Delete old particles
       |> List.filter (fun p -> p.age < 100.53)
   

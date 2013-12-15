@@ -34,6 +34,8 @@ let toRoman =
   fun n ->
     List.fold acc (n, "") numerals |> snd
 
+let positionForward position (direction: float) distance = position + (cos direction * distance @@ sin direction * distance)
+
 let placingColor = function
   | 1 -> Color.Gold
   | 2 -> Color.Silver
