@@ -111,7 +111,7 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
         
         let position, direction = nextPositionDirection player input.turn
         let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
-
+        
         { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
           bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
           index = player.index; turns = turns; age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
