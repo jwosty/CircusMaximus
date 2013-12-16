@@ -77,11 +77,12 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
   let tauntState = nextTauntState expectingTaunt rand player.tauntState
   let effects = nextEffects player.effects
   let particles =
+    let tauntEffect = findLongestEffect player.effects Effect.Taunt
     player.particles
       // Add some particles if necessary
       |> List.appendFrontIf
-        (findLongestEffect player.effects Effect.Taunt |> isSome)
-        (BoundParticle.RandBatchInit ...<| rand)
+        (isSome tauntEffect)
+        (BoundParticle.RandBatchInit rand ...<| 1.)
       // Update particles
       |> List.map BoundParticle.nextParticle
       // Delete old particles
