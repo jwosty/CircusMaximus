@@ -23,10 +23,11 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
   | Moving velocity ->
     // Draw the player's taunt, if any
     match player.tauntState with
-    | Some(taunt, _) ->
+    | Some(taunt, duration) ->
+      let colorFactor = (float32 duration) / (float32 Player.tauntTime)
       FlatSpriteFont.drawString
         assets.Font fontBatch taunt player.position 2.0f
-        (if isMainPlayer then Color.White else Color.OrangeRed)
+        (if isMainPlayer then Color.White * colorFactor else Color.OrangeRed * colorFactor)   // Get the color and fade it out depending on how long the player has been taunting
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
   | Crashed ->
