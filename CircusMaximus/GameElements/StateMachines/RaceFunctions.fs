@@ -66,9 +66,9 @@ let applyPlayerEffects players =
     |> List.map (fun dst ->
       let effects =
         players
-          |> List.map (fun src -> Player.applyEffects src dst)
-          |> List.reduce (fun totalEffects effects -> totalEffects @ effects)
-      {dst with effects = effects})
+          |> List.map (fun src -> Player.applyEffects src dst)                  // Calculate player effects between each other
+          |> List.reduce (fun totalEffects effects -> totalEffects @ effects)   // Collect each player's effects together
+      {dst with effects = effects @ dst.effects})                               // Add the new effects to the players
 
 /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
 let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets: GameContent) =
@@ -100,6 +100,8 @@ let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) (assets:
                 i - 1, (player :: players), newLastPlacing)
               race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congradulate the player for finishing in the top 3
+          
+          // The race is over as soon as the last player finishes
           if lastPlacing = players.Length
             then PostRace, players
             else MidRace(lastPlacing), players

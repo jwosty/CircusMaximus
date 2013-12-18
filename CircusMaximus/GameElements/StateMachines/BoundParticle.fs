@@ -16,5 +16,5 @@ type BoundParticle =
 module BoundParticle =
   let nextParticle particle =
     { particle with
-        position = positionForward particle.position particle.direction (cos(particle.age / (particle.factor * 64.)))
+        position = positionForward particle.position particle.direction (cos(particle.age / 64.) * particle.factor)
         age = particle.age + 1. }

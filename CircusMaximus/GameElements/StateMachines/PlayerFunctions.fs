@@ -14,11 +14,14 @@ let tauntTime = 750
 
 let getBB (player: Player) = BoundingPolygon(player.bounds)
 
-/// Returns a list of effects that the source player imposes on the destination player
+/// Returns the new effects that the source player imposes on the destination player
 let applyEffects (source: Player) (destination: Player) =
   match source.tauntState with
-  | Some(_, _) when source <> destination -> [Effect.Taunt, tauntTime]
-  | _ -> []
+  | Some(_, duration) when source <> destination ->
+    if duration = tauntTime
+    then [Effect.Taunt, tauntTime]    // Source player has just started taunting, so create one new effect
+    else []                           // Source player has already been taunting, so nothing new
+  | _ -> []                           // Source player isn't taunting, so nothing new
 
 let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
   if lastTurnedLeft && position.X > center.X then
@@ -76,17 +79,17 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
   // Common code between crashed and moving players
   let tauntState = nextTauntState expectingTaunt rand player.tauntState
   let effects = nextEffects player.effects
+  let e = findLongestEffect player.effects Effect.Taunt
   let particles =
-    let tauntEffect = findLongestEffect player.effects Effect.Taunt
-    player.particles
-      // Add some particles if necessary
-      |> List.appendFrontIf
-        (isSome tauntEffect)
-        (BoundParticle.RandBatchInit rand ...<| 1.)
+    match e with
+    | Some(effect, duration) ->
+      let factor = (float duration) / (float tauntTime)
+      player.particles @ BoundParticle.RandBatchInit rand factor
+    | None -> player.particles
       // Update particles
-      |> List.map BoundParticle.nextParticle
+    |> List.map BoundParticle.nextParticle
       // Delete old particles
-      |> List.filter (fun p -> p.age < 100.53)
+    |> List.filter (fun p -> p.age < 100.53)
   
   match player.motionState with
   | Moving velocity ->
