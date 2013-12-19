@@ -14,6 +14,7 @@ type BoundParticle =
 
 [<CompilationRepresentationAttribute(CompilationRepresentationFlags.ModuleSuffix)>]
 module BoundParticle =
+  let particleAge = 100.53
   let nextParticle particle =
     { particle with
         position = positionForward particle.position particle.direction (cos(particle.age / 64.) * particle.factor)

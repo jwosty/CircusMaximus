@@ -89,7 +89,7 @@ let next (input: PlayerInputState) (player: Player) playerIndex collisionResults
       // Update particles
     |> List.map BoundParticle.nextParticle
       // Delete old particles
-    |> List.filter (fun p -> p.age < 100.53)
+    |> List.filter (fun p -> p.age < BoundParticle.particleAge)
   
   match player.motionState with
   | Moving velocity ->

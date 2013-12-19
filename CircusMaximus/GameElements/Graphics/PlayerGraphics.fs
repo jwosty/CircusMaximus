@@ -18,16 +18,19 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
 #if DEBUG
   player.bounds.Draw(sb, assets.Pixel, player.intersectingLines)
 #endif
-  player.particles |> List.iter (fun p -> sb.DrawCentered(assets.Particle, player.position + p.position, Color.White))
+  player.particles |> List.iter
+    (fun p ->
+      let fade = (BoundParticle.particleAge - p.age) / BoundParticle.particleAge |> float32 // Particles fade as they get older
+      sb.DrawCentered(assets.Particle, player.position + p.position, Color.White * fade))
   match player.motionState with
   | Moving velocity ->
     // Draw the player's taunt, if any
     match player.tauntState with
     | Some(taunt, duration) ->
-      let colorFactor = (float32 duration) / (float32 Player.tauntTime)
+      let fade = (float32 duration) / (float32 Player.tauntTime)
       FlatSpriteFont.drawString
         assets.Font fontBatch taunt player.position 2.0f
-        (if isMainPlayer then Color.White * colorFactor else Color.OrangeRed * colorFactor)   // Get the color and fade it out depending on how long the player has been taunting
+        (if isMainPlayer then Color.White * fade else Color.OrangeRed * fade)   // Get the color and fade it out depending on how long the player has been taunting
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
   | Crashed ->
