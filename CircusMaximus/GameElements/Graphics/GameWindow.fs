@@ -19,7 +19,7 @@ type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable raceState = Race.init (new Random(42))
+  let mutable game = Game.init (new Random(42))
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
   // A general-purpose sprite batch
@@ -49,21 +49,21 @@ type GameWindow() as this =
   override this.Initialize() =
     base.Initialize()
     this.IsMouseVisible <- true
-    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice raceState.players.Length
+    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice Player.numPlayers
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
   
   /// Load your graphics content.
-  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice (raceState.players.Length)
+  override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice Player.numPlayers
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
     let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match Race.next raceState (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
-      | Some newState -> (raceState <- newState)
-      | None -> this.Exit()
+    match Game.next game (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
+    | Some newState -> (game <- newState)
+    | None -> this.Exit()
     lastKeyboard <- keyboard
     lastGamepads <- gamepads
 
@@ -73,4 +73,4 @@ type GameWindow() as this =
     // background and become whatever color the screen is cleared with
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw(gameTime)
-    GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch raceState
+    GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch game

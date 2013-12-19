@@ -110,6 +110,7 @@
     <Compile Include="GameElements\StateMachines\BoundParticle.fs" />
     <Compile Include="GameElements\StateMachines\Player.fs" />
     <Compile Include="GameElements\StateMachines\Race.fs" />
+    <Compile Include="GameElements\StateMachines\Game.fs" />
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />

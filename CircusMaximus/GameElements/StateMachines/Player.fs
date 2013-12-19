@@ -40,6 +40,7 @@ type Player =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Player =
+  let numPlayers = 5
   let tauntTime = 750
 
   let getBB (player: Player) = BoundingPolygon(player.bounds)
