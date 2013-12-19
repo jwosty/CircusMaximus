@@ -108,10 +108,8 @@
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
     <Compile Include="GameElements\StateMachines\BoundParticle.fs" />
-    <Compile Include="GameElements\StateMachines\PlayerStates.fs" />
-    <Compile Include="GameElements\StateMachines\PlayerFunctions.fs" />
-    <Compile Include="GameElements\StateMachines\RaceStates.fs" />
-    <Compile Include="GameElements\StateMachines\RaceFunctions.fs" />
+    <Compile Include="GameElements\StateMachines\Player.fs" />
+    <Compile Include="GameElements\StateMachines\Race.fs" />
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />
