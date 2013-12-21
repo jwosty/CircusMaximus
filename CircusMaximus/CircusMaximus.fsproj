@@ -105,6 +105,12 @@
     <Compile Include="GameElements\GameContent.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
+    <Compile Include="GameElements\State\Input.fs" />
+    <Compile Include="GameElements\State\Button.fs" />
+    <Compile Include="GameElements\State\BoundParticle.fs" />
+    <Compile Include="GameElements\State\Player.fs" />
+    <Compile Include="GameElements\State\Race.fs" />
+    <Compile Include="GameElements\State\Game.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\ButtonGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
@@ -113,12 +119,6 @@
     <Compile Include="GameElements\Graphics\GameGraphics.fs" />
     <Compile Include="GameElements\Graphics\GameWindow.fs" />
     <Compile Include="Main.fs" />
-    <Compile Include="GameElements\State\Input.fs" />
-    <Compile Include="GameElements\State\Button.fs" />
-    <Compile Include="GameElements\State\BoundParticle.fs" />
-    <Compile Include="GameElements\State\Player.fs" />
-    <Compile Include="GameElements\State\Race.fs" />
-    <Compile Include="GameElements\State\Game.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
