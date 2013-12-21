@@ -85,7 +85,7 @@ module Player =
     positionForward player.position player.direction player.velocity, player.direction + Δdirection
 
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
-  let nextLaps racetrackCenter (input: PlayerInputState) (player: Player) nextPosition =
+  let nextLaps racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
     if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition || input.advanceLap then
       player.turns + 1, not player.lastTurnedLeft
     else
@@ -105,7 +105,7 @@ module Player =
         None
 
   /// Returns an updated version of the given player model. Players are not given a placing here.
-  let next (input: PlayerInputState) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
+  let next (input: PlayerInput) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
     // Common code between crashed and moving players
     let tauntState = nextTauntState expectingTaunt rand player.tauntState
     let effects = nextEffects player.effects
