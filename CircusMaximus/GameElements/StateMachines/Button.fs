@@ -16,3 +16,6 @@ module Button =
   let initCenter (center: Vector2) (width, height) =
     { buttonState = Released
       position = (center.X - width @@ center.Y - height) }
+  
+  /// Returns the next button state with the given conditions
+  let next button lastInput input = button

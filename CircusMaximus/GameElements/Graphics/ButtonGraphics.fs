@@ -8,5 +8,5 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.State
 
-/// Draws a button state
+/// Draws a button state, assuming SpriteBatch.Begin has been called
 let draw (sb: SpriteBatch) (button: Button) (assets: GameContent) = sb.Draw(assets.Button, button.position, Color.White)

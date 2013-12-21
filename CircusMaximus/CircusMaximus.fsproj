@@ -172,5 +172,6 @@
     <BundleResource Include="Content\sounds\chariot.wav" />
     <BundleResource Include="Content\images\placingbg.png" />
     <BundleResource Include="Content\images\particle.png" />
+    <BundleResource Include="Content\images\button.png" />
   </ItemGroup>
 </Project>
