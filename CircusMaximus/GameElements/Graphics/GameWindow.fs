@@ -27,6 +27,7 @@ type GameWindow() as this =
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable assets = Unchecked.defaultof<_>
   
+  let mutable lastMouse = Mouse.GetState()
   let mutable lastKeyboard = Keyboard.GetState()
   let mutable lastGamepads = [for i in 0..3 -> GamePad.GetState(enum i)]
   
@@ -60,10 +61,11 @@ type GameWindow() as this =
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
-    let keyboard, gamepads = Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match Game.next game (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
+    let mouse, keyboard, gamepads = Mouse.GetState(), Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
+    match Game.next game (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
     | Some newState -> (game <- newState)
     | None -> this.Exit()
+    lastMouse <- mouse
     lastKeyboard <- keyboard
     lastGamepads <- gamepads
 
