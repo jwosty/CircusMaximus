@@ -11,6 +11,8 @@ type PlayerInput =
     power: float
     /// Turn amount
     turn: float
+    /// True when the player presses the taunt button (Q on the keyboard, A on the controller)
+    expectingTaunt: bool
     /// Debug input to advance one lap
     advanceLap: bool }
 
@@ -23,10 +25,12 @@ module PlayerInput =
       turn =
         (  if keyboard.IsKeyDown(Keys.A) then -maxTurn else 0.0)
         + (if keyboard.IsKeyDown(Keys.D) then maxTurn else 0.0)
-        |> degreesToRadians;
+        |> degreesToRadians
+      expectingTaunt = keyboard.IsKeyDown(Keys.Q)
       advanceLap = lastKeyboard.IsKeyDown(Keys.L) && keyboard.IsKeyUp(Keys.L) }
   
   let initFromGamepad (lastGamepad: GamePadState, gamepad: GamePadState) maxTurn maxSpeed =
-    { power = float gamepad.Triggers.Right * maxSpeed;
-      turn = float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians;
+    { power = float gamepad.Triggers.Right * maxSpeed
+      turn = float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians
+      expectingTaunt = (gamepad.Buttons.A = ButtonState.Pressed)
       advanceLap = lastGamepad.IsButtonDown(Buttons.Y) && gamepad.IsButtonUp(Buttons.Y) }

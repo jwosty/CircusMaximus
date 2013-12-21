@@ -105,9 +105,9 @@ module Player =
         None
 
   /// Returns an updated version of the given player model. Players are not given a placing here.
-  let next (input: PlayerInput) (player: Player) playerIndex collisionResults expectingTaunt (racetrackCenter: Vector2) rand (assets: GameContent) =
+  let next (input: PlayerInput) (player: Player) playerIndex collisionResults (racetrackCenter: Vector2) rand (assets: GameContent) =
     // Common code between crashed and moving players
-    let tauntState = nextTauntState expectingTaunt rand player.tauntState
+    let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = nextEffects player.effects
     let e = findLongestEffect player.effects Effect.Taunt
     let particles =

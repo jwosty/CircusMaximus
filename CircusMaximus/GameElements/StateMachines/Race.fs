@@ -66,12 +66,12 @@ module Race =
       if playerIndex = 0 then
         Player.next
           (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player playerIndex collision (keyboard.IsKeyDown(Keys.Q)) Racetrack.center rand assets
+          player playerIndex collision Racetrack.center rand assets
       else
         let lastGamepad, gamepad = lastGamepads.[playerIndex - 1], gamepads.[playerIndex - 1]
         Player.next
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player playerIndex collision (gamepad.Buttons.A = ButtonState.Pressed) Racetrack.center rand assets
+          player playerIndex collision Racetrack.center rand assets
     player
 
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
