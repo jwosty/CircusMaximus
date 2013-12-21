@@ -103,15 +103,15 @@
     <Compile Include="Collision\Shapes\RacetrackShape.fs" />
     <Compile Include="Collision\Collision.fs" />
     <Compile Include="GameElements\GameContent.fs" />
-    <Compile Include="GameElements\Input.fs" />
     <Compile Include="GameElements\Taunt.fs" />
-    <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
+    <Compile Include="GameElements\StateMachines\Input.fs" />
     <Compile Include="GameElements\StateMachines\Button.fs" />
     <Compile Include="GameElements\StateMachines\BoundParticle.fs" />
     <Compile Include="GameElements\StateMachines\Player.fs" />
     <Compile Include="GameElements\StateMachines\Race.fs" />
     <Compile Include="GameElements\StateMachines\Game.fs" />
+    <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\ButtonGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
