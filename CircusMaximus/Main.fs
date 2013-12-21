@@ -14,7 +14,7 @@ type AppDelegate() =
  
 module main =
   [<EntryPoint>]
-  let main args =
+  let temain args =
     NSApplication.Init ()
     using (new NSAutoreleasePool()) (fun n -> 
       NSApplication.SharedApplication.Delegate <- new AppDelegate()

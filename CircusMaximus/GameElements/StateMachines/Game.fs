@@ -10,8 +10,8 @@ type Game = { rand: Random; gameState: GameState }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
-  let init rand = { rand = rand; gameState = Race(Race.init ()) }
-
+  let init rand = { rand = rand; gameState = MainMenu }
+  
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
   let next (game: Game) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) assets =
     if keyboard.IsKeyDown(Keys.Escape) then
