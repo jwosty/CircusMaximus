@@ -19,7 +19,7 @@ type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
   let mutable playerScreens = Unchecked.defaultof<_>
-  let mutable game = Game.init (new Random(42))
+  let mutable game = Unchecked.defaultof<_>
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
   // A general-purpose sprite batch
@@ -53,6 +53,7 @@ type GameWindow() as this =
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice Player.numPlayers
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
+    game <- Game.init (new Random(42)) this.WindowDimensions
   
   /// Load your graphics content.
   override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice Player.numPlayers

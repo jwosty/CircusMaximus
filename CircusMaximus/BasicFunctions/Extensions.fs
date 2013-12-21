@@ -31,7 +31,7 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
   /// before ending
   member this.DoWithPointClamp(predicate) =
     // SamplerState.PointClamp disables anti-aliasing, which just looks horrible on scaled bitmap fonts
-    this.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null)
+    this.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null)
     predicate this |> ignore
     this.End()
 

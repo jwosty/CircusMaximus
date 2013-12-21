@@ -15,9 +15,9 @@ type Game = { rand: Random; gameState: GameState }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
-  let init rand =
+  let init rand windowDimensions =
     { rand = rand
-      gameState = MainMenu(Button.init (0 @@ 0) (512, 64)) }
+      gameState = MainMenu(Button.initCenter (windowDimensions * (0.5 @@ 0.5)) (512, 64) "Play") }
   
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
   let next (game: Game) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) assets =
@@ -25,10 +25,9 @@ module Game =
       None  // Indicate that we want to exit
     else
       match game.gameState with
-      | MainMenu button ->
-        match button.buttonState with
-        | Pressing -> printfn "Button pressed"
-        | Releasing -> printfn "Button released"
-        | _ -> ()
-        Some({game with gameState = MainMenu(Button.next button mouse)})
+      | MainMenu playButton ->
+        match playButton.buttonState with
+        | Releasing -> Some({game with gameState = Race(Race.init ())})
+        | _ -> Some({game with gameState = MainMenu(Button.next playButton mouse)})
+      
       | Race race -> Some({game with gameState = Race(Race.next race (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand assets)})
