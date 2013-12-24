@@ -44,7 +44,7 @@ module Player =
   let tauntTime = 750
 
   let init (bounds: PlayerShape) number =
-    { motionState = Moving(0.); finishState = Racing; tauntState = None
+    { motionState = Moving(0.); finishState = Finished(1); tauntState = None
       bounds = bounds; number = number; age = 0.; effects = [];
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1

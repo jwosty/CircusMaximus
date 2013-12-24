@@ -26,9 +26,12 @@ module Race =
   /// Calculates the intersections for all objects
   let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
   
+  /// Finishes players that made the last lap
+  let maxTurns = 13
+
   let init () =
     let x = 820.0f
-    { raceState = PreRace
+    { raceState = PostRace
       players =
         [
           x, 740.0f;
@@ -39,8 +42,7 @@ module Race =
         ] |> List.mapi (fun i (x, y) -> Player.init (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) (i + 1))
       timer = 0 }
   
-  /// Finishes players that made the last lap
-  let maxTurns = 13
+  let findPlayerByNumber number (race: Race) = race.players |> List.find (fun p -> p.number = number)
   
   let nextPlayerFinish lastPlacing (player: Player) =
     match player.finishState with
