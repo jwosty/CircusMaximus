@@ -31,7 +31,7 @@ module Race =
 
   let init () =
     let x = 820.0f
-    { raceState = PostRace
+    { raceState = PreRace
       players =
         [
           x, 740.0f;

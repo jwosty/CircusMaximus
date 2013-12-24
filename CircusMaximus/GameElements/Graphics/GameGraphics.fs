@@ -46,7 +46,7 @@ let drawScreens playerScreens assets (fontBatch: SpriteBatch) players =
 /// Draw a game state
 let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (game: Game) =
   match game.gameState with
-  | MainMenu button -> fontBatch.DoWithPointClamp (fun fb -> generalBatch.DoBasic (fun gb -> ButtonGraphics.draw fb gb button assets))
+  | Screen screen -> ScreenGraphics.draw screen fontBatch generalBatch assets
   
   | Race race ->
     match race.raceState with

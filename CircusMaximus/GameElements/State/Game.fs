@@ -7,7 +7,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
 type GameState =
-  | MainMenu of Button  // For now, the main menu only has a single button
+  | Screen of Screen
   | Race of Race
 
 /// Holds the state of the entire game
@@ -19,7 +19,13 @@ type Game =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
   let init rand windowDimensions =
-    { gameState = MainMenu(Button.initCenter (windowDimensions * (0.5 @@ 0.5)) (512, 64) "Play")
+    { gameState =
+        Screen(
+          MainMenu(
+            Button.initCenter
+              (windowDimensions * (0.5 @@ 0.5))
+              (512, 64)
+              "Play"))
       rand = rand
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1)) }
   
@@ -29,10 +35,11 @@ module Game =
       None  // Indicate that we want to exit
     else
       match game.gameState with
-      | MainMenu playButton ->
-        match playButton.buttonState with
-        | Releasing -> Some({game with gameState = Race(Race.init ())})
-        | _ -> Some({game with gameState = MainMenu(Button.next playButton mouse)})
+      | Screen oldScreen ->
+        let screenOrExit = Screen.next oldScreen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepad)
+        match screenOrExit with
+        | Some(screen) -> Some({game with gameState = Screen(screen)})
+        | None -> Some({game with gameState = Race(Race.init ())})
       
       | Race oldRace ->
         let race = Race.next oldRace (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand assets
