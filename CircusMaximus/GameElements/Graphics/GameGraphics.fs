@@ -63,9 +63,9 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
             assets.Font fontBatch (Race.preRaceMaxCount - (race.timer / Race.preRaceTicksPerCount) |> toRoman)
             windowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     
-    | DynamicRace dynamicRaceState ->
+    | _ ->
       drawScreens playerScreens assets fontBatch race.players
-      match dynamicRaceState with
+      match race.raceState with
       | MidRace lastPlacing ->
         fontBatch.DoWithPointClamp
           (fun fb ->

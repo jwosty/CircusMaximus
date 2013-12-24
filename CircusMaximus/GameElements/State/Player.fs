@@ -105,7 +105,7 @@ module Player =
         None
 
   /// Returns an updated version of the given player model. Players are not given a placing here.
-  let next (input: PlayerInput) (player: Player) playerIndex collisionResults (racetrackCenter: Vector2) rand (assets: GameContent) =
+  let next (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand (assets: GameContent) =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = nextEffects player.effects
@@ -123,7 +123,7 @@ module Player =
     
     match player.motionState with
     | Moving velocity ->
-      let snd = assets.ChariotSound.[playerIndex]
+      let snd = assets.ChariotSound.[player.index - 1]
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
