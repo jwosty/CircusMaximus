@@ -22,7 +22,7 @@ type Player =
   { motionState: MotionState
     finishState: FinishState
     bounds: PlayerShape
-    index: int
+    number: int
     age: float
     turns: int
     lastTurnedLeft: bool
@@ -42,6 +42,14 @@ type Player =
 module Player =
   let numPlayers = 5
   let tauntTime = 750
+
+  let init (bounds: PlayerShape) number =
+    { motionState = Moving(0.); finishState = Racing; tauntState = None
+      bounds = bounds; number = number; age = 0.; effects = [];
+      intersectingLines = [false; false; false; false]
+      turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
+      particles = []
+      lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
 
   let getBB (player: Player) = BoundingPolygon(player.bounds)
 
@@ -123,7 +131,7 @@ module Player =
     
     match player.motionState with
     | Moving velocity ->
-      let snd = assets.ChariotSound.[player.index - 1]
+      let snd = assets.ChariotSound.[player.number - 1]
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
@@ -138,10 +146,11 @@ module Player =
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
           
-          { motionState = Moving(((player.velocity * 128.) + input.power) / 129.0); finishState = player.finishState
-            bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
-            index = player.index; turns = turns; age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
-            tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults }
+          { player with
+              motionState = Moving(((player.velocity * 128.) + input.power) / 129.0)
+              bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
+              age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
+              tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults }
     | Crashed ->
       { player with
           tauntState = tauntState;

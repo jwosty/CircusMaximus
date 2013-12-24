@@ -27,13 +27,6 @@ module Race =
   let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
   
   let init () =
-    let initPlayer (bounds: PlayerShape) index =
-      { motionState = Moving(0.); finishState = Racing; tauntState = None
-        bounds = bounds; index = index + 1; age = 0.; effects = [];
-        intersectingLines = [false; false; false; false]
-        turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
-        particles = []
-        lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
     let x = 820.0f
     { raceState = PreRace
       players =
@@ -43,7 +36,7 @@ module Race =
           x, 1160.0f;
           x, 1370.0f;
           x, 1580.0f;
-        ] |> List.mapi (fun i (x, y) -> initPlayer (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) i)
+        ] |> List.mapi (fun i (x, y) -> Player.init (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) (i + 1))
       timer = 0 }
   
   /// Finishes players that made the last lap
@@ -61,12 +54,12 @@ module Race =
   let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand assets player collisionResult =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player =
-      if player.index = 1 then
+      if player.number = 1 then
         Player.next
           (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
           player collision Racetrack.center rand assets
       else
-        let lastGamepad, gamepad = lastGamepads.[player.index - 2], gamepads.[player.index - 2]
+        let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         Player.next
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
           player collision Racetrack.center rand assets
@@ -108,7 +101,7 @@ module Race =
                 let player, newLastPlacing = nextPlayerFinish lastPlacing player
                 i - 1, (player :: players), newLastPlacing)
               race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
-          if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congradulate the player for finishing in the top 3
+          if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congratulate the player for finishing in the top 3
           
           // The race is over as soon as the last player finishes
           if lastPlacing = players.Length

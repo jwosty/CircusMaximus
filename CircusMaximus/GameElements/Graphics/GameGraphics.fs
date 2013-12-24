@@ -16,7 +16,7 @@ let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.
       3.f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
   match player.motionState with
   | Moving velocity ->
-    drawString ("Histrio " + (player.index |> toRoman)) 0. Color.White
+    drawString ("Histrio " + (player.number |> toRoman)) 0. Color.White
     drawString ("Flexus: " + (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman)) 1. Color.White
     match player.finishState with
     | Finished placing ->
