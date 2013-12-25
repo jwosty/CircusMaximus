@@ -5,10 +5,10 @@ open Microsoft.Xna.Framework
 /// A descriminated union of all the possible states a sound can be in. Why should only game objects get an
 /// abstract, immutable state?
 type SoundState =
-  Playing | Paused | Stopped
+  Playing of int | Paused | Stopped
   override this.ToString() =
     match this with
-    | Playing -> "Playing"
+    | Playing times -> sprintf "Playing(times = %i)" times
     | Paused -> "Paused"
     | Stopped -> "Stopped"
 

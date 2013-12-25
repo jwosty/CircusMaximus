@@ -58,16 +58,22 @@ type GameWindow() as this =
   /// Load your graphics content.
   override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice Player.numPlayers
   
-  /// Updates an XNA sound to make sure it matches the given game sound state
-  member this.UpdateSound(singleGameSound, realSound: SoundEffectInstance) =
-    match singleGameSound with
-    | Playing when realSound.State <> Audio.SoundState.Playing ->
-      realSound.Play()
+  /// Updates an XNA sound to make sure it matches the given game sound state. Has side effects.
+  member this.UpdateSound(sound, realSound: SoundEffectInstance) =
+    match sound with
+    | Playing times when realSound.State <> Audio.SoundState.Playing ->
+      if times < 1 then
+        Stopped
+      else
+        realSound.Play()
+        Playing (times - 1)
     | Paused when realSound.State <> Audio.SoundState.Paused ->
       realSound.Pause()
+      Paused
     | Stopped when realSound.State <> Audio.SoundState.Stopped ->
       realSound.Stop()
-    | _ -> ()
+      Stopped
+    | _ -> sound
   
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
@@ -83,10 +89,15 @@ type GameWindow() as this =
     lastKeyboard <- keyboard
     lastGamepads <- gamepads
     
-    // Actually play, pause, or stop sounds if needed
-    game.gameSounds.Chariots
-      |> List.iteri (fun which soundState -> this.UpdateSound(soundState, assets.ChariotSound.[which]))
-    this.UpdateSound(game.gameSounds.CrowdCheer, assets.CrowdCheerSound)
+    // Play, pause, or stop sounds if needed
+    game <-
+      { game with
+          gameSounds =
+            { Chariots =
+                List.map2
+                  (fun sound realSound -> this.UpdateSound(sound, realSound))
+                  game.gameSounds.Chariots assets.ChariotSound
+              CrowdCheer = this.UpdateSound(game.gameSounds.CrowdCheer, assets.CrowdCheerSound) } }
 
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =

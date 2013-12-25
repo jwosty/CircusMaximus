@@ -21,7 +21,11 @@ type GameContent =
 module GameContentFunctions =
   let loadImage (content: ContentManager) img = content.Load<Texture2D>("images/" + img)
   let loadSound (content: ContentManager) snd = content.Load<SoundEffect>("sounds/" + snd)
-  let loadSoundInstance content snd = (loadSound content snd).CreateInstance()
+  let initSoundInstance (sound: SoundEffect) =
+    let instance = sound.CreateInstance()
+    instance.IsLooped <- false
+    instance
+  let loadSoundInstance content snd = snd |> (loadSound content) |> initSoundInstance
   
   let loadContent (content: ContentManager) graphicsDevice playerQuantity =
     let loadImage, loadSound, loadSoundInstance = loadImage content, loadSound content, loadSoundInstance content
@@ -41,6 +45,6 @@ module GameContentFunctions =
       
       ChariotSound =
         let snd = loadSound "chariot"
-        List.init playerQuantity (fun _ -> snd.CreateInstance())
+        List.init playerQuantity (fun _ -> initSoundInstance snd)
       CrowdCheerSound = loadSoundInstance "cheer1"
     }

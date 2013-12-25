@@ -104,7 +104,7 @@ module Race =
           //if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congratulate the player for finishing in the top 3
           let newGameSound =
             if oldLastPlacing <> lastPlacing || race.timer = 0   // Congratulate the player for finishing in the top 3, or cheer to start off the race
-            then { gameSound with CrowdCheer = Playing }
+            then { gameSound with CrowdCheer = Playing 1 }
             else gameSound
           // The race is over as soon as the last player finishes
           if lastPlacing = players.Length
