@@ -67,6 +67,9 @@ type GameWindow() as this =
       else
         realSound.Play()
         Playing (times - 1)
+    | Looping when realSound.State <> Audio.SoundState.Playing ->
+      realSound.Play()
+      Looping
     | Paused when realSound.State <> Audio.SoundState.Paused ->
       realSound.Pause()
       Paused
