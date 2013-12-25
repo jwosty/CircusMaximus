@@ -103,6 +103,7 @@
     <Compile Include="Collision\Shapes\RacetrackShape.fs" />
     <Compile Include="Collision\Collision.fs" />
     <Compile Include="GameElements\GameContent.fs" />
+    <Compile Include="GameElements\Sound.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
     <Compile Include="GameElements\State\Input.fs" />

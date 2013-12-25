@@ -53,18 +53,18 @@ module Race =
         player, lastPlacing
     | Finished _ -> player, lastPlacing
   
-  let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand assets player collisionResult =
+  let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand player collisionResult =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player =
       if player.number = 1 then
         Player.next
           (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player collision Racetrack.center rand assets
+          player collision Racetrack.center rand
       else
         let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         Player.next
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player collision Racetrack.center rand assets
+          player collision Racetrack.center rand
     player
   
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
@@ -77,22 +77,20 @@ module Race =
             |> List.reduce (fun totalEffects effects -> totalEffects @ effects)   // Collect each player's effects together
         {dst with effects = effects @ dst.effects})                               // Add the new effects to the players
   
-  let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand (assets: GameContent) =
-    let testDoCheer() = if race.timer = 0 then assets.CrowdCheerSound.Play() |> ignore
-    let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand assets
+  let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound =
+    let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
       if race.timer >= preRaceTicks then
-        {raceState = MidRace(0); players = race.players; timer = 0}
+        {raceState = MidRace(0); players = race.players; timer = 0}, gameSound
       else
-        {race with timer = race.timer + 1}
+        {race with timer = race.timer + 1}, gameSound
     
     | _ ->
-      testDoCheer()
       let playerCollisions = collideWorld race.players Racetrack.collisionBounds |> List.tail
       // "Dynamic" races require player updates, but player placings are only used before the race is over. These two conditions
       // mean that Player.next can't do placings, so we have to do it down there somewhere.
-      let raceState, players =
+      let raceState, players, newGameSound =
         match race.raceState with
         | MidRace oldLastPlacing ->
           let _, players, lastPlacing =
@@ -103,13 +101,16 @@ module Race =
                 let player, newLastPlacing = nextPlayerFinish lastPlacing player
                 i - 1, (player :: players), newLastPlacing)
               race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
-          if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congratulate the player for finishing in the top 3
-          
+          //if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congratulate the player for finishing in the top 3
+          let newGameSound =
+            if oldLastPlacing <> lastPlacing || race.timer = 0   // Congratulate the player for finishing in the top 3, or cheer to start off the race
+            then { gameSound with CrowdCheer = Playing }
+            else gameSound
           // The race is over as soon as the last player finishes
           if lastPlacing = players.Length
-            then PostRace, players
-            else MidRace(lastPlacing), players
+            then PostRace, players, newGameSound
+            else MidRace(lastPlacing), players, newGameSound
         // No player placings
-        | PostRace -> PostRace, List.map2 nextPlayer race.players playerCollisions
+        | PostRace -> PostRace, List.map2 nextPlayer race.players playerCollisions, gameSound
       let players = applyPlayerEffects players
-      {raceState = raceState; players = players; timer = race.timer + 1}
+      {raceState = raceState; players = players; timer = race.timer + 1}, newGameSound

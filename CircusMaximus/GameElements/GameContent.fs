@@ -15,15 +15,16 @@ type GameContent =
     Button: Texture2D
     
     ChariotSound: SoundEffectInstance list
-    CrowdCheerSound: SoundEffect }
+    CrowdCheerSound: SoundEffectInstance }
 
 [<AutoOpen>]
 module GameContentFunctions =
   let loadImage (content: ContentManager) img = content.Load<Texture2D>("images/" + img)
   let loadSound (content: ContentManager) snd = content.Load<SoundEffect>("sounds/" + snd)
-
+  let loadSoundInstance content snd = (loadSound content snd).CreateInstance()
+  
   let loadContent (content: ContentManager) graphicsDevice playerQuantity =
-    let loadImage, loadSound = loadImage content, loadSound content
+    let loadImage, loadSound, loadSoundInstance = loadImage content, loadSound content, loadSoundInstance content
     { Pixel =
         let pt = new Texture2D(graphicsDevice, 1, 1)
         pt.SetData([|Color.White|])
@@ -41,5 +42,5 @@ module GameContentFunctions =
       ChariotSound =
         let snd = loadSound "chariot"
         List.init playerQuantity (fun _ -> snd.CreateInstance())
-      CrowdCheerSound = loadSound "cheer1"
+      CrowdCheerSound = loadSoundInstance "cheer1"
     }

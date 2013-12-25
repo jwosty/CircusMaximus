@@ -58,17 +58,35 @@ type GameWindow() as this =
   /// Load your graphics content.
   override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice Player.numPlayers
   
+  /// Updates an XNA sound to make sure it matches the given game sound state
+  member this.UpdateSound(singleGameSound, realSound: SoundEffectInstance) =
+    match singleGameSound with
+    | Playing when realSound.State <> Audio.SoundState.Playing ->
+      realSound.Play()
+    | Paused when realSound.State <> Audio.SoundState.Paused ->
+      realSound.Pause()
+    | Stopped when realSound.State <> Audio.SoundState.Stopped ->
+      realSound.Stop()
+    | _ -> ()
+  
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update(gameTime)
     let mouse, keyboard, gamepads = Mouse.GetState(), Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
-    match Game.next game (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) assets with
+    // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
+    match Game.next game (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) with
     | Some newState -> (game <- newState)
     | None -> this.Exit()
+    
     lastMouse <- mouse
     lastKeyboard <- keyboard
     lastGamepads <- gamepads
+    
+    // Actually play, pause, or stop sounds if needed
+    game.gameSounds.Chariots
+      |> List.iteri (fun which soundState -> this.UpdateSound(soundState, assets.ChariotSound.[which]))
+    this.UpdateSound(game.gameSounds.CrowdCheer, assets.CrowdCheerSound)
 
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =
