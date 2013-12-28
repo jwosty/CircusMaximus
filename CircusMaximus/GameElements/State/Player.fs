@@ -30,19 +30,19 @@ type Player =
     effects: (Effect * Duration) list
     particles: BoundParticle list
     intersectingLines: bool list }
-
+  
   member this.position = this.bounds.Center
   /// Player direction, in radians
   member this.direction = this.bounds.Direction
   member this.velocity = match this.motionState with | Moving v -> v | Crashed -> 0.
   member this.collisionBox = BoundingPolygon(this.bounds)
   member this.finished = match this.finishState with | Racing -> false | _ -> true
-
+  
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Player =
   let numPlayers = 5
   let tauntTime = 750
-
+  
   let init (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
       bounds = bounds; number = number; age = 0.; effects = [];
@@ -50,9 +50,9 @@ module Player =
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       particles = []
       lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
-
+  
   let getBB (player: Player) = BoundingPolygon(player.bounds)
-
+  
   /// Returns the new effects that the source player imposes on the destination player
   let applyEffects (source: Player) (destination: Player) =
     match source.tauntState with
@@ -61,28 +61,28 @@ module Player =
       then [Effect.Taunt, tauntTime]    // Source player has just started taunting, so create one new effect
       else []                           // Source player has already been taunting, so nothing new
     | _ -> []                           // Source player isn't taunting, so nothing new
-
+  
   let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
     if lastTurnedLeft && position.X > center.X then
       lastPosition.Y > center.Y && position.Y < center.Y
     elif (not lastTurnedLeft) && position.X < center.X then
       lastPosition.Y < center.Y && position.Y > center.Y
     else false
-
+  
   let justFinished (oldPlayer: Player) (player: Player) = (not oldPlayer.finished) && player.finished
-
+  
   /// Finds the effect that matches the given effect, using the one with the greatest remaining duration
   let findLongestEffect (effects: (Effect * Duration) list) key =
     let effects = List.filter (fun (e, _) -> e = key) effects
     match effects with
     | [] -> None
     | _ -> Some(List.maxBy snd effects)
-
+  
   let nextEffects (effects: (Effect * Duration) list) =
     effects
       |> List.map (fun (e, d) -> e, d - 1)
       |> List.filter (fun (_, d) -> d > 0)
-
+  
   /// Returns the next position and direction of the player and change in direction
   let nextPositionDirection (player: Player) Δdirection =
     let Δdirection =
@@ -91,14 +91,14 @@ module Player =
       | Some _ -> Δdirection * 0.75
       | None -> Δdirection
     positionForward player.position player.direction player.velocity, player.direction + Δdirection
-
+  
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
-  let nextLaps racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
+  let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
     if isPassingTurnLine racetrackCenter player.lastTurnedLeft player.position nextPosition || input.advanceLap then
       player.turns + 1, not player.lastTurnedLeft
     else
       player.turns, player.lastTurnedLeft
-
+  
   /// Returns a new taunt if needed, otherwise none
   let nextTauntState expectingTaunt rand = function
     | Some(taunt, tauntTimer) ->
@@ -111,7 +111,7 @@ module Player =
         Some(Taunt.pickTaunt rand, tauntTime)
       else
         None
-
+  
   /// Returns an updated version of the given player model. Players are not given a placing here.
   let next (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
@@ -141,12 +141,12 @@ module Player =
             then Looping
             else Paused
           let position, direction = nextPositionDirection player input.turn
-          let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
+          let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
           
           { player with
               motionState = Moving(((player.velocity * 128.) + input.power) / 129.0)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
-              age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
+              age = player.age + 1.; turns = turns; lastTurnedLeft = lastTurnedLeft
               tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults },
             if player.velocity >= 3.
             then Looping

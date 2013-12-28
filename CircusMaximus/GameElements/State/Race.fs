@@ -76,23 +76,24 @@ module Race =
             |> List.reduce (fun totalEffects effects -> totalEffects @ effects)   // Collect each player's effects together
         {dst with effects = effects @ dst.effects})                               // Add the new effects to the players
   
-  let nextPlayers =
-    let rec nextPlayers updatedPlayers updatedChariotSounds
+  let nextPlayers playerMapper latestPlacing playerCollisions playerChariotSounds players =
+    let rec nextPlayers updatedPlayers lastPlacing updatedChariotSounds
                         (nextPlayerFunction: Collision.CollisionResult -> SoundState -> Player -> Player * SoundState)
                         playerCollisions playerChariotSounds players =
-      
       match playerCollisions, playerChariotSounds, players with
       | playerCollision :: restPlayerCollisions,
         playerChariotSound :: restPlayerChariotSounds,
         player :: restPlayers ->
-          let nextPlayer, nextPlayerChariotSound = nextPlayerFunction playerCollision playerChariotSound player
+          let player, nextPlayerChariotSound = nextPlayerFunction playerCollision playerChariotSound player
+          let player, lastPlacing = nextPlayerFinish lastPlacing player
           nextPlayers
-            (updatedPlayers @ [nextPlayer]) (updatedChariotSounds @ [nextPlayerChariotSound])
+            (updatedPlayers @ [player]) lastPlacing (updatedChariotSounds @ [nextPlayerChariotSound])
             nextPlayerFunction restPlayerCollisions restPlayerChariotSounds restPlayers
-      | [], [], [] -> updatedPlayers, updatedChariotSounds
+      | [], [], [] -> updatedPlayers, lastPlacing, updatedChariotSounds
       | _ -> raise (new ArgumentException("The lists had different lengths."))
     
-    nextPlayers [] []
+    // Not curried because it gives an ugly function signature
+    nextPlayers [] latestPlacing [] playerMapper playerCollisions playerChariotSounds players
   
   let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
@@ -112,8 +113,8 @@ module Race =
       let raceState, players, newGameSound =
         match race.raceState with
         | MidRace oldLastPlacing ->
-          let players, playerChariotSounds =
-            nextPlayers nextPlayer playerCollisions gameSound.Chariots race.players
+          let players, latestPlacing, playerChariotSounds =
+            nextPlayers nextPlayer oldLastPlacing playerCollisions gameSound.Chariots race.players
             // Acts as a simeltanious map and fold (map for player updating, fold for keeping track of the last placing)
             //List.foldBack2
             //  (fun player collision (i, players, lastPlacing) ->
@@ -123,17 +124,17 @@ module Race =
             //  race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           let newGameSound =
             { CrowdCheer =
-                if false//oldLastPlacing <> lastPlacing   // Congratulate the player for finishing in the top 3
+                if oldLastPlacing <> latestPlacing   // Congratulate the player for finishing in the top 3
                 then Playing 1
                 else gameSound.CrowdCheer
               Chariots = playerChariotSounds }
           // The race is over as soon as the last player finishes
-          if false//lastPlacing = players.Length
+          if latestPlacing = players.Length
             then PostRace, players, newGameSound
             else MidRace(0), players, newGameSound
         // No player placings
         | PostRace ->
-          let players, chariotSounds = nextPlayers nextPlayer playerCollisions gameSound.Chariots race.players
+          let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
           PostRace, players, { gameSound with Chariots = chariotSounds }
       let players = applyPlayerEffects players
       {raceState = raceState; players = players; timer = race.timer + 1}, newGameSound
