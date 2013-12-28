@@ -1,7 +1,6 @@
 namespace CircusMaximus.State
 open System
 open Microsoft.Xna.Framework
-open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
 open CircusMaximus.HelperFunctions
@@ -53,19 +52,19 @@ module Race =
         player, lastPlacing
     | Finished _ -> player, lastPlacing
   
-  let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand player collisionResult =
+  let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
-    let player =
+    let player, playerChariotSound =
       if player.number = 1 then
         Player.next
           (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player collision Racetrack.center rand
+          player collision Racetrack.center rand playerChariotSound
       else
         let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         Player.next
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player collision Racetrack.center rand
-    player
+          player collision Racetrack.center rand playerChariotSound
+    player, playerChariotSound
   
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
   let applyPlayerEffects players =
@@ -77,14 +76,32 @@ module Race =
             |> List.reduce (fun totalEffects effects -> totalEffects @ effects)   // Collect each player's effects together
         {dst with effects = effects @ dst.effects})                               // Add the new effects to the players
   
+  let nextPlayers =
+    let rec nextPlayers updatedPlayers updatedChariotSounds
+                        (nextPlayerFunction: Collision.CollisionResult -> SoundState -> Player -> Player * SoundState)
+                        playerCollisions playerChariotSounds players =
+      
+      match playerCollisions, playerChariotSounds, players with
+      | playerCollision :: restPlayerCollisions,
+        playerChariotSound :: restPlayerChariotSounds,
+        player :: restPlayers ->
+          let nextPlayer, nextPlayerChariotSound = nextPlayerFunction playerCollision playerChariotSound player
+          nextPlayers
+            (updatedPlayers @ [nextPlayer]) (updatedChariotSounds @ [nextPlayerChariotSound])
+            nextPlayerFunction restPlayerCollisions restPlayerChariotSounds restPlayers
+      | [], [], [] -> updatedPlayers, updatedChariotSounds
+      | _ -> raise (new ArgumentException("The lists had different lengths."))
+    
+    nextPlayers [] []
+  
   let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
       if race.timer >= preRaceTicks then
-        {raceState = MidRace(0); players = race.players; timer = 0}, gameSound
+        { raceState = MidRace(0); players = race.players; timer = 0 }, { gameSound with CrowdCheer = Playing 1 }
       else
-        {race with timer = race.timer + 1}, gameSound
+        { race with timer = race.timer + 1 }, gameSound
     
     | _ ->
       let playerCollisions = collideWorld race.players Racetrack.collisionBounds |> List.tail
@@ -93,24 +110,28 @@ module Race =
       let raceState, players, newGameSound =
         match race.raceState with
         | MidRace oldLastPlacing ->
-          let _, players, lastPlacing =
+          let players, playerChariotSounds =
+            nextPlayers nextPlayer playerCollisions gameSound.Chariots race.players
             // Acts as a simeltanious map and fold (map for player updating, fold for keeping track of the last placing)
-            List.foldBack2
-              (fun player collision (i, players, lastPlacing) ->
-                let player = nextPlayer player collision
-                let player, newLastPlacing = nextPlayerFinish lastPlacing player
-                i - 1, (player :: players), newLastPlacing)
-              race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
+            //List.foldBack2
+            //  (fun player collision (i, players, lastPlacing) ->
+            //    let player = nextPlayer player collision
+            //    let player, newLastPlacing = nextPlayerFinish lastPlacing player
+            //    i - 1, (player :: players), newLastPlacing)
+            //  race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           //if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congratulate the player for finishing in the top 3
           let newGameSound =
-            if oldLastPlacing <> lastPlacing || race.timer = 0   // Congratulate the player for finishing in the top 3, or cheer to start off the race
-            then { gameSound with CrowdCheer = Playing 1 }
+            if false//oldLastPlacing <> lastPlacing || race.timer = 0   // Congratulate the player for finishing in the top 3, or cheer to start off the race
+            then {  CrowdCheer = Playing 1
+                    Chariots = playerChariotSounds }
             else gameSound
           // The race is over as soon as the last player finishes
-          if lastPlacing = players.Length
+          if false//lastPlacing = players.Length
             then PostRace, players, newGameSound
-            else MidRace(lastPlacing), players, newGameSound
+            else MidRace(0), players, newGameSound
         // No player placings
-        | PostRace -> PostRace, List.map2 nextPlayer race.players playerCollisions, gameSound
+        | PostRace ->
+          let players, chariotSounds = nextPlayers nextPlayer playerCollisions gameSound.Chariots race.players
+          PostRace, players, { gameSound with Chariots = chariotSounds }
       let players = applyPlayerEffects players
       {raceState = raceState; players = players; timer = race.timer + 1}, newGameSound

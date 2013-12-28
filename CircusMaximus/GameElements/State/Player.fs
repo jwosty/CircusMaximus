@@ -113,7 +113,7 @@ module Player =
         None
 
   /// Returns an updated version of the given player model. Players are not given a placing here.
-  let next (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand =
+  let next (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = nextEffects player.effects
@@ -131,19 +131,15 @@ module Player =
     
     match player.motionState with
     | Moving velocity ->
-      //let snd = assets.ChariotSound.[player.number - 1]
-      //let snd = Sound.Chariot(player.number - 1)
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
-          //SoundAction(Stop, snd)
-          { player with motionState = Crashed }
+          { player with motionState = Crashed }, Stopped
         | _ ->
-          //if (player.velocity >= 3.) && (snd.State <> SoundState.Playing) then
-            //snd.Resume()
-          //if (player.velocity < 3.) && (snd.State = SoundState.Playing) then
-            //snd.Pause()
-          
+          let chariotSound =
+            if (player.velocity >= 3.)
+            then Looping
+            else Paused
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextLaps racetrackCenter input player position
           
@@ -151,9 +147,12 @@ module Player =
               motionState = Moving(((player.velocity * 128.) + input.power) / 129.0)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
               age = player.age + 1.; lastTurnedLeft = lastTurnedLeft
-              tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults }
+              tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults },
+            if player.velocity >= 3.
+            then Looping
+            else Paused
     | Crashed ->
       { player with
           tauntState = tauntState;
           effects = effects;
-          particles = particles }
+          particles = particles }, playerChariotSound

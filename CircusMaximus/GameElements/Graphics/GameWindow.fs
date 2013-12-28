@@ -106,6 +106,6 @@ type GameWindow() as this =
   override this.Draw(gameTime:GameTime) =
     // Since the borders btwn the player screens are merely trimmed edges, they show through to the
     // background and become whatever color the screen is cleared with
-    graphics.GraphicsDevice.Clear (Color.Black)
+    //graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw(gameTime)
     GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch game
