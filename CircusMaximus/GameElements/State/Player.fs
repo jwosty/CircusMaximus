@@ -107,10 +107,9 @@ module Player =
       else
         None
     | None ->
-      if expectingTaunt then
-        Some(Taunt.pickTaunt rand, tauntTime)
-      else
-        None
+      if expectingTaunt
+      then Some(Taunt.pickTaunt rand, tauntTime)
+      else None
   
   /// Returns an updated version of the given player model. Players are not given a placing here.
   let next (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
