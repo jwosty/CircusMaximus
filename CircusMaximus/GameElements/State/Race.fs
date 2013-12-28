@@ -115,13 +115,6 @@ module Race =
         | MidRace oldLastPlacing ->
           let players, latestPlacing, playerChariotSounds =
             nextPlayers nextPlayer oldLastPlacing playerCollisions gameSound.Chariots race.players
-            // Acts as a simeltanious map and fold (map for player updating, fold for keeping track of the last placing)
-            //List.foldBack2
-            //  (fun player collision (i, players, lastPlacing) ->
-            //    let player = nextPlayer player collision
-            //    let player, newLastPlacing = nextPlayerFinish lastPlacing player
-            //    i - 1, (player :: players), newLastPlacing)
-            //  race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
           let newGameSound =
             { CrowdCheer =
                 if oldLastPlacing <> latestPlacing   // Congratulate the player for finishing in the top 3
