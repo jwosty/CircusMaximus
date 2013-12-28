@@ -99,9 +99,11 @@ module Race =
     match race.raceState with
     | PreRace ->
       if race.timer >= preRaceTicks then
-        { raceState = MidRace(0); players = race.players; timer = 0 }, { gameSound with CrowdCheer = Playing 1 }
+        { raceState = MidRace(0); players = race.players; timer = 0 },  // Begin the race when it's time
+        { gameSound with CrowdCheer = Playing 1 }   // The crowd gets exited when the race begins
       else
-        { race with timer = race.timer + 1 }, gameSound
+        { race with timer = race.timer + 1 },   // Simply increment the timer until the race starts
+        gameSound   // No sounds here
     
     | _ ->
       let playerCollisions = collideWorld race.players Racetrack.collisionBounds |> List.tail
@@ -119,12 +121,12 @@ module Race =
             //    let player, newLastPlacing = nextPlayerFinish lastPlacing player
             //    i - 1, (player :: players), newLastPlacing)
             //  race.players playerCollisions (race.players.Length - 1, [], oldLastPlacing)
-          //if oldLastPlacing <> lastPlacing then assets.CrowdCheerSound.Play() |> ignore // Congratulate the player for finishing in the top 3
           let newGameSound =
-            if false//oldLastPlacing <> lastPlacing || race.timer = 0   // Congratulate the player for finishing in the top 3, or cheer to start off the race
-            then {  CrowdCheer = Playing 1
-                    Chariots = playerChariotSounds }
-            else gameSound
+            { CrowdCheer =
+                if false//oldLastPlacing <> lastPlacing   // Congratulate the player for finishing in the top 3
+                then Playing 1
+                else gameSound.CrowdCheer
+              Chariots = playerChariotSounds }
           // The race is over as soon as the last player finishes
           if false//lastPlacing = players.Length
             then PostRace, players, newGameSound
