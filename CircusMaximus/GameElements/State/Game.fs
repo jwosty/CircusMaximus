@@ -25,8 +25,7 @@ module Game =
           MainMenu(
             Button.initCenter
               (windowDimensions * (0.5 @@ 0.5))
-              (512, 64)
-              "Play"))
+              Button.defaultButtonSize "Play"))
       rand = rand
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
       gameSounds = GameSounds.allStopped Player.numPlayers }
@@ -51,7 +50,7 @@ module Game =
           let playerData =
             // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
             match oldRace.raceState, race.raceState with
-            | MidRace _, PostRace ->
+            | MidRace _, PostRace _ ->
               // Transform all players' data to reward them if they did well
               game.playerData |>
                 List.map (fun playerData ->
@@ -70,7 +69,7 @@ module Game =
                 gameSounds = gameSounds }
           
           match race.raceState, race.timer with
-          | PostRace, 0 -> ()
+          | PostRace _, 0 -> ()
           | _ -> ()
           game
       Some(game)

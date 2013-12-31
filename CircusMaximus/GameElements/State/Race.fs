@@ -9,7 +9,7 @@ open CircusMaximus.Input
 
 type LastPlacing = int
 
-type RaceState = | PreRace | MidRace of LastPlacing | PostRace
+type RaceState = | PreRace | MidRace of LastPlacing | PostRace of Button
 
 type Race = { raceState: RaceState; players: Player list; timer: int }
 
@@ -30,7 +30,7 @@ module Race =
 
   let init () =
     let x = 820.0f
-    { raceState = PreRace
+    { raceState = PostRace(Button.initCenter (0 @@ 0) Button.defaultButtonSize "Continue")
       players =
         [
           x, 740.0f;
@@ -122,12 +122,13 @@ module Race =
                 else gameSound.CrowdCheer
               Chariots = playerChariotSounds }
           // The race is over as soon as the last player finishes
-          if latestPlacing = players.Length
-            then PostRace, players, newGameSound
-            else MidRace(0), players, newGameSound
+          if latestPlacing = players.Length then
+            let continueButton = Button.initCenter (100 @@ 50) Button.defaultButtonSize "Continue"
+            PostRace(continueButton), players, newGameSound
+          else MidRace(0), players, newGameSound
         // No player placings
-        | PostRace ->
+        | PostRace continueButton ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
-          PostRace, players, { gameSound with Chariots = chariotSounds }
+          PostRace(continueButton), players, { gameSound with Chariots = chariotSounds }
       let players = applyPlayerEffects players
       { raceState = raceState; players = players; timer = race.timer + 1 }, newGameSound

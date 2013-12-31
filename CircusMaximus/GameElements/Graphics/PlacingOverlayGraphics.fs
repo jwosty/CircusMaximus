@@ -7,6 +7,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.State
 
+/// Draws the play placing overlay. Does not call (but needs) SpriteBatch.Begin and SpriteBatch.End
 let drawOverlay (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (screenWidth, screenHeight) (assets: GameContent) players =
   let padding = 16
   let spacing = float (screenHeight / (List.length players + padding))
@@ -16,11 +17,9 @@ let drawOverlay (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (screenWidt
     |> List.iteri
       (fun i player ->
         let center = (screenWidth / 2) @@ (spacing * (float i + (float padding * 0.5)))
-        generalBatch.DoBasic (fun generalBatch -> generalBatch.DrawCentered(assets.PlacingBackground, center - (0 @@ 3), new Color(Color.White, 255)))
-        fontBatch.DoWithPointClamp
-          (fun fontBatch ->
-            let str = "Locus " + (player |> placing |> toRoman) + ":      Histrio " + (player.number |> toRoman)
-            FlatSpriteFont.drawString
-              assets.Font fontBatch str center 4.0f
-              (player |> placing |> placingColor)
-              (FlatSpriteFont.Alignment.Center, FlatSpriteFont.Alignment.Center)))
+        generalBatch.DrawCentered(assets.PlacingBackground, center - (0 @@ 3), new Color(Color.White, 255))
+        let str = "Locus " + (player |> placing |> toRoman) + ":      Histrio " + (player.number |> toRoman)
+        FlatSpriteFont.drawString
+          assets.Font fontBatch str center 4.0f
+          (player |> placing |> placingColor)
+          (FlatSpriteFont.Alignment.Center, FlatSpriteFont.Alignment.Center))

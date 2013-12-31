@@ -20,6 +20,8 @@ type Button =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Button =
+  let defaultButtonSize = 512, 64
+  
   let init position (width, height) label =
     { position = position
       width = width; height = height
