@@ -47,7 +47,7 @@ module Race =
     match player.finishState with
     | Racing ->
       if player.turns >= maxTurns then
-        {player with finishState = Finished(lastPlacing + 1)}, lastPlacing + 1
+        { player with finishState = Finished(lastPlacing + 1) }, lastPlacing + 1
       else
         player, lastPlacing
     | Finished _ -> player, lastPlacing
@@ -74,7 +74,7 @@ module Race =
           players
             |> List.map (fun src -> Player.applyEffects src dst)                  // Calculate player effects between each other
             |> List.reduce (fun totalEffects effects -> totalEffects @ effects)   // Collect each player's effects together
-        {dst with effects = effects @ dst.effects})                               // Add the new effects to the players
+        { dst with effects = effects @ dst.effects })                             // Add the new effects to the players
   
   let nextPlayers playerMapper latestPlacing playerCollisions playerChariotSounds players =
     let rec nextPlayers updatedPlayers lastPlacing updatedChariotSounds
@@ -130,4 +130,4 @@ module Race =
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
           PostRace, players, { gameSound with Chariots = chariotSounds }
       let players = applyPlayerEffects players
-      {raceState = raceState; players = players; timer = race.timer + 1}, newGameSound
+      { raceState = raceState; players = players; timer = race.timer + 1 }, newGameSound

@@ -43,8 +43,8 @@ module Game =
           // ready to start the game
           let screenOrExit = Screen.next oldScreen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepad)
           match screenOrExit with
-          | Some(screen) -> {game with gameState = Screen(screen)}
-          | None -> {game with gameState = Race(Race.init ())}
+          | Some(screen) -> { game with gameState = Screen(screen) }
+          | None -> { game with gameState = Race(Race.init ()) }
         
         | Race oldRace ->
           let race, gameSounds = Race.next oldRace (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds
