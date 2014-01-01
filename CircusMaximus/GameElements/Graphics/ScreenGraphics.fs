@@ -10,4 +10,9 @@ open CircusMaximus.State
 
 let draw screen (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) assets =
   match screen with
-  | MainMenu playButton -> fontBatch.DoWithPointClamp (fun fb -> generalBatch.DoBasic (fun gb -> ButtonGraphics.draw fb gb playButton assets))
+  | MainMenu(playButton, quitButton) ->
+    fontBatch.DoWithPointClamp
+      (fun fb ->
+        generalBatch.DoBasic (fun gb ->
+          ButtonGraphics.draw fb gb playButton assets
+          ButtonGraphics.draw fb gb quitButton assets))

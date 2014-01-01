@@ -7,19 +7,23 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
 type Screen =
-  | MainMenu of Button  // For now, the main menu only has a single button, the play button
+  /// Two buttons: Principio (play) and Desero (quit)
+  | MainMenu of Button * Button
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Screen =
   let initMainMenu (settings: GameSettings) =
     MainMenu(
       Button.initCenter
-        (settings.windowDimensions * (0.5 @@ 0.5))
-        Button.defaultButtonSize "Play")
+        (settings.windowDimensions * (0.5 @@ 0.333))
+        Button.defaultButtonSize "Principio",
+      Button.initCenter
+        (settings.windowDimensions * (0.5 @@ 0.666))
+        Button.defaultButtonSize "Desero")
   
   let next screen (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) =
     match screen with
-    | MainMenu playButton ->
+    | MainMenu(playButton, quitButton) ->
       match playButton.buttonState with
       | Releasing -> None
-      | _ -> Some(MainMenu(Button.next playButton mouse))
+      | _ -> Some(MainMenu(Button.next playButton mouse, Button.next quitButton mouse))
