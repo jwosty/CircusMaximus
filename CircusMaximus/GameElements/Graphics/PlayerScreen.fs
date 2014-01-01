@@ -8,7 +8,13 @@ type PlayerScreen = SpriteBatch * Rectangle
 
 let rasterizerState = new RasterizerState(ScissorTestEnable = true)
 
-// Compute a rectangle for a single screen
+/// Creates a translation matrix for a player and a clipping rectangle to produce scrolling
+let createPlayerTranslationMatrix (player: Player) (playerScreenRect: Rectangle) =
+  Matrix.CreateTranslation(
+    float32 playerScreenRect.X + (float32 playerScreenRect.Width / 2.0f) - player.position.X,
+    float32 playerScreenRect.Y + (float32 playerScreenRect.Height / 2.0f) - player.position.Y, 0.0f)
+
+// Computes a rectangle for a single screen
 let screenBounds (screenWidth, screenHeight) border (row, column) =
   // Determine how many screens will be in this row
   // If you think about it, the screen arrangement is actually a pyramid (granted, only the top two rows)
@@ -62,19 +68,22 @@ let createScreen graphics playerNumber =
 // Returns a list of player screens
 let createScreens graphics quantity = List.init quantity (createScreen graphics)
 
+let beginScrollClipSpriteBatch (sb: SpriteBatch) samplerState player rect =
+  sb.Begin(
+    SpriteSortMode.Immediate, BlendState.AlphaBlend,
+    samplerState, null, rasterizerState, null,
+    createPlayerTranslationMatrix player rect)
+
 // Draw a single player's screen
-let drawSingle drawPredicate playerNumber (player: Player) (screen: PlayerScreen) =
+let drawSingle drawPredicate movingFontBatch playerNumber (player: Player) (screen: PlayerScreen) =
   let sb, rect = screen
   let sr = sb.GraphicsDevice.ScissorRectangle
-  sb.Begin(
-    SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, rasterizerState, null,
-    // Use a simple translation matrix based on the player's position to produce scrolling
-    Matrix.CreateTranslation(
-      float32 rect.X + (float32 rect.Width / 2.0f) - player.position.X,
-      float32 rect.Y + (float32 rect.Height / 2.0f) - player.position.Y, 0.0f))
+  beginScrollClipSpriteBatch sb null player rect
+  beginScrollClipSpriteBatch movingFontBatch SamplerState.PointClamp player rect
   // Cuts off anything outside the screen's bounds, thus stopping screens from drawing on top of each other
   sb.GraphicsDevice.ScissorRectangle <- rect
   // Call the custom drawing code
   drawPredicate(playerNumber, screen)
   sb.End()
+  movingFontBatch.End()
   sb.GraphicsDevice.ScissorRectangle <- sr

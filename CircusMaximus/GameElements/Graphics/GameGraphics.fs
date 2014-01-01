@@ -26,22 +26,21 @@ let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.
     | Racing -> ()
   | Crashed -> ()
 
-let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets fontBatch players mainPlayer =
+let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets (fontBatch: SpriteBatch) players mainPlayer =
   for x in 0..9 do
     for y in 0..2 do
       Racetrack.drawSingle sb assets.RacetrackTextures.[x, y] x y
   #if DEBUG
   Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
   #endif
-  List.iteri (fun i player -> PlayerGraphics.drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch) players
+  List.iteri
+    (fun i player -> PlayerGraphics.drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch)
+    players
 
 let drawScreens playerScreens assets (fontBatch: SpriteBatch) players =
-  fontBatch.DoWithPointClamp
-    (fun fb ->
-      List.iteri2
-        (PlayerScreen.drawSingle
-          (fun (p, s) -> drawWorld s assets fontBatch players p))
-          players playerScreens)
+  List.iteri2
+    (PlayerScreen.drawSingle (fun (p, s) -> drawWorld s assets fontBatch players p) fontBatch)
+    players playerScreens
 
 /// Draw a game state
 let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (game: Game) =
