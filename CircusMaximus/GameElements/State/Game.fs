@@ -13,19 +13,22 @@ type GameState =
 /// Holds the state of the entire game
 type Game =
     { gameState: GameState
+      settings: GameSettings
       rand: Random
       playerData: PlayerData list
       gameSounds: GameSounds }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
-  let init rand windowDimensions =
+  let init rand startingWindowDimensions =
+    let settings = { windowDimensions = startingWindowDimensions }
     { gameState =
         Screen(
           MainMenu(
             Button.initCenter
-              (windowDimensions * (0.5 @@ 0.5))
+              (settings.windowDimensions * (0.5 @@ 0.5))
               Button.defaultButtonSize "Play"))
+      settings = settings
       rand = rand
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
       gameSounds = GameSounds.allStopped Player.numPlayers }
@@ -43,10 +46,10 @@ module Game =
           let screenOrExit = Screen.next oldScreen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepad)
           match screenOrExit with
           | Some(screen) -> { game with gameState = Screen(screen) }
-          | None -> { game with gameState = Race(Race.init ()) }
+          | None -> { game with gameState = Race(Race.init game.settings) }
         
         | Race oldRace ->
-          let race, gameSounds = Race.next oldRace (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds
+          let race, gameSounds = Race.next oldRace (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds game.settings
           let playerData =
             // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
             match oldRace.raceState, race.raceState with

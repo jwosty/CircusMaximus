@@ -107,6 +107,7 @@
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
     <Compile Include="GameElements\State\Input.fs" />
+    <Compile Include="GameElements\State\GameSettings.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
     <Compile Include="GameElements\State\PlayerData.fs" />

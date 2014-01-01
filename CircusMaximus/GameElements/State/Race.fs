@@ -27,10 +27,13 @@ module Race =
   
   /// Finishes players that made the last lap
   let maxTurns = 13
-
-  let init () =
+  
+  let initPostRaceState defaultButtonSize (settings: GameSettings) =
+    PostRace(Button.initCenter (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y * 0.1f) defaultButtonSize "Continue")
+  
+  let init settings =
     let x = 820.0f
-    { raceState = PostRace(Button.initCenter (0 @@ 0) Button.defaultButtonSize "Continue")
+    { raceState = PreRace
       players =
         [
           x, 740.0f;
@@ -95,7 +98,7 @@ module Race =
     // Not curried because it gives an ugly function signature
     nextPlayers [] latestPlacing [] playerMapper playerCollisions playerChariotSounds players
   
-  let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound =
+  let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound (settings: GameSettings) =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
@@ -122,9 +125,8 @@ module Race =
                 else gameSound.CrowdCheer
               Chariots = playerChariotSounds }
           // The race is over as soon as the last player finishes
-          if latestPlacing = players.Length then
-            let continueButton = Button.initCenter (100 @@ 50) Button.defaultButtonSize "Continue"
-            PostRace(continueButton), players, newGameSound
+          if latestPlacing = players.Length
+          then initPostRaceState Button.defaultButtonSize settings, players, newGameSound
           else MidRace(0), players, newGameSound
         // No player placings
         | PostRace continueButton ->
