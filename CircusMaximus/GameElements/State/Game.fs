@@ -29,22 +29,21 @@ module Game =
       gameSounds = GameSounds.allStopped Player.numPlayers }
   
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
-  let next (game: Game) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) =
+  let next (game: Game) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
     if keyboard.IsKeyDown(Keys.Escape) then
       None  // Indicate that we want to exit
     else
       let game =  
         match game.gameState with
-        | Screen oldScreen ->
-          // Some(screen) means that the screen wants to remain and should be updated; None means that the screen is
-          // ready to start the game
-          let screenOrExit = Screen.next oldScreen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepad)
-          match screenOrExit with
-          | Some(screen) -> { game with gameState = Screen(screen) }
-          | None -> { game with gameState = Race(Race.init game.settings) }
+        | Screen screen ->
+          // Update the screen and proceed to stay on this screen or switch to something else
+          match Screen.next screen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) with
+          | Keep screen -> Some({ game with gameState = Screen(screen) })   // Continue updating the screen
+          | ExitToRaces -> Some({ game with gameState = Race(Race.init game.settings) })  // Initialize a new race
+          | NativeExit -> None  // Indicate that we want to exit
         
         | Race oldRace ->
-          match Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds game.settings with
+          match Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.gameSounds game.settings with
           | Some race, gameSounds ->
             let playerData =
               // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
@@ -60,7 +59,7 @@ module Game =
                     // Something strange is happening if there's an unfinished player in a post-race state
                     | _ -> playerData)
               | _ -> game.playerData
-            
+            // Tie all this data together into an updated game state
             let game =
               { game with
                   gameState = Race(race)
@@ -70,9 +69,10 @@ module Game =
             match race.raceState, race.timer with
             | PostRace _, 0 -> ()
             | _ -> ()
-            game
+            Some(game)
           | None, gameSounds ->
-            { game with
-                gameState = Screen(Screen.initMainMenu game.settings)   // The races have been exited and we need to return to the main menu
-                gameSounds = gameSounds }
-      Some(game)
+            Some(
+              { game with
+                  gameState = Screen(Screen.initMainMenu game.settings)   // The races have been exited and we need to return to the main menu
+                  gameSounds = gameSounds })
+      game

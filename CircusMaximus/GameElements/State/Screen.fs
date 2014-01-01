@@ -10,6 +10,14 @@ type Screen =
   /// Two buttons: Principio (play) and Desero (quit)
   | MainMenu of Button * Button
 
+type status<'a> =
+  /// Continue updating the screen as usual
+  | Keep of 'a
+  /// Exit the screen and start a race
+  | ExitToRaces
+  /// Quit CircusMaximus
+  | NativeExit
+
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Screen =
   let initMainMenu (settings: GameSettings) =
@@ -24,6 +32,7 @@ module Screen =
   let next screen (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) =
     match screen with
     | MainMenu(playButton, quitButton) ->
-      match playButton.buttonState with
-      | Releasing -> None
-      | _ -> Some(MainMenu(Button.next playButton mouse, Button.next quitButton mouse))
+      match playButton.buttonState, quitButton.buttonState with
+      | _, Releasing -> NativeExit
+      | Releasing, _ -> ExitToRaces
+      | _, _ -> Keep(MainMenu(Button.next playButton mouse, Button.next quitButton mouse))

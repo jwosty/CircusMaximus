@@ -6,6 +6,8 @@ open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
+/// Represents the current state a button is in. Click actions should be taken if the button state
+/// is Releasing.
 type ButtonState =
   | Pressing | Down
   | Releasing | Up
