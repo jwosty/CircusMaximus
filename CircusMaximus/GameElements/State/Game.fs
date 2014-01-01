@@ -22,12 +22,7 @@ type Game =
 module Game =
   let init rand startingWindowDimensions =
     let settings = { windowDimensions = startingWindowDimensions }
-    { gameState =
-        Screen(
-          MainMenu(
-            Button.initCenter
-              (settings.windowDimensions * (0.5 @@ 0.5))
-              Button.defaultButtonSize "Play"))
+    { gameState = Screen(Screen.initMainMenu settings)
       settings = settings
       rand = rand
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
@@ -49,30 +44,35 @@ module Game =
           | None -> { game with gameState = Race(Race.init game.settings) }
         
         | Race oldRace ->
-          let race, gameSounds = Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds game.settings
-          let playerData =
-            // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
-            match oldRace.raceState, race.raceState with
-            | MidRace _, PostRace _ ->
-              // Transform all players' data to reward them if they did well
-              game.playerData |>
-                List.map (fun playerData ->
-                  // Find the race player attatched to the data
-                  let player = Race.findPlayerByNumber playerData.number oldRace
-                  match player.finishState with
-                  | Finished placing -> PlayerData.awardWinnings playerData placing
-                  // Something strange is happening if there's an unfinished player in a post-race state
-                  | _ -> playerData)
-            | _ -> game.playerData
-          
-          let game =
+          match Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds game.settings with
+          | Some race, gameSounds ->
+            let playerData =
+              // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
+              match oldRace.raceState, race.raceState with
+              | MidRace _, PostRace _ ->
+                // Transform all players' data to reward them if they did well
+                game.playerData |>
+                  List.map (fun playerData ->
+                    // Find the race player attatched to the data
+                    let player = Race.findPlayerByNumber playerData.number oldRace
+                    match player.finishState with
+                    | Finished placing -> PlayerData.awardWinnings playerData placing
+                    // Something strange is happening if there's an unfinished player in a post-race state
+                    | _ -> playerData)
+              | _ -> game.playerData
+            
+            let game =
+              { game with
+                  gameState = Race(race)
+                  playerData = playerData
+                  gameSounds = gameSounds }
+            
+            match race.raceState, race.timer with
+            | PostRace _, 0 -> ()
+            | _ -> ()
+            game
+          | None, gameSounds ->
             { game with
-                gameState = Race(race)
-                playerData = playerData
+                gameState = Screen(Screen.initMainMenu game.settings)   // The races have been exited and we need to return to the main menu
                 gameSounds = gameSounds }
-          
-          match race.raceState, race.timer with
-          | PostRace _, 0 -> ()
-          | _ -> ()
-          game
       Some(game)

@@ -34,7 +34,7 @@ module Race =
   
   let init settings =
     let x = 820.0f
-    { raceState = initPostRaceState Button.defaultButtonSize settings
+    { raceState = PreRace
       players =
         [
           x, 740.0f;
@@ -104,18 +104,20 @@ module Race =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
-      if race.timer >= preRaceTicks then
-        { raceState = MidRace(0); players = race.players; timer = 0 },  // Begin the race when it's time
-        { gameSound with CrowdCheer = Playing 1 }   // The crowd gets exited when the race begins
-      else
-        { race with timer = race.timer + 1 },   // Simply increment the timer until the race starts
-        gameSound   // No sounds here
+      let nextRace, gameSounds =
+        if race.timer >= preRaceTicks then
+          { raceState = MidRace(0); players = race.players; timer = 0 },  // Begin the race when it's time
+          { gameSound with CrowdCheer = Playing 1 }   // The crowd gets exited when the race begins
+        else
+          { race with timer = race.timer + 1 },   // Simply increment the timer until the race starts
+          gameSound   // No sounds here
+      Some(nextRace), gameSounds
     
     | _ ->
       let playerCollisions = collideWorld race.players Racetrack.collisionBounds |> List.tail
       // "Dynamic" races require player updates, but player placings are only used before the race is over. These two conditions
       // mean that Player.next can't do placings, so we have to do it down there somewhere.
-      let raceState, players, newGameSound =
+      let raceState, players, gameSound, shouldExitRaces =
         match race.raceState with
         | MidRace oldLastPlacing ->
           let players, latestPlacing, playerChariotSounds =
@@ -128,11 +130,19 @@ module Race =
               Chariots = playerChariotSounds }
           // The race is over as soon as the last player finishes
           if latestPlacing = players.Length
-          then initPostRaceState Button.defaultButtonSize settings, players, newGameSound
-          else MidRace(0), players, newGameSound
+          then initPostRaceState Button.defaultButtonSize settings, players, newGameSound, false
+          else MidRace(0), players, newGameSound, false
         // No player placings
         | PostRace(continueButton, exitButton) ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
-          PostRace(Button.next continueButton mouse, Button.next exitButton mouse), players, { gameSound with Chariots = chariotSounds }
+          let raceState = PostRace(Button.next continueButton mouse, Button.next exitButton mouse)
+          let shouldExitRaces =
+            match exitButton.buttonState with
+            | Releasing -> true
+            | _ -> false
+          raceState, players, { gameSound with Chariots = chariotSounds }, shouldExitRaces
+      
       let players = applyPlayerEffects players
-      { raceState = raceState; players = players; timer = race.timer + 1 }, newGameSound
+      if shouldExitRaces
+        then None, gameSound
+        else Some({ raceState = raceState; players = players; timer = race.timer + 1 }), gameSound
