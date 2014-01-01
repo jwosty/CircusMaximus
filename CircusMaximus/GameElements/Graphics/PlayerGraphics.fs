@@ -16,7 +16,7 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
     1.0f, // scale
     SpriteEffects.None, single 0)
 #if DEBUG
-  player.bounds.Draw(sb, assets.Pixel, player.intersectingLines)
+  //player.bounds.Draw(sb, assets.Pixel, player.intersectingLines)
 #endif
   player.particles |> List.iter
     (fun p ->
