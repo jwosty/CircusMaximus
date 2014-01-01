@@ -49,7 +49,7 @@ module Game =
           | None -> { game with gameState = Race(Race.init game.settings) }
         
         | Race oldRace ->
-          let race, gameSounds = Race.next oldRace (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds game.settings
+          let race, gameSounds = Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepad) game.rand game.gameSounds game.settings
           let playerData =
             // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
             match oldRace.raceState, race.raceState with

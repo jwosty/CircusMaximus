@@ -9,7 +9,7 @@ open CircusMaximus.Input
 
 type LastPlacing = int
 
-type RaceState = | PreRace | MidRace of LastPlacing | PostRace of Button
+type RaceState = | PreRace | MidRace of LastPlacing | PostRace of Button * Button
 
 type Race = { raceState: RaceState; players: Player list; timer: int }
 
@@ -29,11 +29,12 @@ module Race =
   let maxTurns = 13
   
   let initPostRaceState defaultButtonSize (settings: GameSettings) =
-    PostRace(Button.initCenter (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y * 0.1f) defaultButtonSize "Continue")
+    let initButton y label = Button.initCenter (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y * 0.1f * float32 y) defaultButtonSize label
+    PostRace(initButton 1 "Continue", initButton 2 "Exit races")
   
   let init settings =
     let x = 820.0f
-    { raceState = PreRace
+    { raceState = initPostRaceState Button.defaultButtonSize settings
       players =
         [
           x, 740.0f;
@@ -98,7 +99,8 @@ module Race =
     // Not curried because it gives an ugly function signature
     nextPlayers [] latestPlacing [] playerMapper playerCollisions playerChariotSounds players
   
-  let next (race: Race) (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound (settings: GameSettings) =
+  /// Returns the next race state. 
+  let next (race: Race) mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound (settings: GameSettings) =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
@@ -129,8 +131,8 @@ module Race =
           then initPostRaceState Button.defaultButtonSize settings, players, newGameSound
           else MidRace(0), players, newGameSound
         // No player placings
-        | PostRace continueButton ->
+        | PostRace(continueButton, exitButton) ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
-          PostRace(continueButton), players, { gameSound with Chariots = chariotSounds }
+          PostRace(Button.next continueButton mouse, Button.next exitButton mouse), players, { gameSound with Chariots = chariotSounds }
       let players = applyPlayerEffects players
       { raceState = raceState; players = players; timer = race.timer + 1 }, newGameSound
