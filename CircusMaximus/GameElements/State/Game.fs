@@ -9,6 +9,7 @@ open CircusMaximus.HelperFunctions
 type GameState =
   | Screen of Screen
   | Race of Race
+  | AwardScreen
 
 /// Holds the state of the entire game
 type Game =
@@ -33,46 +34,47 @@ module Game =
     if keyboard.IsKeyDown(Keys.Escape) then
       None  // Indicate that we want to exit
     else
-      let game =  
-        match game.gameState with
-        | Screen screen ->
-          // Update the screen and proceed to stay on this screen or switch to something else
-          match Screen.next screen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) with
-          | Keep screen -> Some({ game with gameState = Screen(screen) })   // Continue updating the screen
-          | ExitToRaces -> Some({ game with gameState = Race(Race.init game.settings) })  // Initialize a new race
-          | NativeExit -> None  // Indicate that we want to exit
-        
-        | Race oldRace ->
-          match Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.gameSounds game.settings with
-          | Some race, gameSounds ->
-            let playerData =
-              // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
-              match oldRace.raceState, race.raceState with
-              | MidRace _, PostRace _ ->
-                // Transform all players' data to reward them if they did well
-                game.playerData |>
-                  List.map (fun playerData ->
-                    // Find the race player attatched to the data
-                    let player = Race.findPlayerByNumber playerData.number oldRace
-                    match player.finishState with
-                    | Finished placing -> PlayerData.awardWinnings playerData placing
-                    // Something strange is happening if there's an unfinished player in a post-race state
-                    | _ -> playerData)
-              | _ -> game.playerData
-            // Tie all this data together into an updated game state
-            let game =
-              { game with
-                  gameState = Race(race)
-                  playerData = playerData
-                  gameSounds = gameSounds }
-            
-            match race.raceState, race.timer with
-            | PostRace _, 0 -> ()
-            | _ -> ()
-            Some(game)
-          | None, gameSounds ->
-            Some(
-              { game with
-                  gameState = Screen(Screen.initMainMenu game.settings)   // The races have been exited and we need to return to the main menu
-                  gameSounds = gameSounds })
-      game
+      match game.gameState with
+      | Screen screen ->
+        // Update the screen and proceed to stay on this screen or switch to something else
+        match Screen.next screen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) with
+        | Keep screen -> Some({ game with gameState = Screen(screen) })   // Continue updating the screen
+        | ExitToRaces -> Some({ game with gameState = Race(Race.init game.settings) })  // Initialize a new race
+        | NativeExit -> None  // Indicate that we want to exit
+      
+      | Race oldRace ->
+        match Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.gameSounds game.settings with
+        | Some race, gameSounds ->
+          let playerData =
+            // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
+            match oldRace.raceState, race.raceState with
+            | MidRace _, PostRace _ ->
+              // Transform all players' data to reward them if they did well
+              game.playerData |>
+                List.map (fun playerData ->
+                  // Find the race player attatched to the data
+                  let player = Race.findPlayerByNumber playerData.number oldRace
+                  match player.finishState with
+                  | Finished placing -> PlayerData.awardWinnings playerData placing
+                  // Something strange is happening if there's an unfinished player in a post-race state
+                  | _ -> playerData)
+            | _ -> game.playerData
+          // Tie all this data together into an updated game state
+          let game =
+            { game with
+                gameState = Race(race)
+                playerData = playerData
+                gameSounds = gameSounds }
+          
+          match race.raceState, race.timer with
+          | PostRace _, 0 -> ()
+          | _ -> ()
+          Some(game)
+        | None, gameSounds ->
+          Some(
+            { game with
+                gameState = Screen(Screen.initMainMenu game.settings)   // The races have been exited and we need to return to the main menu
+                gameSounds = gameSounds })
+      
+      | AwardScreen ->
+        Some(game)

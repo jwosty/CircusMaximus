@@ -34,7 +34,7 @@ module Race =
   
   let init settings =
     let x = 820.0f
-    { raceState = PreRace
+    { raceState = initPostRaceState Button.defaultButtonSize settings
       players =
         [
           x, 740.0f;
