@@ -121,6 +121,7 @@
     <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />
     <Compile Include="GameElements\Graphics\ScreenGraphics.fs" />
+    <Compile Include="GameElements\Graphics\AwardScreenGraphics.fs" />
     <Compile Include="GameElements\Graphics\GameGraphics.fs" />
     <Compile Include="GameElements\GameWindow.fs" />
     <Compile Include="Main.fs" />
