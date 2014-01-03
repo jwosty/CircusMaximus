@@ -10,9 +10,10 @@ type GameContent =
     RacetrackTextures: Texture2D[,]
     ChariotTexture: Texture2D
     Font: Texture2D
-    PlacingBackground: Texture2D
-    Particle: Texture2D
     Button: Texture2D
+    Particle: Texture2D
+    PlacingBackground: Texture2D
+    AwardBackground: Texture2D
     
     ChariotSound: SoundEffectInstance list
     CrowdCheerSound: SoundEffectInstance }
@@ -39,9 +40,10 @@ module GameContentFunctions =
       RacetrackTextures = Array2D.init 10 3 (fun x y -> loadImage (sprintf "racetrack/%i-%i.png" y x))
       ChariotTexture = loadImage "chariot"
       Font = loadImage "font"
-      PlacingBackground = loadImage "placingbg"
-      Particle = loadImage "particle"
       Button = loadImage "button"
+      Particle = loadImage "particle"
+      PlacingBackground = loadImage "placingbg"
+      AwardBackground = loadImage "awardbg"
       
       ChariotSound =
         let snd = loadSound "chariot"

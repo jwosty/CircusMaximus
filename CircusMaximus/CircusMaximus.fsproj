@@ -178,5 +178,6 @@
     <BundleResource Include="Content\images\placingbg.png" />
     <BundleResource Include="Content\images\particle.png" />
     <BundleResource Include="Content\images\button.png" />
+    <BundleResource Include="Content\images\awardbg.png" />
   </ItemGroup>
 </Project>
