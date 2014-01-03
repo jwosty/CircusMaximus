@@ -9,7 +9,7 @@ open CircusMaximus.HelperFunctions
 type GameState =
   | Screen of Screen
   | Race of Race
-  | AwardScreen
+  | AwardScreen of int
 
 /// Holds the state of the entire game
 type Game =
@@ -38,8 +38,8 @@ module Game =
       | Screen screen ->
         // Update the screen and proceed to stay on this screen or switch to something else
         match Screen.next screen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) with
-        | Keep screen -> Some({ game with gameState = Screen(screen) })   // Continue updating the screen
-        | ExitToRaces -> Some({ game with gameState = Race(Race.init game.settings) })  // Initialize a new race
+        | NoSwitch screen -> Some({ game with gameState = Screen(screen) })   // Continue updating the screen
+        | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings) })  // Initialize a new race
         | NativeExit -> None  // Indicate that we want to exit
       
       | Race oldRace ->
@@ -76,5 +76,4 @@ module Game =
                 gameState = Screen(Screen.initMainMenu game.settings)   // The races have been exited and we need to return to the main menu
                 gameSounds = gameSounds })
       
-      | AwardScreen ->
-        Some(game)
+      | AwardScreen timer -> Some({ game with gameState = AwardScreen(timer + 1) })

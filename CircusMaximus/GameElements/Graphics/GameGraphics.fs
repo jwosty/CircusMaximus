@@ -81,3 +81,10 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
                 PlacingOverlayGraphics.drawOverlay generalBatch fontBatch (windowRect.Width, windowRect.Height) assets race.players
                 ButtonGraphics.draw fontBatch generalBatch continueButton assets
                 ButtonGraphics.draw fontBatch generalBatch menuButton assets))
+  
+  | AwardScreen timer ->
+    fontBatch.DoWithPointClamp
+      (fun fontBatch ->
+        FlatSpriteFont.drawString
+          assets.Font fontBatch "Hello world" windowCenter 8.0f Color.White
+          (FlatSpriteFont.Center, FlatSpriteFont.Center))

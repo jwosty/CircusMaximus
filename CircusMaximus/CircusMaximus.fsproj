@@ -20,7 +20,6 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <EnableCodeSigning>false</EnableCodeSigning>
-    <ConsolePause>false</ConsolePause>
     <PlatformTarget>
     </PlatformTarget>
     <UseSGen>false</UseSGen>
@@ -31,6 +30,7 @@
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
     <I18n>
     </I18n>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -105,6 +105,7 @@
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
     <Compile Include="GameElements\State\Input.fs" />
+    <Compile Include="GameElements\State\ScreenStatus.fs" />
     <Compile Include="GameElements\State\GameSettings.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
