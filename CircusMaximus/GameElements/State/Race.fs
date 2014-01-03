@@ -34,7 +34,7 @@ module Race =
   
   let init settings =
     let x = 820.0f
-    { raceState = initPostRaceState Button.defaultButtonSize settings
+    { raceState = PreRace//initPostRaceState Button.defaultButtonSize settings
       players =
         [
           x, 740.0f;
@@ -107,7 +107,7 @@ module Race =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
-      let nextRace, gameSounds =
+      let race, gameSounds =
         if race.timer >= preRaceTicks then
           { raceState = MidRace(0); players = race.players; timer = 0 },  // Begin the race when it's time
           { gameSound with CrowdCheer = Playing 1 }   // The crowd gets exited when the race begins
