@@ -27,5 +27,5 @@ let draw (fontBatch: SpriteBatch) (assets: GameContent) (game: Game) =
             assets.Font fontBatch playerN (x @@ (y - 25.f)) 3.0f Color.White
             (FlatSpriteFont.Center, FlatSpriteFont.Center)
           FlatSpriteFont.drawString
-            assets.Font fontBatch playerCoinAmtStr (x @@ (y + 25.f)) 2.0f playerCoinsStrCol
+            assets.Font fontBatch playerCoinsStr (x @@ (y + 25.f)) 2.0f playerCoinsStrCol
             (FlatSpriteFont.Center, FlatSpriteFont.Center)))
