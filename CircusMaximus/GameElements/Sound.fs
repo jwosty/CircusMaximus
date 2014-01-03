@@ -1,9 +1,11 @@
 namespace CircusMaximus.State
 open System
+open System.Diagnostics
 open Microsoft.Xna.Framework
 
 /// A descriminated union of all the possible states a sound can be in. Why should only game objects get an
 /// abstract, immutable state?
+[<DebuggerDisplay("SoundState = {DebugString}")>]
 type SoundState =
   /// Represents a sound that is playing n times
   Playing of int
@@ -19,6 +21,7 @@ type SoundState =
     | Looping -> "Looping"
     | Paused -> "Paused"
     | Stopped -> "Stopped"
+  member private this.DebugString = this.ToString()
 
 /// A record to hold the entire game's sound state
 type GameSounds =

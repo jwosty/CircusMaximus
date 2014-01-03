@@ -68,7 +68,7 @@ module Game =
                 | PostRace _, 0 -> ()
                 | _ -> ()
                 Race(race))
-          gameState, game.gameSounds, game.playerData
+          gameState, gameSounds, game.playerData
           
         | AwardScreen timer -> NoSwitch(AwardScreen(timer + 1)), game.gameSounds, game.playerData
       
