@@ -90,15 +90,16 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
           (fun fontBatch ->
             let x = vecx game.settings.windowDimensions / (float game.playerData.Length + 0.25) * (float i + 0.625)
             let playerN = "Histrio " + toRoman playerData.number
-            let playerCoins =
-              // TODO: extract this first part out into a function since it is very useful -- the Romans couldn't say "0 things", only "no things"!
+            let playerCoinAmtStr, playerCoinsStrCol =
+              // TODO: extract this first part out into a function since it will be useful throughout the
+              // game -- the Romans couldn't say "0 things", only "no things"!
               match playerData.coinBalance with
-              | 0 -> "Nullus"
-              | coins -> toRoman coins
-              + " nummi"
+              | 0 -> "Nullus", Color.Maroon
+              | coins -> toRoman coins, Color.Silver
+            let playerCoinsStr = playerCoinAmtStr + " nummi"
             FlatSpriteFont.drawString
               assets.Font fontBatch playerN (x @@ (y - 25.f)) 3.0f Color.White
               (FlatSpriteFont.Center, FlatSpriteFont.Center)
             FlatSpriteFont.drawString
-              assets.Font fontBatch playerCoins (x @@ (y + 25.f)) 2.0f Color.Silver
+              assets.Font fontBatch playerCoinAmtStr (x @@ (y + 25.f)) 2.0f playerCoinsStrCol
               (FlatSpriteFont.Center, FlatSpriteFont.Center)))
