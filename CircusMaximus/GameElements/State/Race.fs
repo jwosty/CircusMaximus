@@ -42,7 +42,10 @@ module Race =
           x, 1160.0f;
           x, 1370.0f;
           x, 1580.0f;
-        ] |> List.mapi (fun i (x, y) -> Player.init (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) (i + 1))
+        ] |> List.mapi
+          (fun i (x, y) ->
+            let basePlayer = Player.init (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) (i + 1)
+            { basePlayer with finishState = Finished(Player.numPlayers - i) })
       timer = 0 }
   
   let findPlayerByNumber number (race: Race) = race.players |> List.find (fun p -> p.number = number)
@@ -111,13 +114,13 @@ module Race =
         else
           { race with timer = race.timer + 1 },   // Simply increment the timer until the race starts
           gameSound   // No sounds here
-      Some(nextRace), gameSounds
+      NoSwitch(race), gameSounds
     
     | _ ->
       let playerCollisions = collideWorld race.players Racetrack.collisionBounds |> List.tail
       // "Dynamic" races require player updates, but player placings are only used before the race is over. These two conditions
       // mean that Player.next can't do placings, so we have to do it down there somewhere.
-      let raceState, players, gameSound, shouldExitRaces =
+      let raceStatus, raceState, players, gameSound =
         match race.raceState with
         | MidRace oldLastPlacing ->
           let players, latestPlacing, playerChariotSounds =
@@ -130,8 +133,8 @@ module Race =
               Chariots = playerChariotSounds }
           // The race is over as soon as the last player finishes
           if latestPlacing = players.Length
-          then initPostRaceState Button.defaultButtonSize settings, players, newGameSound, false
-          else MidRace(0), players, newGameSound, false
+          then NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
+          else NoSwitch(race), MidRace(0), players, newGameSound
         // No player placings
         | PostRace(continueButton, exitButton) ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
@@ -140,9 +143,13 @@ module Race =
             match exitButton.buttonState with
             | Releasing -> true
             | _ -> false
-          raceState, players, { gameSound with Chariots = chariotSounds }, shouldExitRaces
+          let raceStatus =
+            match exitButton.buttonState with
+            | Releasing -> SwitchToMainMenu
+            | _ -> NoSwitch(race)
+          raceStatus, raceState, players, { gameSound with Chariots = chariotSounds }
       
       let players = applyPlayerEffects players
-      if shouldExitRaces
-        then None, gameSound
-        else Some({ raceState = raceState; players = players; timer = race.timer + 1 }), gameSound
+      match raceStatus with
+      | NoSwitch race -> NoSwitch({ race with raceState = raceState; players = players; timer = race.timer + 1 }), gameSound
+      | _ -> raceStatus, gameSound
