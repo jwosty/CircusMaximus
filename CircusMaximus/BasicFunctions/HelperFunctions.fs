@@ -10,6 +10,14 @@ open CircusMaximus.TupleClassExtensions
 let inline (@@) a b = new Vector2(float32 a, float32 b)
 /// Nullable 2D constructor
 let inline (@~) a b = new Nullable<_>(new Vector2(float32 a, float32 b))
+/// Vector2 X position (as a float32/single)
+let inline vecxs (vector2: Vector2) = vector2.X
+/// Vector2 Y position (as a float32/single)
+let inline vecys (vector2: Vector2) = vector2.Y
+/// Vector2 X position (as a float/double)
+let inline vecx (vector2: Vector2) = float vector2.X
+/// Vector2 Y position (as a float/double)
+let inline vecy (vector2: Vector2) = float vector2.Y
 /// Vector2 cross product
 let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d

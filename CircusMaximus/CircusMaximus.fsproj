@@ -30,6 +30,7 @@
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
     <I18n>
     </I18n>
+    <Externalconsole>true</Externalconsole>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

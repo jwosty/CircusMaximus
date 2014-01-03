@@ -23,7 +23,7 @@ type Game =
 module Game =
   let init rand startingWindowDimensions =
     let settings = { windowDimensions = startingWindowDimensions }
-    { gameState = Screen(Screen.initMainMenu settings)
+    { gameState = AwardScreen(0)//Screen(Screen.initMainMenu settings)
       settings = settings
       rand = rand
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
