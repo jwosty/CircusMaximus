@@ -34,7 +34,7 @@ module Race =
   
   let init settings =
     let x = 820.0f
-    { raceState = PreRace//initPostRaceState Button.defaultButtonSize settings
+    { raceState = initPostRaceState Button.defaultButtonSize settings
       players =
         [
           x, 740.0f;
@@ -139,13 +139,10 @@ module Race =
         | PostRace(continueButton, exitButton) ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
           let raceState = PostRace(Button.next continueButton mouse, Button.next exitButton mouse)
-          let shouldExitRaces =
-            match exitButton.buttonState with
-            | Releasing -> true
-            | _ -> false
           let raceStatus =
-            match exitButton.buttonState with
-            | Releasing -> SwitchToMainMenu
+            match continueButton.buttonState, exitButton.buttonState with
+            | Releasing, _ -> SwitchToAwards
+            | _, Releasing -> SwitchToMainMenu
             | _ -> NoSwitch(race)
           raceStatus, raceState, players, { gameSound with Chariots = chariotSounds }
       

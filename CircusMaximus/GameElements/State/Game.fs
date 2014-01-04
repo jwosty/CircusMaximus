@@ -74,6 +74,7 @@ module Game =
       
       match gameState with
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds; playerData = playerData })
-      | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds; playerData = playerData })
       | SwitchToMainMenu -> Some({ game with gameState = Screen(Screen.initMainMenu game.settings); gameSounds = gameSounds; playerData = playerData })
+      | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds; playerData = playerData })
+      | SwitchToAwards -> Some({ game with gameState = AwardScreen(0); gameSounds = gameSounds; playerData = playerData })
       | NativeExit -> None

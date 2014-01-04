@@ -4,10 +4,12 @@ open System
 type ScreenStatus<'a> =
   /// Continue updating as usual
   | NoSwitch of 'a
-  /// Exit and begin a new race
-  | SwitchToRaces
   /// Return to the main menu
   | SwitchToMainMenu
+  /// Exit and begin a new race
+  | SwitchToRaces
+  /// Continue to the awards screen
+  | SwitchToAwards
   /// Quit CircusMaximus
   | NativeExit
 
@@ -17,6 +19,7 @@ module ScreenStatus =
   let map mapping screenStatus =
     match screenStatus with
     | NoSwitch x -> NoSwitch(mapping x)
-    | SwitchToRaces -> SwitchToRaces
     | SwitchToMainMenu -> SwitchToMainMenu
+    | SwitchToRaces -> SwitchToRaces
+    | SwitchToAwards -> SwitchToAwards
     | NativeExit -> NativeExit
