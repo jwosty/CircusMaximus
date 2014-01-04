@@ -48,11 +48,10 @@ module Race =
   let nextPlayerFinish lastPlacing (player: Player) =
     match player.finishState with
     | Racing ->
-      if player.turns >= maxTurns then
-        { player with finishState = Finished(lastPlacing + 1) }, lastPlacing + 1
-      else
-        player, lastPlacing
-    | Finished _ -> player, lastPlacing
+      if player.turns >= maxTurns
+      then { player with finishState = Finished(lastPlacing + 1) }, lastPlacing + 1
+      else player, lastPlacing
+    | Finished(placing) -> player, lastPlacing
   
   let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
@@ -97,6 +96,13 @@ module Race =
     // Not curried because it gives an ugly function signature
     nextPlayers [] latestPlacing [] playerMapper playerCollisions playerChariotSounds players
   
+  /// A quick 'n dirty function to find the last player placing so we know what to use next when someone
+  /// else finishes.
+  let getLastPlacing players =
+    List.fold
+      (fun lastPlacing (player: Player) -> if player.finished then lastPlacing + 1 else lastPlacing)
+      0 players
+  
   /// Returns the next race state. 
   let next (race: Race) mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound (settings: GameSettings) =
     let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
@@ -104,7 +110,10 @@ module Race =
     | PreRace ->
       let race, gameSounds =
         if race.timer >= preRaceTicks then
-          { raceState = MidRace(0); players = race.players; timer = 0 },  // Begin the race when it's time
+          // Begin the race when it's time
+          { raceState = MidRace(getLastPlacing race.players)  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
+            players = race.players
+            timer = 0 },
           { gameSound with CrowdCheer = Playing 1 }   // The crowd gets exited when the race begins
         else
           { race with timer = race.timer + 1 },   // Simply increment the timer until the race starts
@@ -118,8 +127,7 @@ module Race =
       let raceStatus, raceState, players, gameSound =
         match race.raceState with
         | MidRace oldLastPlacing ->
-          let players, latestPlacing, playerChariotSounds =
-            nextPlayers nextPlayer oldLastPlacing playerCollisions gameSound.Chariots race.players
+          let players, latestPlacing, playerChariotSounds = nextPlayers nextPlayer oldLastPlacing playerCollisions gameSound.Chariots race.players
           let newGameSound =
             { CrowdCheer =
                 if oldLastPlacing <> latestPlacing   // Congratulate the player for finishing in the top 3
@@ -133,7 +141,7 @@ module Race =
             match players |> List.tryFind (fun player -> not player.finished) with
             | Some _ -> NoSwitch(race), MidRace(latestPlacing), players, newGameSound
             | None -> NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
-          else NoSwitch(race), MidRace(0), players, newGameSound
+          else NoSwitch(race), MidRace(latestPlacing), players, newGameSound
         // No player placings
         | PostRace(continueButton, exitButton) ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
