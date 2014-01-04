@@ -46,6 +46,7 @@ module Game =
         
         | Race oldRace ->
           let raceScreenStatus, gameSounds = Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.gameSounds game.settings
+          let playerDataRef = ref game.playerData
           let gameState =
             raceScreenStatus |> ScreenStatus.map
               (fun race ->
@@ -59,16 +60,17 @@ module Game =
                         // Find the race player attatched to the data
                         let player = Race.findPlayerByNumber playerData.number oldRace
                         match player.finishState with
-                        | Finished placing -> PlayerData.awardWinnings playerData placing
+                        | Finished placing -> { playerData with coinBalance = PlayerData.playerWinnings placing }
                         // Something strange is happening if there's an unfinished player in a post-race state
                         | _ -> playerData)
                   | _ -> game.playerData
+                playerDataRef := playerData
                 
                 match race.raceState, race.timer with
                 | PostRace _, 0 -> ()
                 | _ -> ()
                 Race(race))
-          gameState, gameSounds, game.playerData
+          gameState, gameSounds, !playerDataRef
           
         | AwardScreen timer -> NoSwitch(AwardScreen(timer + 1)), game.gameSounds, game.playerData
       

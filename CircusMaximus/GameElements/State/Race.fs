@@ -34,7 +34,7 @@ module Race =
   
   let init settings =
     let x = 820.0f
-    { raceState = initPostRaceState Button.defaultButtonSize settings
+    { raceState = PreRace
       players =
         [
           x, 740.0f;
@@ -45,7 +45,9 @@ module Race =
         ] |> List.mapi
           (fun i (x, y) ->
             let basePlayer = Player.init (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) (i + 1)
-            { basePlayer with finishState = Finished(Player.numPlayers - i) })
+            if i < 2
+              then basePlayer
+              else { basePlayer with finishState = Finished(Player.numPlayers - i) })
       timer = 0 }
   
   let findPlayerByNumber number (race: Race) = race.players |> List.find (fun p -> p.number = number)
@@ -131,9 +133,13 @@ module Race =
                 then Playing 1
                 else gameSound.CrowdCheer
               Chariots = playerChariotSounds }
+          let noSwitchResults = NoSwitch(race), MidRace(0), players, newGameSound
           // The race is over as soon as the last player finishes
-          if latestPlacing = players.Length
-          then NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
+          if latestPlacing <> oldLastPlacing then
+            // Check if there are any players that are still racing
+            match players |> List.tryFind (fun player -> not player.finished) with
+            | Some _ -> NoSwitch(race), MidRace(0), players, newGameSound
+            | None -> NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
           else NoSwitch(race), MidRace(0), players, newGameSound
         // No player placings
         | PostRace(continueButton, exitButton) ->

@@ -17,13 +17,9 @@ module PlayerData =
     { number = number
       coinBalance = 0 }
   
-  /// Awards a player the proper winnings for their place in a race
-  let awardWinnings playerData placing =
-    { playerData with
-        coinBalance =
-          playerData.coinBalance +
-            match placing with 
-            | 1 -> 100
-            | 2 -> 50
-            | 3 -> 25
-            | _ -> 0 }
+  let playerWinnings placing =
+    match placing with
+    | 1 -> 100
+    | 2 -> 50
+    | 3 -> 25
+    | _ -> 0
