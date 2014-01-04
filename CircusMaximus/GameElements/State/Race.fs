@@ -33,21 +33,14 @@ module Race =
     PostRace(initButton 1 "Continue", initButton 2 "Exit races")
   
   let init settings =
-    let x = 820.0f
+    let playerY n = (n - 1) * 210 + 740 |> float32
     { raceState = PreRace
       players =
-        [
-          x, 740.0f;
-          x, 950.0f;
-          x, 1160.0f;
-          x, 1370.0f;
-          x, 1580.0f;
-        ] |> List.mapi
-          (fun i (x, y) ->
-            let basePlayer = Player.init (new PlayerShape(x@@y, 64.0f, 29.0f, 0.)) (i + 1)
-            if i < 2
-              then basePlayer
-              else { basePlayer with finishState = Finished(Player.numPlayers - i) })
+        [ for n in 1..5 ->
+          let basePlayer = Player.init (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n
+          if n < 4
+            then basePlayer
+            else { basePlayer with finishState = Finished(Player.numPlayers - n + 1) } ]
       timer = 0 }
   
   let findPlayerByNumber number (race: Race) = race.players |> List.find (fun p -> p.number = number)
@@ -138,7 +131,7 @@ module Race =
           if latestPlacing <> oldLastPlacing then
             // Check if there are any players that are still racing
             match players |> List.tryFind (fun player -> not player.finished) with
-            | Some _ -> NoSwitch(race), MidRace(0), players, newGameSound
+            | Some _ -> NoSwitch(race), MidRace(latestPlacing), players, newGameSound
             | None -> NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
           else NoSwitch(race), MidRace(0), players, newGameSound
         // No player placings
