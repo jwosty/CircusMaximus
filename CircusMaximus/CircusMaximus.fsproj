@@ -114,6 +114,7 @@
     <Compile Include="GameElements\State\Player.fs" />
     <Compile Include="GameElements\State\Race.fs" />
     <Compile Include="GameElements\State\Screen.fs" />
+    <Compile Include="GameElements\State\AwardScreen.fs" />
     <Compile Include="GameElements\State\Game.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\ButtonGraphics.fs" />

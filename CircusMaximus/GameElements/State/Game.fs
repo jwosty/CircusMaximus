@@ -9,7 +9,7 @@ open CircusMaximus.HelperFunctions
 type GameState =
   | Screen of Screen
   | Race of Race
-  | AwardScreen of int
+  | AwardScreen of AwardScreen
 
 /// Holds the state of the entire game
 type Game =
@@ -72,11 +72,13 @@ module Game =
                 Race(race))
           gameState, gameSounds, !playerDataRef
           
-        | AwardScreen timer -> NoSwitch(AwardScreen(timer + 1)), game.gameSounds, game.playerData
+        | AwardScreen awardScreen ->
+          ScreenStatus.map AwardScreen (AwardScreen.next awardScreen),
+          game.gameSounds, game.playerData
       
       match gameState with
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds; playerData = playerData })
       | SwitchToMainMenu -> Some({ game with gameState = Screen(Screen.initMainMenu game.settings); gameSounds = gameSounds; playerData = playerData })
       | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds; playerData = playerData })
-      | SwitchToAwards -> Some({ game with gameState = AwardScreen(0); gameSounds = gameSounds; playerData = playerData })
+      | SwitchToAwards -> Some({ game with gameState = AwardScreen(AwardScreen.initted); gameSounds = gameSounds; playerData = playerData })
       | NativeExit -> None
