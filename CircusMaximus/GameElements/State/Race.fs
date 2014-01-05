@@ -45,28 +45,6 @@ module Race =
   
   let findPlayerByNumber number (race: Race) = race.players |> List.find (fun p -> p.number = number)
   
-  let nextPlayerFinish lastPlacing (player: Player) =
-    match player.finishState with
-    | Racing ->
-      if player.turns >= maxTurns
-      then { player with finishState = Finished(lastPlacing + 1) }, lastPlacing + 1
-      else player, lastPlacing
-    | Finished(placing) -> player, lastPlacing
-  
-  let nextPlayer (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =
-    let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
-    let player, playerChariotSound =
-      if player.number = 1 then
-        Player.next
-          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player collision Racetrack.center rand playerChariotSound
-      else
-        let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
-        Player.next
-          (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
-          player collision Racetrack.center rand playerChariotSound
-    player, playerChariotSound
-  
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
   let applyPlayerEffects players =
     players
@@ -86,7 +64,7 @@ module Race =
         playerChariotSound :: restPlayerChariotSounds,
         player :: restPlayers ->
           let player, nextPlayerChariotSound = nextPlayerFunction playerCollision playerChariotSound player
-          let player, lastPlacing = nextPlayerFinish lastPlacing player
+          let player, lastPlacing = Player.nextPlayerFinish maxTurns lastPlacing player
           nextPlayers
             (updatedPlayers @ [player]) lastPlacing (updatedChariotSounds @ [nextPlayerChariotSound])
             nextPlayerFunction restPlayerCollisions restPlayerChariotSounds restPlayers
@@ -105,7 +83,7 @@ module Race =
   
   /// Returns the next race state. 
   let next (race: Race) mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound (settings: GameSettings) =
-    let nextPlayer = nextPlayer (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
+    let nextPlayer = Player.next (lastKeyboard, keyboard) (lastGamepads, gamepads) rand
     match race.raceState with
     | PreRace ->
       let race, gameSounds =

@@ -2,6 +2,7 @@ namespace CircusMaximus.State
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
+open Microsoft.Xna.Framework.Input
 open CircusMaximus
 open CircusMaximus.State
 open CircusMaximus.Extensions
@@ -99,6 +100,15 @@ module Player =
     else
       player.turns, player.lastTurnedLeft
   
+  /// Functionally updates a player's state, finishing the player if needed and returning the new player and placing
+  let nextPlayerFinish maxTurns lastPlacing (player: Player) =
+    match player.finishState with
+    | Racing ->
+      if player.turns >= maxTurns
+      then { player with finishState = Finished(lastPlacing + 1) }, lastPlacing + 1
+      else player, lastPlacing
+    | Finished(placing) -> player, lastPlacing
+  
   /// Returns a new taunt if needed, otherwise none
   let nextTauntState expectingTaunt rand = function
     | Some(taunt, tauntTimer) ->
@@ -111,8 +121,8 @@ module Player =
       then Some(Taunt.pickTaunt rand, tauntTime)
       else None
   
-  /// Returns an updated version of the given player model. Players are not given a placing here.
-  let next (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
+  /// A basic function an updated version of the given player model. Players are not given a placing here.
+  let basicNext (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = nextEffects player.effects
@@ -155,3 +165,18 @@ module Player =
           tauntState = tauntState;
           effects = effects;
           particles = particles }, playerChariotSound
+  
+  /// Updates a player like basicNext, but also handles input things
+  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =
+    let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
+    let player, playerChariotSound =
+      if player.number = 1 then
+        basicNext
+          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
+          player collision Racetrack.center rand playerChariotSound
+      else
+        let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
+        basicNext
+          (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
+          player collision Racetrack.center rand playerChariotSound
+    player, playerChariotSound
