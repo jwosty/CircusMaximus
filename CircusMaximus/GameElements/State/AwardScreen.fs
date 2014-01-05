@@ -24,6 +24,8 @@ module AwardScreen =
   
   /// Updates an award screen and returns the new model
   let next (awardScreen: AwardScreen) mouse =
-    { timer = awardScreen.timer + 1
-      mainMenuButton = Button.next awardScreen.mainMenuButton mouse }
-    |> NoSwitch
+    match awardScreen.mainMenuButton.buttonState with
+    | Releasing -> SwitchToMainMenu
+    | _ ->
+      { timer = awardScreen.timer + 1
+        mainMenuButton = Button.next awardScreen.mainMenuButton mouse } |> NoSwitch
