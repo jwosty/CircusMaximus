@@ -113,7 +113,7 @@
     <Compile Include="GameElements\State\PlayerData.fs" />
     <Compile Include="GameElements\State\Player.fs" />
     <Compile Include="GameElements\State\Race.fs" />
-    <Compile Include="GameElements\State\Screen.fs" />
+    <Compile Include="GameElements\State\MainMenu.fs" />
     <Compile Include="GameElements\State\AwardScreen.fs" />
     <Compile Include="GameElements\State\Game.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
@@ -121,7 +121,7 @@
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />
-    <Compile Include="GameElements\Graphics\ScreenGraphics.fs" />
+    <Compile Include="GameElements\Graphics\MainMenuGraphics.fs" />
     <Compile Include="GameElements\Graphics\AwardScreenGraphics.fs" />
     <Compile Include="GameElements\Graphics\GameGraphics.fs" />
     <Compile Include="GameElements\GameWindow.fs" />

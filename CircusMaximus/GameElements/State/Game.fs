@@ -7,7 +7,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
 type GameState =
-  | Screen of Screen
+  | MainMenu of MainMenu
   | Race of Race
   | AwardScreen of AwardScreen
 
@@ -23,13 +23,16 @@ type Game =
 module Game =
   let init rand startingWindowDimensions =
     let settings = { windowDimensions = startingWindowDimensions }
-    { gameState = Screen(Screen.initMainMenu settings)
+    { gameState = MainMenu(MainMenu.init settings)
       settings = settings
       rand = rand
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
       gameSounds = GameSounds.allStopped Player.numPlayers }
   
-  let switchToMainMenu game gameSounds = { game with gameState = Screen(Screen.initMainMenu game.settings); gameSounds = gameSounds }
+  let switchToMainMenu game gameSounds =
+    { game with
+        gameState = MainMenu(MainMenu.init game.settings)
+        gameSounds = gameSounds }
   
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
   let next (game: Game) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
@@ -38,10 +41,10 @@ module Game =
     else
       let gameState, gameSounds, playerData =
         match game.gameState with
-        | Screen screen ->
+        | MainMenu mainMenu ->
           let gameState =
-            Screen.next screen (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads)
-            |> ScreenStatus.map Screen
+            (MainMenu.next mainMenu (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads))
+            |> ScreenStatus.map MainMenu
           gameState, game.gameSounds, game.playerData
         
         | Race oldRace ->
@@ -78,7 +81,7 @@ module Game =
       
       match gameState with
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds; playerData = playerData })
-      | SwitchToMainMenu -> Some({ game with gameState = Screen(Screen.initMainMenu game.settings); gameSounds = gameSounds; playerData = playerData })
+      | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds; playerData = playerData })
       | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds; playerData = playerData })
       | SwitchToAwards -> Some({ game with gameState = AwardScreen(AwardScreen.initted); gameSounds = gameSounds; playerData = playerData })
       | NativeExit -> None
