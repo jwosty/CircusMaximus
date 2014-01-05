@@ -9,23 +9,32 @@ open CircusMaximus.Input
 
 type AwardScreen =
   { timer: int
-    mainMenuButton: Button }
+    mainMenuButton: Button
+    continueButton: Button }
 
 /// Contains functions and constants pertaining to award screens
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module AwardScreen =
   /// The default initialized award screen
   let init (settings: GameSettings) =
+    let x = settings.windowDimensions.X / 2.f
+    let y8 = settings.windowDimensions.Y / 10.f
     { timer = 0
+      continueButton =
+        Button.initCenter
+          (x @@ y8)
+          Button.defaultButtonSize "Continue"
       mainMenuButton =
         Button.initCenter
-          (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y / 6.f)
+          (x @@ y8 * 2.f)
           Button.defaultButtonSize "Exit races" }
   
   /// Updates an award screen and returns the new model
   let next (awardScreen: AwardScreen) mouse =
-    match awardScreen.mainMenuButton.buttonState with
-    | Releasing -> SwitchToMainMenu
+    match awardScreen.continueButton.buttonState, awardScreen.mainMenuButton.buttonState with
+    | Releasing, _ -> SwitchToRaces
+    | _, Releasing -> SwitchToMainMenu
     | _ ->
       { timer = awardScreen.timer + 1
+        continueButton = Button.next awardScreen.continueButton mouse
         mainMenuButton = Button.next awardScreen.mainMenuButton mouse } |> NoSwitch
