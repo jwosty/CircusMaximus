@@ -76,12 +76,12 @@ module Game =
           gameState, gameSounds, !playerDataRef
           
         | AwardScreen awardScreen ->
-          ScreenStatus.map AwardScreen (AwardScreen.next awardScreen),
+          ScreenStatus.map AwardScreen (AwardScreen.next awardScreen mouse),
           game.gameSounds, game.playerData
       
       match gameState with
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds; playerData = playerData })
       | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds; playerData = playerData })
       | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds; playerData = playerData })
-      | SwitchToAwards -> Some({ game with gameState = AwardScreen(AwardScreen.initted); gameSounds = gameSounds; playerData = playerData })
+      | SwitchToAwards -> Some({ game with gameState = AwardScreen(AwardScreen.init game.settings); gameSounds = gameSounds; playerData = playerData })
       | NativeExit -> None
