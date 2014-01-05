@@ -44,8 +44,6 @@ module Race =
             else { basePlayer with finishState = Finished(Player.numPlayers - n + 1) } ]
       timer = 0 }
   
-  let findPlayerByNumber number (race: Race) = race.players |> List.find (fun p -> p.number = number)
-  
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
   let applyPlayerEffects players =
     players

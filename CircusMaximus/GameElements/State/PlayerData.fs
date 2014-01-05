@@ -23,3 +23,5 @@ module PlayerData =
     | 2 -> 50
     | 3 -> 25
     | _ -> 0
+  
+  let findByNumber number playerData = List.find (fun (playerData: PlayerData) -> playerData.number = number) playerData

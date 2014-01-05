@@ -9,6 +9,8 @@ open CircusMaximus.Input
 
 type AwardScreen =
   { timer: int
+    /// A list of player data and the amounts they just earned
+    playerDataAndWinnings: (PlayerData * int) list
     mainMenuButton: Button
     continueButton: Button }
 
@@ -16,10 +18,28 @@ type AwardScreen =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module AwardScreen =
   /// The default initialized award screen
-  let init (settings: GameSettings) =
+  let init (settings: GameSettings) (playerDataAndWinnings: (PlayerData * int) list) =
     let x = settings.windowDimensions.X / 2.f
     let y8 = settings.windowDimensions.Y / 10.f
+    // Player data and their winnings paired together conveniently
+    (*
+    let playerDataAndWinnings =
+      List.init players.Length
+        (fun i ->
+          let number = i + 1
+          let winnings =
+            match (Player.findByNumber number players).finishState with
+            | Finished placing -> PlayerData.playerWinnings number
+            | Racing _ -> 0
+          PlayerData.findByNumber number playerData, winnings)
+    *)
+    // The new playerData that the game should now use
+    let newPlayerData =
+      playerDataAndWinnings |> List.map
+        (fun (playerData, winnings) -> { playerData with coinBalance = playerData.coinBalance + winnings })
+    
     { timer = 0
+      playerDataAndWinnings = playerDataAndWinnings
       continueButton =
         Button.initCenter
           (x @@ y8)
@@ -27,7 +47,8 @@ module AwardScreen =
       mainMenuButton =
         Button.initCenter
           (x @@ y8 * 2.f)
-          Button.defaultButtonSize "Exit races" }
+          Button.defaultButtonSize "Exit races" },
+    newPlayerData
   
   /// Updates an award screen and returns the new model
   let next (awardScreen: AwardScreen) mouse =
@@ -35,6 +56,7 @@ module AwardScreen =
     | Releasing, _ -> SwitchToRaces
     | _, Releasing -> SwitchToMainMenu
     | _ ->
-      { timer = awardScreen.timer + 1
-        continueButton = Button.next awardScreen.continueButton mouse
-        mainMenuButton = Button.next awardScreen.mainMenuButton mouse } |> NoSwitch
+      { awardScreen with
+          timer = awardScreen.timer + 1
+          continueButton = Button.next awardScreen.continueButton mouse
+          mainMenuButton = Button.next awardScreen.mainMenuButton mouse } |> NoSwitch

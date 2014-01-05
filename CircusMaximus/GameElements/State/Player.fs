@@ -166,6 +166,8 @@ module Player =
           effects = effects;
           particles = particles }, playerChariotSound
   
+  let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
+  
   /// Updates a player like basicNext, but also handles input things
   let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"

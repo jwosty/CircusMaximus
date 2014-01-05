@@ -39,49 +39,48 @@ module Game =
     if keyboard.IsKeyDown(Keys.Escape) then
       None  // Indicate that we want to exit
     else
-      let gameState, gameSounds, playerData =
+      let gameState, gameSounds =
         match game.gameState with
         | MainMenu mainMenu ->
           let gameState =
             (MainMenu.next mainMenu (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads))
             |> ScreenStatus.map MainMenu
-          gameState, game.gameSounds, game.playerData
+          gameState, game.gameSounds
         
         | Race oldRace ->
           let raceScreenStatus, gameSounds = Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.gameSounds game.settings
-          let playerDataRef = ref game.playerData
           let gameState =
             raceScreenStatus |> ScreenStatus.map
               (fun race ->
-                let playerData =
-                  // Add winnings if the race just ended (last state was MidRace, but current is now PostRace)
-                  match oldRace.raceState, race.raceState with
-                  | MidRace _, PostRace _ ->
-                    // Transform all players' data to reward them if they did well
-                    game.playerData |>
-                      List.map (fun playerData ->
-                        // Find the race player attatched to the data
-                        let player = Race.findPlayerByNumber playerData.number oldRace
-                        match player.finishState with
-                        | Finished placing -> { playerData with coinBalance = playerData.coinBalance + PlayerData.playerWinnings placing }
-                        // Something strange is happening if there's an unfinished player in a post-race state
-                        | _ -> playerData)
-                  | _ -> game.playerData
-                playerDataRef := playerData
-                
                 match race.raceState, race.timer with
                 | PostRace _, 0 -> ()
                 | _ -> ()
                 Race(race))
-          gameState, gameSounds, !playerDataRef
+          gameState, gameSounds
           
         | AwardScreen awardScreen ->
           ScreenStatus.map AwardScreen (AwardScreen.next awardScreen mouse),
-          game.gameSounds, game.playerData
+          game.gameSounds
       
       match gameState with
-      | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds; playerData = playerData })
-      | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds; playerData = playerData })
-      | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds; playerData = playerData })
-      | SwitchToAwards -> Some({ game with gameState = AwardScreen(AwardScreen.init game.settings); gameSounds = gameSounds; playerData = playerData })
+      | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds })
+      | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds })
+      | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds })
+      | SwitchToAwards ->
+        // Update player data
+        let players =
+          match game.gameState with
+          | Race race -> race.players
+          | _ -> failwith "The awards screen can only be accessed when a race ends"
+        let playerDataAndWinnings =
+          players |> List.map
+            (fun player ->
+              let winnings =
+                match player.finishState with
+                | Finished placing -> PlayerData.playerWinnings placing
+                // Something strange is happening if there's an unfinished player after the race has ended
+                | Racing -> 0
+              PlayerData.findByNumber player.number game.playerData, winnings)
+        let awardScreen, playerData = AwardScreen.init game.settings playerDataAndWinnings
+        Some({ game with gameState = AwardScreen(awardScreen); gameSounds = gameSounds; playerData = playerData })
       | NativeExit -> None
