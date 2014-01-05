@@ -63,7 +63,7 @@ module Game =
                         // Find the race player attatched to the data
                         let player = Race.findPlayerByNumber playerData.number oldRace
                         match player.finishState with
-                        | Finished placing -> { playerData with coinBalance = PlayerData.playerWinnings placing }
+                        | Finished placing -> { playerData with coinBalance = playerData.coinBalance + PlayerData.playerWinnings placing }
                         // Something strange is happening if there's an unfinished player in a post-race state
                         | _ -> playerData)
                   | _ -> game.playerData
