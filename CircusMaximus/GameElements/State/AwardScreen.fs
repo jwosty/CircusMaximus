@@ -21,18 +21,6 @@ module AwardScreen =
   let init (settings: GameSettings) (playerDataAndWinnings: (PlayerData * int) list) =
     let x = settings.windowDimensions.X / 2.f
     let y8 = settings.windowDimensions.Y / 10.f
-    // Player data and their winnings paired together conveniently
-    (*
-    let playerDataAndWinnings =
-      List.init players.Length
-        (fun i ->
-          let number = i + 1
-          let winnings =
-            match (Player.findByNumber number players).finishState with
-            | Finished placing -> PlayerData.playerWinnings number
-            | Racing _ -> 0
-          PlayerData.findByNumber number playerData, winnings)
-    *)
     // The new playerData that the game should now use
     let newPlayerData =
       playerDataAndWinnings |> List.map

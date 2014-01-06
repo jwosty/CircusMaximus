@@ -39,7 +39,7 @@ module Race =
       players =
         [ for n in 1..5 ->
           let basePlayer = Player.init (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n
-          if n < 4
+          if n < 2
             then basePlayer
             else { basePlayer with finishState = Finished(Player.numPlayers - n + 1) } ]
       timer = 0 }

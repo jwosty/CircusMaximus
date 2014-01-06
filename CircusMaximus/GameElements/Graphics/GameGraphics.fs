@@ -83,4 +83,4 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
                 ButtonGraphics.draw fontBatch generalBatch continueButton assets))
   
   | AwardScreen awardScreen ->
-    AwardScreenGraphics.draw fontBatch generalBatch awardScreen game assets
+    AwardScreenGraphics.draw fontBatch generalBatch awardScreen game.settings assets
