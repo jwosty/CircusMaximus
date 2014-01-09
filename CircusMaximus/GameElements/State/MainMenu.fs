@@ -15,11 +15,11 @@ module MainMenu =
     { playButton =
         Button.initCenter
           (settings.windowDimensions * (0.5 @@ 0.333))
-          Button.defaultButtonSize "Principio"
+          Button.defaultButtonSize "Incipe"
       quitButton =
         Button.initCenter
           (settings.windowDimensions * (0.5 @@ 0.666))
-          Button.defaultButtonSize "Desero" }
+          Button.defaultButtonSize "Exi" }
   
   /// Updates the main menu
   let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) =

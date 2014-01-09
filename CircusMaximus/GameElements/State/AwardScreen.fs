@@ -31,11 +31,11 @@ module AwardScreen =
       continueButton =
         Button.initCenter
           (x @@ y8)
-          Button.defaultButtonSize "Continue"
+          Button.defaultButtonSize "Contine"
       mainMenuButton =
         Button.initCenter
           (x @@ y8 * 2.f)
-          Button.defaultButtonSize "Exit races" },
+          Button.defaultButtonSize "Exi cursus" },
     newPlayerData
   
   /// Updates an award screen and returns the new model
