@@ -105,14 +105,14 @@
     <Compile Include="GameElements\Sound.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
-    <Compile Include="GameElements\State\Input.fs" />
     <Compile Include="GameElements\State\ScreenStatus.fs" />
     <Compile Include="GameElements\State\GameSettings.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
-    <Compile Include="GameElements\State\PlayerData.fs" />
-    <Compile Include="GameElements\State\Horses.fs" />
-    <Compile Include="GameElements\State\Player.fs" />
+    <Compile Include="GameElements\State\Player\PlayerInput.fs" />
+    <Compile Include="GameElements\State\Player\PlayerData.fs" />
+    <Compile Include="GameElements\State\Player\Horses.fs" />
+    <Compile Include="GameElements\State\Player\Player.fs" />
     <Compile Include="GameElements\State\Race.fs" />
     <Compile Include="GameElements\State\MainMenu.fs" />
     <Compile Include="GameElements\State\AwardScreen.fs" />
@@ -141,6 +141,7 @@
     <Folder Include="Collision\Shapes\" />
     <Folder Include="GameElements\Graphics\" />
     <Folder Include="GameElements\State\" />
+    <Folder Include="GameElements\State\Player\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\images\chariot.png" />
