@@ -26,15 +26,24 @@ type Effect = | Taunt
 type Player =
   { motionState: MotionState
     finishState: FinishState
+    /// The player's number, e.g. player 1, player 2, etc
     number: int
+    /// The number of frames that this player has existed for
     age: float
+    /// Player bounds for collision
     bounds: PlayerShape
+    /// Horse stats aggregated together
     horses: Horses
+    /// The amount of turns this player has made so far
     turns: int
+    /// Whether or not this player just came around the starting turn
     lastTurnedLeft: bool
     tauntState: Taunt option
+    /// A list of active player effects
     effects: (Effect * Duration) list
+    /// Particles attatched to this player (used for the taunt effect)
     particles: BoundParticle list
+    /// For debugging; a list representing which lines on the player bounds are intersecting
     intersectingLines: bool list }
   
   member this.position = this.bounds.Center
