@@ -111,6 +111,7 @@
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
     <Compile Include="GameElements\State\PlayerData.fs" />
+    <Compile Include="GameElements\State\Horses.fs" />
     <Compile Include="GameElements\State\Player.fs" />
     <Compile Include="GameElements\State\Race.fs" />
     <Compile Include="GameElements\State\MainMenu.fs" />

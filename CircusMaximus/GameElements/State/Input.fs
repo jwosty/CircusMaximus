@@ -7,9 +7,9 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 
 type PlayerInput =
-  { /// Forward push
+  { /// Forward push; ranges from 0 to 1
     power: float
-    /// Turn amount
+    /// Turn amount; ranges from 0 to 1
     turn: float
     /// True when the player presses the taunt button (Q on the keyboard, A on the controller)
     expectingTaunt: bool
@@ -18,19 +18,17 @@ type PlayerInput =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module PlayerInput =
-  let maxTurn, maxSpeed = 1.0, 4.0
-
-  let initFromKeyboard (lastKeyboard: KeyboardState, keyboard: KeyboardState) maxTurn maxSpeed =
-    { power = if keyboard.IsKeyDown(Keys.W) then maxSpeed else 0.0
+  let initFromKeyboard (lastKeyboard: KeyboardState, keyboard: KeyboardState) =
+    { power = if keyboard.IsKeyDown(Keys.W) then 1. else 0.0
       turn =
-        (  if keyboard.IsKeyDown(Keys.A) then -maxTurn else 0.0)
-        + (if keyboard.IsKeyDown(Keys.D) then maxTurn else 0.0)
+        (  if keyboard.IsKeyDown(Keys.A) then -1. else 0.0)
+        + (if keyboard.IsKeyDown(Keys.D) then 1. else 0.0)
         |> degreesToRadians
       expectingTaunt = keyboard.IsKeyDown(Keys.Q)
       advanceLap = lastKeyboard.IsKeyDown(Keys.L) && keyboard.IsKeyUp(Keys.L) }
   
-  let initFromGamepad (lastGamepad: GamePadState, gamepad: GamePadState) maxTurn maxSpeed =
-    { power = float gamepad.Triggers.Right * maxSpeed
-      turn = float gamepad.ThumbSticks.Left.X * maxTurn |> degreesToRadians
+  let initFromGamepad (lastGamepad: GamePadState, gamepad: GamePadState) =
+    { power = float gamepad.Triggers.Right
+      turn = float gamepad.ThumbSticks.Left.X |> degreesToRadians
       expectingTaunt = (gamepad.Buttons.A = ButtonState.Pressed)
       advanceLap = lastGamepad.IsButtonDown(Buttons.Y) && gamepad.IsButtonUp(Buttons.Y) }

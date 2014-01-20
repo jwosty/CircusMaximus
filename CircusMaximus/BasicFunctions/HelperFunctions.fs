@@ -22,6 +22,18 @@ let inline vecy (vector2: Vector2) = float vector2.Y
 let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
+let clampMin min value =
+  if value < min
+  then min
+  else value
+
+let clampMax max value =
+  if value > max
+  then max
+  else value
+
+let clamp value min max = value |> clampMin min |> clampMax max
+
 /// Creates a sort of lazy evaluation by "delaying" the result
 let (...<|) f x = fun () -> f x
 let (|>...) x f = fun () -> f x

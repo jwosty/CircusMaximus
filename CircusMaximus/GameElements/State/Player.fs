@@ -22,9 +22,10 @@ type Effect = | Taunt
 type Player =
   { motionState: MotionState
     finishState: FinishState
-    bounds: PlayerShape
     number: int
     age: float
+    bounds: PlayerShape
+    horses: Horses
     turns: int
     lastTurnedLeft: bool
     tauntState: Taunt option
@@ -38,18 +39,31 @@ type Player =
   member this.velocity = match this.motionState with | Moving v -> v | Crashed -> 0.
   member this.collisionBox = BoundingPolygon(this.bounds)
   member this.finished = match this.finishState with | Racing -> false | _ -> true
-  
+
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Player =
+  /// The number of players participating in the race
   let numPlayers = 5
+  /// The amount of time a taunt lasts
   let tauntTime = 750
+  
+  /// The base player acceleration change in percent per frame
+  let basePlayerAcceleration = 0.005
+  /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
+  let baseTopSpeed = 5.
+  /// A normal turn speed, and the factor to convert a turn percentage into an absolute velocity
+  let baseTurn = 1.
   
   let init (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      bounds = bounds; number = number; age = 0.; effects = [];
+      number = number; age = 0.; bounds = bounds;
+      horses =
+        { acceleration = basePlayerAcceleration
+          topSpeed = baseTopSpeed
+          turn = baseTurn }
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
-      particles = []
+      effects = []; particles = []
       lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
   
   let getBB (player: Player) = BoundingPolygon(player.bounds)
@@ -86,12 +100,16 @@ module Player =
   
   /// Returns the next position and direction of the player and change in direction
   let nextPositionDirection (player: Player) Δdirection =
-    let Δdirection =
+    let Δdirection = Δdirection * player.horses.turn
+    let finalVelocity = player.velocity * player.horses.topSpeed
+    let finalΔdirection =
       // Taunting affects players' turning ability
       match findLongestEffect player.effects Effect.Taunt with
       | Some _ -> Δdirection * 0.75
       | None -> Δdirection
-    positionForward player.position player.direction player.velocity, player.direction + Δdirection
+    let finalDirection = player.direction + finalΔdirection
+    
+    positionForward player.position finalDirection finalVelocity, finalDirection
   
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
   let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
@@ -151,13 +169,18 @@ module Player =
             else Paused
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
-          
+          let velocity =
+            if player.velocity > input.power
+              then clampMin (player.velocity - player.horses.acceleration) input.power
+            elif player.velocity < input.power
+              then clampMax (player.velocity + player.horses.acceleration) input.power
+            else player.velocity
           { player with
-              motionState = Moving(((player.velocity * 128.) + input.power) / 129.0)
+              motionState = Moving(velocity)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
               age = player.age + 1.; turns = turns; lastTurnedLeft = lastTurnedLeft
               tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults },
-            if player.velocity >= 3.
+            if player.velocity >= 0.75
             then Looping
             else Paused
     | Crashed ->
@@ -174,11 +197,11 @@ module Player =
     let player, playerChariotSound =
       if player.number = 1 then
         basicNext
-          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) PlayerInput.maxTurn PlayerInput.maxSpeed)
+          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard))
           player collision Racetrack.center rand playerChariotSound
       else
         let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         basicNext
-          (PlayerInput.initFromGamepad (lastGamepad, gamepad) PlayerInput.maxTurn PlayerInput.maxSpeed)
+          (PlayerInput.initFromGamepad (lastGamepad, gamepad))
           player collision Racetrack.center rand playerChariotSound
     player, playerChariotSound
