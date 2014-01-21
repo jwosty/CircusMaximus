@@ -61,7 +61,7 @@ module Player =
   let tauntTime = 750
   
   /// The base player acceleration change in percent per frame
-  let basePlayerAcceleration = 0.005
+  let baseAcceleration = 0.005
   /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
   let baseTopSpeed = 5.
   /// A normal turn speed, and the factor to convert a turn percentage into an absolute velocity
@@ -71,7 +71,7 @@ module Player =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
       number = number; age = 0.; bounds = bounds;
       horses =
-        { acceleration = basePlayerAcceleration
+        { acceleration = baseAcceleration
           topSpeed = baseTopSpeed
           turn = baseTurn }
       intersectingLines = [false; false; false; false]
@@ -176,10 +176,6 @@ module Player =
         | true :: _ ->
           { player with motionState = Crashed }, Stopped
         | _ ->
-          let chariotSound =
-            if (player.velocity >= 3.)
-            then Looping
-            else Paused
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
           let velocity =

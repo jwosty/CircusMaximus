@@ -48,6 +48,16 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
   | MainMenu mainMenu ->
     MainMenuGraphics.draw mainMenu fontBatch generalBatch assets
   
+  | HorseScreen horses ->
+    let y = windowRect.Height / 2
+    horses |> List.iteri (fun i horse ->
+      let playerNumber = i + 1
+      let x = vecx game.settings.windowDimensions / (float horses.Length + 0.25) * (float (playerNumber - 1) + 0.625)
+      generalBatch.Begin()
+      let bgCenter = x @@ y
+      generalBatch.DrawCentered(assets.AwardBackground, bgCenter, Color.White)
+      generalBatch.End())
+  
   | Race race ->
     match race.raceState with
     | PreRace ->

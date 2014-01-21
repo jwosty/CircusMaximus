@@ -68,6 +68,7 @@ type GameWindow() as this =
         realSound.Play()
         Playing (times - 1)
     | Looping when realSound.State <> Audio.SoundState.Playing ->
+      /// TODO: fix the bug here where the sound doesn't play if it already has in the past (possibly a MonoGame bug)
       realSound.Play()
       Looping
     | Paused when realSound.State <> Audio.SoundState.Paused ->

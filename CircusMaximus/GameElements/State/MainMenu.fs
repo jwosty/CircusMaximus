@@ -25,7 +25,7 @@ module MainMenu =
   let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) =
     match mainMenu.playButton.buttonState, mainMenu.quitButton.buttonState with
     | _, Releasing -> NativeExit
-    | Releasing, _ -> SwitchToRaces
+    | Releasing, _ -> SwitchToHorseScreen
     | _, _ ->
       NoSwitch(
         { mainMenu with

@@ -8,6 +8,7 @@ open CircusMaximus.HelperFunctions
 
 type GameState =
   | MainMenu of MainMenu
+  | HorseScreen of Horses list
   | Race of Race
   | AwardScreen of AwardScreen
 
@@ -29,9 +30,13 @@ module Game =
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
       gameSounds = GameSounds.allStopped Player.numPlayers }
   
-  let switchToMainMenu game gameSounds =
+  let switchToHorseScreen game gameSounds =
+    let horses = List.init Player.numPlayers (fun i ->
+      { acceleration = Player.baseAcceleration
+        topSpeed = Player.baseTopSpeed
+        turn = Player.baseTurn})
     { game with
-        gameState = MainMenu(MainMenu.init game.settings)
+        gameState = HorseScreen(horses)
         gameSounds = gameSounds }
   
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
@@ -46,6 +51,8 @@ module Game =
             (MainMenu.next mainMenu (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads))
             |> ScreenStatus.map MainMenu
           gameState, game.gameSounds
+        
+        | HorseScreen _ -> NoSwitch(game.gameState), game.gameSounds
         
         | Race oldRace ->
           let raceScreenStatus, gameSounds = Race.next oldRace mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.gameSounds game.settings
@@ -64,6 +71,7 @@ module Game =
       
       match gameState with
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds })
+      | SwitchToHorseScreen -> Some(switchToHorseScreen game gameSounds)
       | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds })
       | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds })
       | SwitchToAwards ->
