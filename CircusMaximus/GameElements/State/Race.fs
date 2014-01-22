@@ -33,12 +33,12 @@ module Race =
       (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y / 6.f * 1.f)
       defaultButtonSize "Continue")
   
-  let init settings =
+  let init (playerHorses: _ list) settings =
     let playerY n = (n - 1) * 210 + 740 |> float32
     { raceState = PreRace
       players =
         [ for n in 1..5 ->
-          let basePlayer = Player.init (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n
+          let basePlayer = Player.init playerHorses.[n - 1] (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n
           if n < 2
             then basePlayer
             else { basePlayer with finishState = Finished(Player.numPlayers - n + 1) } ]

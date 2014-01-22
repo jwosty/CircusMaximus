@@ -11,6 +11,8 @@ type AwardScreen =
   { timer: int
     /// A list of player data and the amounts they just earned
     playerDataAndWinnings: (PlayerData * int) list
+    /// A list of players' horses saved from the last race, which will be passed onto the next
+    playerHorses: Horses list
     mainMenuButton: Button
     continueButton: Button }
 
@@ -18,7 +20,7 @@ type AwardScreen =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module AwardScreen =
   /// The default initialized award screen
-  let init (settings: GameSettings) (playerDataAndWinnings: (PlayerData * int) list) =
+  let init (settings: GameSettings) (playerDataAndWinnings: (PlayerData * int) list) playerHorses =
     let x = settings.windowDimensions.X / 2.f
     let y8 = settings.windowDimensions.Y / 10.f
     // The new playerData that the game should now use
@@ -28,6 +30,7 @@ module AwardScreen =
     
     { timer = 0
       playerDataAndWinnings = playerDataAndWinnings
+      playerHorses = playerHorses
       continueButton =
         Button.initCenter
           (x @@ y8)
@@ -41,7 +44,7 @@ module AwardScreen =
   /// Updates an award screen and returns the new model
   let next (awardScreen: AwardScreen) mouse =
     match awardScreen.continueButton.buttonState, awardScreen.mainMenuButton.buttonState with
-    | Releasing, _ -> SwitchToRaces
+    | Releasing, _ -> SwitchToRaces(awardScreen.playerHorses)
     | _, Releasing -> SwitchToMainMenu
     | _ ->
       { awardScreen with

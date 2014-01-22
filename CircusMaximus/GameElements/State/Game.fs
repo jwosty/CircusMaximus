@@ -22,6 +22,7 @@ type Game =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
+  /// Initializes a game state with the given random number generator and window dimensions
   let init rand startingWindowDimensions =
     let settings = { windowDimensions = startingWindowDimensions }
     { gameState = MainMenu(MainMenu.init settings)
@@ -30,6 +31,7 @@ module Game =
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
       gameSounds = GameSounds.allStopped Player.numPlayers }
   
+  /// Initializes the game state to a HorseScreen
   let switchToHorseScreen game gameSounds =
     let horses = List.init Player.numPlayers (fun i ->
       { acceleration = Player.baseAcceleration
@@ -52,12 +54,12 @@ module Game =
             |> ScreenStatus.map MainMenu
           gameState, game.gameSounds
         
-        | HorseScreen(horses, continueButton) ->
+        | HorseScreen(playerHorses, continueButton) ->
           let continueButton = Button.next continueButton mouse
           let gameState =
             match continueButton.buttonState with
-            | Releasing -> SwitchToRaces
-            | _ -> NoSwitch(HorseScreen(horses, continueButton))
+            | Releasing -> SwitchToRaces(playerHorses)
+            | _ -> NoSwitch(HorseScreen(playerHorses, continueButton))
           gameState, game.gameSounds
         
         | Race oldRace ->
@@ -79,7 +81,7 @@ module Game =
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds })
       | SwitchToHorseScreen -> Some(switchToHorseScreen game gameSounds)
       | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds })
-      | SwitchToRaces -> Some({ game with gameState = Race(Race.init game.settings); gameSounds = gameSounds })
+      | SwitchToRaces(playerHorses) -> Some({ game with gameState = Race(Race.init playerHorses game.settings); gameSounds = gameSounds })
       | SwitchToAwards ->
         // Update player data
         let players =
@@ -95,6 +97,7 @@ module Game =
                 // Something strange is happening if there's an unfinished player after the race has ended
                 | Racing -> 0
               PlayerData.findByNumber player.number game.playerData, winnings)
-        let awardScreen, playerData = AwardScreen.init game.settings playerDataAndWinnings
+        let playerHorses = players |> List.map (fun player -> player.horses)
+        let awardScreen, playerData = AwardScreen.init game.settings playerDataAndWinnings playerHorses
         Some({ game with gameState = AwardScreen(awardScreen); gameSounds = gameSounds; playerData = playerData })
       | NativeExit -> None

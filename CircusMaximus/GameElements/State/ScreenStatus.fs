@@ -6,7 +6,7 @@ type ScreenStatus<'a> =
   | NoSwitch of 'a
   | SwitchToMainMenu
   | SwitchToHorseScreen
-  | SwitchToRaces
+  | SwitchToRaces of Horses list
   | SwitchToAwards
   /// Quit CircusMaximus
   | NativeExit
@@ -19,6 +19,6 @@ module ScreenStatus =
     | NoSwitch x -> NoSwitch(mapping x)
     | SwitchToHorseScreen -> SwitchToHorseScreen
     | SwitchToMainMenu -> SwitchToMainMenu
-    | SwitchToRaces -> SwitchToRaces
+    | SwitchToRaces(playerHorses) -> SwitchToRaces(playerHorses)
     | SwitchToAwards -> SwitchToAwards
     | NativeExit -> NativeExit
