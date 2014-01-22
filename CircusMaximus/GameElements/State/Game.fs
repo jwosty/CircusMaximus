@@ -34,9 +34,15 @@ module Game =
   /// Initializes the game state to a HorseScreen
   let switchToHorseScreen game gameSounds =
     let horses = List.init Player.numPlayers (fun i ->
-      { acceleration = Player.baseAcceleration
-        topSpeed = Player.baseTopSpeed
-        turn = Player.baseTurn})
+      let values =
+        repeat (unbalanceRandom 0 25 game.rand) [100; 100; 100] 3
+        |> List.map (fun n -> float n / 100.0)
+      let h =
+        { acceleration = Player.baseAcceleration * values.[0]
+          topSpeed = Player.baseTopSpeed * values.[1]
+          turn = Player.baseTurn * values.[2]}
+      printfn "Player %i\n\tacceleration = %f\n\ttop speed = %f\n\tturn = %f" (i + 1) h.acceleration h.topSpeed h.turn
+      h)
     { game with
         gameState = HorseScreen(horses, Button.initCenter (game.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonSize "Contine")
         gameSounds = gameSounds }

@@ -32,6 +32,31 @@ let clampMax max value =
   then max
   else value
 
+/// Randomly changes two values so that all values still add up to the same total
+let unbalanceRandom minUnbalance maxUnbalance (rand: Random) values =
+  if maxUnbalance > 0 then
+    // The index of the value to increment
+    let whichInc = rand.Next(0, List.length values)
+    // The index of the value to decrement
+    let whichDec =
+      let wd = rand.Next(0, (List.length values) - 1)
+      if wd >= whichInc then wd + 1
+      else wd
+    // The amount to unbalance, from 1 to 3
+    let amt = rand.Next(minUnbalance, maxUnbalance + 1)
+    values |> List.mapi (fun i v ->
+      if i = whichInc then v + amt
+      elif i = whichDec then v - amt
+      else v)
+  else values
+
+/// A pipe chain of n length
+let rec repeat f x n =
+  if n <= 0 then x
+  else repeat f (f x) (n - 1)
+
+let ( *@*@* ) a b c = a, b, c
+
 let clamp value min max = value |> clampMin min |> clampMax max
 
 /// Creates a sort of lazy evaluation by "delaying" the result
