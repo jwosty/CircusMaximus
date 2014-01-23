@@ -7,11 +7,26 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.State
+open CircusMaximus.FlatSpriteFont
 
 let drawBarData (generalBatch: SpriteBatch) (topLeft: Vector2) (bottomRight: Vector2) percent (assets: GameContent) =
+  let centerColor =
+    if percent >= 0.5f then
+      let f = percent * -2.f + 2.f
+      new Color(f, 1.f, f)
+    else
+      let f = percent * 2.f
+      new Color(1.f, f, f)
   generalBatch.Draw(assets.Pixel, new Rectangle(int topLeft.X, int topLeft.Y, bottomRight.X - topLeft.X |> int, bottomRight.Y - topLeft.Y |> int), Color.Gray)
   let barY = MathHelper.Lerp(bottomRight.Y, topLeft.Y, percent)
-  generalBatch.Draw(assets.Pixel, new Rectangle(int topLeft.X + 2, int barY + 2, bottomRight.X - topLeft.X - 4.f |> int, bottomRight.Y - barY - 4.f |> int), Color.White)
+  generalBatch.Draw(assets.Pixel, new Rectangle(int topLeft.X + 2, int barY + 2, bottomRight.X - topLeft.X - 4.f |> int, bottomRight.Y - barY - 4.f |> int), centerColor)
+
+let drawHorseBarData generalBatch fontBatch barTop barBottom x percent name assets =
+  
+  drawBarData generalBatch (x - 10.f @@ barTop) (x + 10.f @@ barBottom) percent assets
+  FlatSpriteFont.drawString
+    assets.Font fontBatch name (x @@ barBottom + 10.f) 1.5f Color.White
+    (Center, Center)
 
 let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) continueButton assets horses =
   fontBatch.DoWithPointClamp (fun fontBatch ->
@@ -36,10 +51,10 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) conti
       let barLeftX = x - (float32 assets.AwardBackground.Width / 2.0f)
       let lx = x - (float32 assets.AwardBackground.Width / 2.f) |> float32
       generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)
-      let bx = barLeftX + (barSpacing * 1.f)
-      drawBarData generalBatch (bx - 10.f @@ barTop) ((bx + 10.f) @@ barBottom) (float32 horse.acceleration * accFactor) assets
-      let bx = barLeftX + (barSpacing * 2.f)
-      drawBarData generalBatch (bx - 10.f @@ barTop) ((bx + 10.f) @@ barBottom) (float32 horse.topSpeed * tsFactor) assets
-      let bx = barLeftX + (barSpacing * 3.f)
-      drawBarData generalBatch (bx - 10.f @@ barTop) ((bx + 10.f) @@ barBottom) (float32 horse.turn * tuFactor) assets
-      )))
+      
+      // "acc." = acceleratio
+      drawHorseBarData generalBatch fontBatch barTop barBottom (barLeftX + (barSpacing * 1.f)) (float32 horse.acceleration * accFactor) "acc." assets
+      // "vel." = velocitas
+      drawHorseBarData generalBatch fontBatch barTop barBottom (barLeftX + (barSpacing * 2.f)) (float32 horse.topSpeed * tsFactor) "vel." assets
+      // "spat." = spatium
+      drawHorseBarData generalBatch fontBatch barTop barBottom (barLeftX + (barSpacing * 3.f)) (float32 horse.turn * tuFactor) "spat." assets)))
