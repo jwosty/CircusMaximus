@@ -35,7 +35,8 @@ module Game =
   let switchToHorseScreen game gameSounds =
     let horses = List.init Player.numPlayers (fun i ->
       let values =
-        repeat (unbalanceRandom 0 25 game.rand) [100; 100; 100] 3
+        let ump = Player.unbalanceMidPoint * 100.0 |> int
+        repeat (unbalanceRandom 0 (Player.maxStatUnbalance * 100. |> int) game.rand) [ump; ump; ump] Player.unbalanceTimes
         |> List.map (fun n -> float n / 100.0)
       let h =
         { acceleration = Player.baseAcceleration * values.[0]

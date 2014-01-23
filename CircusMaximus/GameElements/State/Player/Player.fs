@@ -67,6 +67,10 @@ module Player =
   /// A normal turn speed, and the factor to convert a turn percentage into an absolute velocity
   let baseTurn = 1.
   
+  let unbalanceMidPoint = 0.5
+  let maxStatUnbalance = 0.1
+  let unbalanceTimes = 4
+  
   let init horses (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
       number = number; age = 0.
