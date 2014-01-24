@@ -8,9 +8,10 @@ open Microsoft.Xna.Framework.Graphics
 type GameContent =
   { Pixel: Texture2D
     RacetrackTextures: Texture2D[,]
-    ChariotTexture: Texture2D
     Font: Texture2D
     Button: Texture2D
+    ChariotTexture: Texture2D
+    PlayerGlow: Texture2D
     Particle: Texture2D
     PlacingBackground: Texture2D
     AwardBackground: Texture2D
@@ -38,9 +39,10 @@ module GameContentFunctions =
       // The GIMP plugin that split the image generates the files in the format y-x.png -- I should fix
       // that sometime
       RacetrackTextures = Array2D.init 10 3 (fun x y -> loadImage (sprintf "racetrack/%i-%i.png" y x))
-      ChariotTexture = loadImage "chariot"
       Font = loadImage "font"
       Button = loadImage "button"
+      ChariotTexture = loadImage "chariot"
+      PlayerGlow = loadImage "pglow"
       Particle = loadImage "particle"
       PlacingBackground = loadImage "placingbg"
       AwardBackground = loadImage "awardbg"

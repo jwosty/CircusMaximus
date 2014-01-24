@@ -183,5 +183,6 @@
     <BundleResource Include="Content\images\particle.png" />
     <BundleResource Include="Content\images\button.png" />
     <BundleResource Include="Content\images\awardbg.png" />
+    <BundleResource Include="Content\images\pglow.png" />
   </ItemGroup>
 </Project>

@@ -28,6 +28,8 @@ type Player =
     finishState: FinishState
     /// The player's number, e.g. player 1, player 2, etc
     number: int
+    /// The player's color
+    color: Color
     /// The number of frames that this player has existed for
     age: float
     /// Player bounds for collision
@@ -38,6 +40,7 @@ type Player =
     turns: int
     /// Whether or not this player just came around the starting turn
     lastTurnedLeft: bool
+    /// Whether or not this player is currently taunting
     tauntState: Taunt option
     /// A list of active player effects
     effects: (Effect * Duration) list
@@ -71,10 +74,18 @@ module Player =
   let maxStatUnbalance = 0.1
   let unbalanceTimes = 4
   
+  let getColor = function
+    | 1 -> Color.Red
+    | 2 -> Color.Yellow
+    | 3 -> Color.Green
+    | 4 -> Color.Cyan
+    | 5 -> Color.Blue
+    | _ -> Color.White
+  
   let init horses (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      number = number; age = 0.
-      bounds = bounds; horses = horses
+      number = number; color = getColor number;
+      age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       effects = []; particles = []
