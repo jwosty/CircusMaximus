@@ -101,7 +101,6 @@
     <Compile Include="Collision\Shapes\PlayerShape.fs" />
     <Compile Include="Collision\Shapes\RacetrackShape.fs" />
     <Compile Include="Collision\Collision.fs" />
-    <Compile Include="GameElements\GameContent.fs" />
     <Compile Include="GameElements\Sound.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\Racetrack.fs" />
@@ -117,6 +116,7 @@
     <Compile Include="GameElements\State\MainMenu.fs" />
     <Compile Include="GameElements\State\AwardScreen.fs" />
     <Compile Include="GameElements\State\Game.fs" />
+    <Compile Include="GameElements\Graphics\GameContent.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\ButtonGraphics.fs" />
     <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
