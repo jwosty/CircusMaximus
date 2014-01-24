@@ -36,7 +36,7 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) conti
     let y = game.settings.windowDimensions.Y / 2.f
     let bgTop = y - (float32 assets.AwardBackground.Height / 2.f)
     let bgBottom = y + (float32 assets.AwardBackground.Height / 2.f)
-    let barTop = bgTop + 10.f
+    let barTop = bgTop + 51.f
     let barBottom = bgBottom - 30.f
     let barSpacing = float32 assets.AwardBackground.Width / 4.0f
     
@@ -51,6 +51,12 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) conti
       let barLeftX = x - (float32 assets.AwardBackground.Width / 2.0f)
       let lx = x - (float32 assets.AwardBackground.Width / 2.f) |> float32
       generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)
+      
+      // title (player)
+      let str = "Histrio " + (toRoman playerNumber)
+      FlatSpriteFont.drawString assets.Font fontBatch str (x @@ (bgTop + 17.f)) 2.f Color.White (Center, Center)
+      // TODO: check translation
+      FlatSpriteFont.drawString assets.Font fontBatch "Informatiae Equo" (x @@ (bgTop + 34.f)) 2.f Color.White (Center, Center)
       
       // "acc." = acceleratio
       drawHorseBarData generalBatch fontBatch barTop barBottom (barLeftX + (barSpacing * 1.f)) (float32 horse.acceleration * accFactor) "acc." assets
