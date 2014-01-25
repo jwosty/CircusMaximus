@@ -107,6 +107,7 @@
     <Compile Include="GameElements\State\GameSettings.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
+    <Compile Include="GameElements\State\Item.fs" />
     <Compile Include="GameElements\State\Player\PlayerInput.fs" />
     <Compile Include="GameElements\State\Player\PlayerData.fs" />
     <Compile Include="GameElements\State\Player\Horses.fs" />
@@ -119,8 +120,8 @@
     <Compile Include="GameElements\Graphics\GameContent.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\ButtonGraphics.fs" />
-    <Compile Include="GameElements\Graphics\PlayerGraphics.fs" />
-    <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
+    <Compile Include="GameElements\Graphics\Player\PlayerGraphics.fs" />
+    <Compile Include="GameElements\Graphics\Player\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />
     <Compile Include="GameElements\Graphics\MainMenuGraphics.fs" />
     <Compile Include="GameElements\Graphics\HorseScreenGraphics.fs" />
@@ -143,6 +144,7 @@
     <Folder Include="GameElements\Graphics\" />
     <Folder Include="GameElements\State\" />
     <Folder Include="GameElements\State\Player\" />
+    <Folder Include="GameElements\Graphics\Player\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\images\chariot.png" />
