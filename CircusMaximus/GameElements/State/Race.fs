@@ -37,11 +37,7 @@ module Race =
     let playerY n = (n - 1) * 210 + 740 |> float32
     { raceState = PreRace
       players =
-        [ for n in 1..5 ->
-          let basePlayer = Player.init playerHorses.[n - 1] (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n
-          if n < 2
-            then basePlayer
-            else { basePlayer with finishState = Finished(Player.numPlayers - n + 1) } ]
+        [ for n in 1..5 -> Player.init playerHorses.[n - 1] (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n ]
       timer = 0 }
   
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
