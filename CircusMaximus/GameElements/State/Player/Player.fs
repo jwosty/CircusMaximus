@@ -105,29 +105,17 @@ module Player =
   /// Finds a player by their number
   let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
   
-  /// Finds the effect that matches the given effect, using the one with the greatest remaining duration
-  let findLongestEffect (effects: Effect list) key =
-    let effects = List.filter (fun (e, _) -> e = key) effects
-    match effects with
-    | [] -> None
-    | _ -> Some(List.maxBy snd effects)
-  
-  let nextEffects (effects: Effect list) =
-    effects
-      |> List.map (fun (e, d) -> e, d - 1)
-      |> List.filter (fun (_, d) -> d > 0)
-  
   /// Returns the next position and direction of the player and change in direction
   let nextPositionDirection (player: Player) Δdirection =
     let Δdirection = Δdirection * player.horses.turn
     let velocity = player.velocity * player.horses.topSpeed
     let finalVelocity =
-      match findLongestEffect player.effects EffectType.Sugar with
+      match Effect.findLongest player.effects EffectType.Sugar with
       | Some(_, duration) -> velocity * 2.5
       | None -> velocity
     let finalΔdirection =
       // Being taunted affects players' turning ability
-      match findLongestEffect player.effects EffectType.Taunted with
+      match Effect.findLongest player.effects EffectType.Taunted with
       | Some _ -> Δdirection * 0.75
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
@@ -164,7 +152,7 @@ module Player =
   
   /// Updates/adds/destroys player particles
   let nextParticles rand particles effects =
-    match findLongestEffect effects EffectType.Taunted with
+    match Effect.findLongest effects EffectType.Taunted with
       // Player is being taunted, so randomly generate particles
     | Some(effect, duration) ->
       let factor = (float duration) / (float EffectDurations.taunt)
@@ -191,7 +179,7 @@ module Player =
   let basicNext (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
-    let effects = nextEffects player.effects
+    let effects = Effect.nextEffects player.effects
     let particles = nextParticles rand player.particles player.effects
     
     match player.motionState with
