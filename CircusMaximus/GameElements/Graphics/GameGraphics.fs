@@ -9,23 +9,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.State
 
-let drawHUD fb (assets: GameContent) (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) =
-  let drawString str vertPos color =
-    FlatSpriteFont.drawString
-      assets.Font fb str (float rect.X + (float rect.Width / 2.0) @@ (float rect.Y + vertPos * 24.0))
-      3.f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
-  match player.motionState with
-  | Moving velocity ->
-    drawString ("Histrio " + (player.number |> toRoman)) 0. Color.White
-    drawString ("Flexus: " + (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman)) 1. Color.White
-    match player.finishState with
-    | Finished placing ->
-        drawString
-          (sprintf "Locus: %s" (toRoman placing)) 2.
-          (placingColor placing)
-    | Racing -> ()
-  | Crashed -> ()
-
 let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets (fontBatch: SpriteBatch) players mainPlayer =
   for x in 0..9 do
     for y in 0..2 do
@@ -71,7 +54,7 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
       | MidRace lastPlacing ->
         fontBatch.DoWithPointClamp
           (fun fb ->
-            List.iter2 (drawHUD fb assets) race.players playerScreens
+            List.iter2 (HUDGraphics.draw generalBatch fb assets) race.players playerScreens
             if race.timer <= Race.midRaceBeginPeriod then
               FlatSpriteFont.drawString
                 assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen

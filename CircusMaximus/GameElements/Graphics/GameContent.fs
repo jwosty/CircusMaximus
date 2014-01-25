@@ -15,6 +15,7 @@ type GameContent =
     Particle: Texture2D
     PlacingBackground: Texture2D
     AwardBackground: Texture2D
+    ItemSugarCubes: Texture2D
     
     ChariotSound: SoundEffectInstance list
     CrowdCheerSound: SoundEffectInstance }
@@ -46,6 +47,7 @@ module GameContentFunctions =
       Particle = loadImage "particle"
       PlacingBackground = loadImage "placingbg"
       AwardBackground = loadImage "awardbg"
+      ItemSugarCubes = loadImage "items\sugarcubes"
       
       ChariotSound =
         let snd = loadSound "chariot"

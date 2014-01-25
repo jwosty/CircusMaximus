@@ -4,7 +4,6 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
-open CircusMaximus.State
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
@@ -42,6 +41,8 @@ type Player =
     lastTurnedLeft: bool
     /// Whether or not this player is currently taunting
     tauntState: Taunt option
+    /// The player's usable items
+    items: Item list
     /// A list of active player effects
     effects: (Effect * Duration) list
     /// Particles attatched to this player (used for the taunt effect)
@@ -85,7 +86,7 @@ module Player =
   let init horses (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
       number = number; color = getColor number;
-      age = 0.; bounds = bounds; horses = horses
+      items = [Item.SugarCubes]; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       effects = []; particles = []

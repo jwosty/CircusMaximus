@@ -120,8 +120,10 @@
     <Compile Include="GameElements\Graphics\GameContent.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\ButtonGraphics.fs" />
+    <Compile Include="GameElements\Graphics\Player\Item.fs" />
     <Compile Include="GameElements\Graphics\Player\PlayerGraphics.fs" />
     <Compile Include="GameElements\Graphics\Player\PlayerScreen.fs" />
+    <Compile Include="GameElements\Graphics\Player\HUD.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlayGraphics.fs" />
     <Compile Include="GameElements\Graphics\MainMenuGraphics.fs" />
     <Compile Include="GameElements\Graphics\HorseScreenGraphics.fs" />
@@ -179,12 +181,13 @@
     <BundleResource Include="Content\images\racetrack\2-8.png" />
     <BundleResource Include="Content\images\racetrack\2-9.png" />
     <BundleResource Include="Content\images\font.png" />
-    <BundleResource Include="Content\sounds\cheer1.wav" />
-    <BundleResource Include="Content\sounds\chariot.wav" />
     <BundleResource Include="Content\images\placingbg.png" />
     <BundleResource Include="Content\images\particle.png" />
     <BundleResource Include="Content\images\button.png" />
     <BundleResource Include="Content\images\awardbg.png" />
     <BundleResource Include="Content\images\pglow.png" />
+    <BundleResource Include="Content\images\items\sugarcubes.png" />
+    <BundleResource Include="Content\sounds\cheer1.wav" />
+    <BundleResource Include="Content\sounds\chariot.wav" />
   </ItemGroup>
 </Project>
