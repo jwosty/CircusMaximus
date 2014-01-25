@@ -30,7 +30,7 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
     // Draw the player's taunt, if any
     match player.tauntState with
     | Some(taunt, duration) ->
-      let fade = (float32 duration) / (float32 Player.tauntTime)
+      let fade = (float32 duration) / (float32 EffectDurations.taunt)
       FlatSpriteFont.drawString
         assets.Font fontBatch taunt player.position 2.0f
         (if isMainPlayer then Color.White * fade else Color.OrangeRed * fade)   // Get the color and fade it out depending on how long the player has been taunting

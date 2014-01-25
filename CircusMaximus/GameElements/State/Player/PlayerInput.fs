@@ -16,7 +16,9 @@ type PlayerInput =
     /// Debug input to advance one lap
     advanceLap: bool
     /// Indicates how many items to move the item selector (negative = left, positive = right, 0 = none)
-    selectorΔ: int }
+    selectorΔ: int
+    /// Whether or not the user pressed the use item button
+    isUsingItem: bool }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module PlayerInput =
@@ -46,17 +48,19 @@ module PlayerInput =
         match keyJustPressed Keys.Left, keyJustPressed Keys.Right with
         | true, false -> -1
         | false, true -> 1
-        | _ -> 0 }
+        | _ -> 0
+      isUsingItem = keyJustPressed Keys.E}
   
   let initFromGamepad (lastGamepad, gamepad) =
     let gpButtonJustReleased = gpButtonJustReleased (lastGamepad, gamepad)
     let gpButtonJustPressed = gpButtonJustPressed (lastGamepad, gamepad)
     { power = float gamepad.Triggers.Right
       turn = float gamepad.ThumbSticks.Left.X |> degreesToRadians
-      expectingTaunt = gamepad.IsButtonDown(Buttons.A)
-      advanceLap = gpButtonJustPressed Buttons.Y
+      expectingTaunt = gamepad.IsButtonDown(Buttons.Y)
+      advanceLap = gpButtonJustPressed Buttons.X
       selectorΔ =
         match gpButtonJustPressed Buttons.LeftShoulder, gpButtonJustPressed Buttons.RightShoulder with
         | true, false -> -1
         | false, true -> 1
-        | _ -> 0 }
+        | _ -> 0
+      isUsingItem = gpButtonJustPressed Buttons.A}

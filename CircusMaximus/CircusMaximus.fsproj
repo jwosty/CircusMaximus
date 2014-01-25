@@ -96,6 +96,7 @@
     <Compile Include="BasicFunctions\TupleExtensions.fs" />
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
+    <Compile Include="BasicFunctions\Aliases.fs" />
     <Compile Include="Collision\Shapes\LineSegment.fs" />
     <Compile Include="Collision\Shapes\Polygon.fs" />
     <Compile Include="Collision\Shapes\PlayerShape.fs" />
@@ -107,6 +108,7 @@
     <Compile Include="GameElements\State\GameSettings.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
+    <Compile Include="GameElements\State\Player\Effect.fs" />
     <Compile Include="GameElements\State\Item.fs" />
     <Compile Include="GameElements\State\Player\PlayerInput.fs" />
     <Compile Include="GameElements\State\Player\PlayerData.fs" />

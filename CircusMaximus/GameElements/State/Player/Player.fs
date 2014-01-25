@@ -9,18 +9,8 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
 open CircusMaximus.Collision
 
-/// A velocity, in percentage (where 0 = 0% and 1 = 100%) of a top speed
-type Velocity = float
-/// A player's finishing place in the race
-type Placing = int
-/// A length of time
-type Duration = int
-/// A taunt contains the string to display as well as the amount of time it lasts for
-type Taunt = string * Duration
-
 type MotionState = Moving of Velocity | Crashed
 type FinishState = | Racing | Finished of Placing
-type Effect = | Taunt
 
 type Player =
   { motionState: MotionState
@@ -46,7 +36,7 @@ type Player =
     /// The index of the currently selected item
     selectedItem: int
     /// A list of active player effects
-    effects: (Effect * Duration) list
+    effects: Effect list
     /// Particles attatched to this player (used for the taunt effect)
     particles: BoundParticle list
     /// For debugging; a list representing which lines on the player bounds are intersecting
@@ -63,8 +53,6 @@ type Player =
 module Player =
   /// The number of players participating in the race
   let numPlayers = 5
-  /// The amount of time a taunt lasts
-  let tauntTime = 750
   
   /// The base player acceleration change in percent per frame
   let baseAcceleration = 0.005
@@ -100,10 +88,10 @@ module Player =
   let applyEffects (source: Player) (destination: Player) =
     match source.tauntState with
     | Some(_, duration) when source <> destination ->
-      if duration = tauntTime
-      then [Effect.Taunt, tauntTime]    // Source player has just started taunting, so create one new effect
-      else []                           // Source player has already been taunting, so nothing new
-    | _ -> []                           // Source player isn't taunting, so nothing new
+      if duration = EffectDurations.taunt
+      then [EffectType.Taunted, EffectDurations.taunt]  // Source player has just started taunting, so create one new effect
+      else []                                           // Source player has already been taunting, so nothing new
+    | _ -> []                                           // Source player isn't taunting, so nothing new
   
   let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
     if lastTurnedLeft && position.X > center.X then
@@ -118,13 +106,13 @@ module Player =
   let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
   
   /// Finds the effect that matches the given effect, using the one with the greatest remaining duration
-  let findLongestEffect (effects: (Effect * Duration) list) key =
+  let findLongestEffect (effects: Effect list) key =
     let effects = List.filter (fun (e, _) -> e = key) effects
     match effects with
     | [] -> None
     | _ -> Some(List.maxBy snd effects)
   
-  let nextEffects (effects: (Effect * Duration) list) =
+  let nextEffects (effects: Effect list) =
     effects
       |> List.map (fun (e, d) -> e, d - 1)
       |> List.filter (fun (_, d) -> d > 0)
@@ -132,10 +120,14 @@ module Player =
   /// Returns the next position and direction of the player and change in direction
   let nextPositionDirection (player: Player) Δdirection =
     let Δdirection = Δdirection * player.horses.turn
-    let finalVelocity = player.velocity * player.horses.topSpeed
+    let velocity = player.velocity * player.horses.topSpeed
+    let finalVelocity =
+      match findLongestEffect player.effects EffectType.Sugar with
+      | Some(_, duration) -> velocity * 2.5
+      | None -> velocity
     let finalΔdirection =
-      // Taunting affects players' turning ability
-      match findLongestEffect player.effects Effect.Taunt with
+      // Being taunted affects players' turning ability
+      match findLongestEffect player.effects EffectType.Taunted with
       | Some _ -> Δdirection * 0.75
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
@@ -167,15 +159,15 @@ module Player =
         None
     | None ->
       if expectingTaunt
-      then Some(Taunt.pickTaunt rand, tauntTime)
+      then Some(Taunt.pickTaunt rand, EffectDurations.taunt)
       else None
   
   /// Updates/adds/destroys player particles
   let nextParticles rand particles effects =
-    match findLongestEffect effects Effect.Taunt with
+    match findLongestEffect effects EffectType.Taunted with
       // Player is being taunted, so randomly generate particles
     | Some(effect, duration) ->
-      let factor = (float duration) / (float tauntTime)
+      let factor = (float duration) / (float EffectDurations.taunt)
       particles @ BoundParticle.RandBatchInit rand factor
       // Player is not being taunted, so don't generate any more particles
     | None -> particles
@@ -183,6 +175,17 @@ module Player =
     |> List.map BoundParticle.nextParticle
       // Delete old particles
     |> List.filter (fun p -> p.age < BoundParticle.particleAge)
+  
+  /// Uses the given item, deleting the item and adding the appropriate effect
+  let useItem items effects itemIndex =
+    let rec useItem items (effects: Effect list) i itemIndex =
+      if itemIndex = i then
+        List.tail items, (items |> List.head |> Item.getEffect) :: effects
+      else
+        let updatedItems, updatedEffects = useItem (List.tail items) effects (i + 1) itemIndex
+        List.head items :: updatedItems, updatedEffects
+    
+    useItem items effects 0 itemIndex
   
   /// A basic function an updated version of the given player model. Players are not given a placing here.
   let basicNext (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
@@ -207,11 +210,15 @@ module Player =
               then clampMax (player.velocity + player.horses.acceleration) input.power
             else player.velocity
           let selectedItem = MathHelper.Clamp(player.selectedItem + input.selectorΔ, 0, player.items.Length - 1)
+          let items, effects =
+            if input.isUsingItem && player.items.Length > 0
+              then useItem player.items effects selectedItem
+              else player.items, effects
           { player with
               motionState = Moving(velocity)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
               age = player.age + 1.; selectedItem = selectedItem; turns = turns; lastTurnedLeft = lastTurnedLeft
-              tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults },
+              tauntState = tauntState; effects = effects; items = items; particles = particles; intersectingLines = collisionResults },
             if player.velocity >= 0.75
             then Looping
             else Paused
