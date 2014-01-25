@@ -70,8 +70,8 @@ module Player =
   let baseAcceleration = 0.005
   /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
   let baseTopSpeed = 5.
-  /// A normal turn speed, and the factor to convert a turn percentage into an absolute velocity
-  let baseTurn = 1.
+  /// A normal turn speed, and the factor to convert a turn percentage into degrees
+  let baseTurn = 1.5
   
   let unbalanceMidPoint = 0.5
   let maxStatUnbalance = 0.1
@@ -87,7 +87,7 @@ module Player =
   
   let init horses (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      number = number; color = getColor number; items = [Item.SugarCubes]
+      number = number; color = getColor number; items = [Item.SugarCubes; Item.SugarCubes; Item.SugarCubes; Item.SugarCubes; Item.SugarCubes]
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
@@ -113,6 +113,9 @@ module Player =
     else false
   
   let justFinished (oldPlayer: Player) (player: Player) = (not oldPlayer.finished) && player.finished
+  
+  /// Finds a player by their number
+  let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
   
   /// Finds the effect that matches the given effect, using the one with the greatest remaining duration
   let findLongestEffect (effects: (Effect * Duration) list) key =
@@ -167,22 +170,26 @@ module Player =
       then Some(Taunt.pickTaunt rand, tauntTime)
       else None
   
+  /// Updates/adds/destroys player particles
+  let nextParticles rand particles effects =
+    match findLongestEffect effects Effect.Taunt with
+      // Player is being taunted, so randomly generate particles
+    | Some(effect, duration) ->
+      let factor = (float duration) / (float tauntTime)
+      particles @ BoundParticle.RandBatchInit rand factor
+      // Player is not being taunted, so don't generate any more particles
+    | None -> particles
+      // Update particles
+    |> List.map BoundParticle.nextParticle
+      // Delete old particles
+    |> List.filter (fun p -> p.age < BoundParticle.particleAge)
+  
   /// A basic function an updated version of the given player model. Players are not given a placing here.
   let basicNext (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = nextEffects player.effects
-    let e = findLongestEffect player.effects Effect.Taunt
-    let particles =
-      match e with
-      | Some(effect, duration) ->
-        let factor = (float duration) / (float tauntTime)
-        player.particles @ BoundParticle.RandBatchInit rand factor
-      | None -> player.particles
-        // Update particles
-      |> List.map BoundParticle.nextParticle
-        // Delete old particles
-      |> List.filter (fun p -> p.age < BoundParticle.particleAge)
+    let particles = nextParticles rand player.particles player.effects
     
     match player.motionState with
     | Moving velocity ->
@@ -199,10 +206,11 @@ module Player =
             elif player.velocity < input.power
               then clampMax (player.velocity + player.horses.acceleration) input.power
             else player.velocity
+          let selectedItem = MathHelper.Clamp(player.selectedItem + input.selectorΔ, 0, player.items.Length - 1)
           { player with
               motionState = Moving(velocity)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
-              age = player.age + 1.; turns = turns; lastTurnedLeft = lastTurnedLeft
+              age = player.age + 1.; selectedItem = selectedItem; turns = turns; lastTurnedLeft = lastTurnedLeft
               tauntState = tauntState; effects = effects; particles = particles; intersectingLines = collisionResults },
             if player.velocity >= 0.75
             then Looping
@@ -212,8 +220,6 @@ module Player =
           tauntState = tauntState;
           effects = effects;
           particles = particles }, playerChariotSound
-  
-  let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
   
   /// Updates a player like basicNext, but also handles input things
   let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =

@@ -53,7 +53,7 @@ type GameWindow() as this =
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice Player.numPlayers
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
-    game <- Game.init (new Random(42)) this.WindowDimensions
+    game <- Game.init (new Random()) this.WindowDimensions
   
   /// Load your graphics content.
   override this.LoadContent() = assets <- loadContent this.Content this.GraphicsDevice Player.numPlayers

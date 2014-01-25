@@ -32,8 +32,8 @@ let drawItems (generalBatch: SpriteBatch) fontBatch (player: Player) ((sb, rect)
     let widthDiff = ItemGraphics.defaultItemSelectorImageWidth - ItemGraphics.defaultItemImageWidth
     let heightDiff = ItemGraphics.defaultItemSelectorImageHeight - ItemGraphics.defaultItemImageHeight
     player.items |> List.iteri (fun i item ->
-      let slot = float32 player.items.Length / 2.f - float32 i
-      let x = float32 rect.X + (float32 rect.Width / 2.f) + (slot * (float32 ItemGraphics.defaultItemSelectorImageWidth / 2.f))
+      let slot = float32 player.items.Length / 2.f - float32 (player.items.Length - i)
+      let x = float32 rect.X + (float32 rect.Width / 2.f) + (slot * (float32 ItemGraphics.defaultItemSelectorImageWidth))
       let y = (float32 rect.Y + float32 rect.Height - (float32 ItemGraphics.defaultItemSelectorImageHeight / 2.f))
       ItemGraphics.draw generalBatch item (x @@ y) assets
       if player.selectedItem = i
