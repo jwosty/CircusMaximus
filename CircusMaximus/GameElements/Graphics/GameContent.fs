@@ -15,6 +15,7 @@ type GameContent =
     Particle: Texture2D
     PlacingBackground: Texture2D
     AwardBackground: Texture2D
+    ItemSelector: Texture2D
     ItemSugarCubes: Texture2D
     
     ChariotSound: SoundEffectInstance list
@@ -47,6 +48,7 @@ module GameContentFunctions =
       Particle = loadImage "particle"
       PlacingBackground = loadImage "placingbg"
       AwardBackground = loadImage "awardbg"
+      ItemSelector = loadImage "itemselector"
       ItemSugarCubes = loadImage "items\sugarcubes"
       
       ChariotSound =

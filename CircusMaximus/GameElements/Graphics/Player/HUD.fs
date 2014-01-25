@@ -26,16 +26,20 @@ let drawInfo fontBatch (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) 
   | Crashed -> ()
 
 /// Draws the bottom portion of the HUD (player items)
-let drawItems (generalBatch: SpriteBatch) fontBatch items ((sb, rect): PlayerScreen.PlayerScreen) assets =
+let drawItems (generalBatch: SpriteBatch) fontBatch (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) assets =
   generalBatch.DoBasic (fun generalBatch ->
-    let spacing = float32 rect.Width / float32 (List.length items + 1)
-    items |> List.iteri (fun i item ->
-      let slot = float32 (List.length items) / 2.f - float32 i
-      let x = float32 rect.X + (float32 rect.Width / 2.f) + (slot * float32 ItemGraphics.defaultItemImageWidth)
-      let y = (rect.Y + rect.Height - ItemGraphics.defaultItemImageHeight)
-      ItemGraphics.draw generalBatch item (x @@ y) assets))
+    let spacing = float32 rect.Width / float32 (player.items.Length + 1)
+    let widthDiff = ItemGraphics.defaultItemSelectorImageWidth - ItemGraphics.defaultItemImageWidth
+    let heightDiff = ItemGraphics.defaultItemSelectorImageHeight - ItemGraphics.defaultItemImageHeight
+    player.items |> List.iteri (fun i item ->
+      let slot = float32 player.items.Length / 2.f - float32 i
+      let x = float32 rect.X + (float32 rect.Width / 2.f) + (slot * (float32 ItemGraphics.defaultItemSelectorImageWidth / 2.f))
+      let y = (float32 rect.Y + float32 rect.Height - (float32 ItemGraphics.defaultItemSelectorImageHeight / 2.f))
+      ItemGraphics.draw generalBatch item (x @@ y) assets
+      if player.selectedItem = i
+        then generalBatch.DrawCentered(assets.ItemSelector, x @@ y, Color.White)))
 
 /// Draws a player's HUD (Heads-Up Display)
 let draw generalBatch fontBatch assets player playerScreen =
   drawInfo fontBatch player playerScreen assets
-  drawItems generalBatch fontBatch player.items playerScreen assets
+  drawItems generalBatch fontBatch player playerScreen assets

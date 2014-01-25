@@ -43,6 +43,8 @@ type Player =
     tauntState: Taunt option
     /// The player's usable items
     items: Item list
+    /// The index of the currently selected item
+    selectedItem: int
     /// A list of active player effects
     effects: (Effect * Duration) list
     /// Particles attatched to this player (used for the taunt effect)
@@ -85,8 +87,8 @@ module Player =
   
   let init horses (bounds: PlayerShape) number =
     { motionState = Moving(0.); finishState = Racing; tauntState = None
-      number = number; color = getColor number;
-      items = [Item.SugarCubes]; age = 0.; bounds = bounds; horses = horses
+      number = number; color = getColor number; items = [Item.SugarCubes]
+      selectedItem = 0; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       effects = []; particles = []

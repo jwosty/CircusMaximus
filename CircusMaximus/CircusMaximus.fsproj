@@ -189,5 +189,6 @@
     <BundleResource Include="Content\images\items\sugarcubes.png" />
     <BundleResource Include="Content\sounds\cheer1.wav" />
     <BundleResource Include="Content\sounds\chariot.wav" />
+    <BundleResource Include="Content\images\itemselector.png" />
   </ItemGroup>
 </Project>
