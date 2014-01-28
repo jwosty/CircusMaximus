@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>MonoGame.Samples.Draw2D.MacOS</string>
+	<string>Circus Maximus</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
@@ -11,6 +11,6 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>CFBundleIdentifier</key>
-	<string>CircusMaximus</string>
+	<string>Circus Maximus</string>
 </dict>
 </plist>
