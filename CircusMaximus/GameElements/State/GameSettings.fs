@@ -6,4 +6,5 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 
 type GameSettings =
-  { windowDimensions: Vector2 }
+  { windowDimensions: Vector2
+    debugDrawBounds: Boolean }

@@ -9,20 +9,19 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.State
 
-let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets (fontBatch: SpriteBatch) players mainPlayer =
+let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets (settings: GameSettings) (fontBatch: SpriteBatch) players mainPlayer =
   for x in 0..9 do
     for y in 0..2 do
       Racetrack.drawSingle sb assets.RacetrackTextures.[x, y] x y
-  #if DEBUG
-  Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
-  #endif
+  if settings.debugDrawBounds
+    then Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
   List.iteri
-    (fun i player -> PlayerGraphics.drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch)
+    (fun i player -> PlayerGraphics.drawPlayer (sb, rect) player (i = mainPlayer) settings assets fontBatch)
     players
 
-let drawScreens playerScreens assets (fontBatch: SpriteBatch) players =
+let drawScreens playerScreens assets settings (fontBatch: SpriteBatch) players =
   List.iteri2
-    (PlayerScreen.drawSingle (fun (p, s) -> drawWorld s assets fontBatch players p) fontBatch)
+    (PlayerScreen.drawSingle (fun (p, s) -> drawWorld s assets settings fontBatch players p) fontBatch)
     players playerScreens
 
 /// Draw a game state
@@ -36,7 +35,7 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
   | Race race ->
     match race.raceState with
     | PreRace ->
-      drawScreens playerScreens assets fontBatch race.players
+      drawScreens playerScreens assets game.settings fontBatch race.players
       // Draw a dark overlay to indicate that the game hasn't started yet
       generalBatch.Begin()
       generalBatch.Draw(assets.Pixel, windowRect, new Color(Color.Black, 192))
@@ -49,7 +48,7 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
             windowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     
     | _ ->
-      drawScreens playerScreens assets fontBatch race.players
+      drawScreens playerScreens assets game.settings fontBatch race.players
       match race.raceState with
       | MidRace lastPlacing ->
         fontBatch.DoWithPointClamp

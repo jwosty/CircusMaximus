@@ -24,7 +24,9 @@ type Game =
 module Game =
   /// Initializes a game state with the given random number generator and window dimensions
   let init rand startingWindowDimensions =
-    let settings = { windowDimensions = startingWindowDimensions }
+    let settings =
+      { windowDimensions = startingWindowDimensions
+        debugDrawBounds = true }
     { gameState = MainMenu(MainMenu.init settings)
       settings = settings
       rand = rand
