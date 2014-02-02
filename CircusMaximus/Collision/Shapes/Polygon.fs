@@ -17,7 +17,8 @@ type Polygon(center) =
   default this.Edges: CircusMaximus.LineSegment.LineSegment list = this.Points |> List.consecutivePairs
   
   /// Draws edges
-  member this.Draw(sb: SpriteBatch, pixelTexture, redLines) =
+  abstract member Draw: SpriteBatch * Texture2D * bool list -> unit
+  default this.Draw(sb: SpriteBatch, pixelTexture, redLines) =
     List.iter2
       (fun isRed (start, ``end``) ->
         let color = if isRed then Color.Red else Color.White

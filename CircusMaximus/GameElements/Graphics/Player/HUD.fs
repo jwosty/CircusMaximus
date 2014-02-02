@@ -23,7 +23,7 @@ let drawInfo fontBatch (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) 
           (sprintf "Locus: %s" (toRoman placing)) 2.
           (placingColor placing)
     | Racing -> ()
-  | Crashed -> ()
+  | Crashed _ -> ()
 
 /// Draws the bottom portion of the HUD (player items)
 let drawItems (generalBatch: SpriteBatch) fontBatch (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) assets =

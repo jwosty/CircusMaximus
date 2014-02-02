@@ -36,7 +36,7 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
         (if isMainPlayer then Color.White * fade else Color.OrangeRed * fade)   // Get the color and fade it out depending on how long the player has been taunting
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
-  | Crashed ->
+  | Crashed timeCrashed ->
     // Remind the player that they are crashed
     let message, color = if isMainPlayer then "Strepebas!", Color.Red else "Strepebat!", (new Color(Color.Red, 63))
     FlatSpriteFont.drawString

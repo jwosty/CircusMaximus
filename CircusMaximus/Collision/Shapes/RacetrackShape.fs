@@ -8,14 +8,35 @@ open CircusMaximus.Extensions
 type RacetrackSpinaShape(center) =
   inherit Polygon(center)
   
+  let centerC1 = 42
+  
   // Center points
   override this.Points =
     [-2210 @@ -86;
+      // For respawn guides
+     -1658 @@ -86;
+     -1105 @@ -86;
+     //-553  @@ -86;
+     // 0    @@ -86;
+     // 553  @@ -86;
+      1105 @@ -86;
+      1658 @@ -86;
+      
       2210 @@ -86;
       2280 @@ -66;
       2304 @@  0;
       2280 @@  66;
       2210 @@  86;
+      
+      // For respawn guides
+      1658 @@  86;
+      1105 @@  86;
+     // 553  @@  86;
+     // 0    @@  86;
+     //-553  @@  86;
+     -1105 @@  86;
+     -1658 @@  86;
+      
      -2210 @@  86;
      -2280 @@  66;
      -2304 @@  0;
@@ -52,5 +73,18 @@ type RacetrackSpinaShape(center) =
      782  @@ 702;
      ]
   
+  member this.RespawnPath =
+    this.Points|> List.map (fun p ->
+      let direction = Vector2.Normalize(p - center)
+      p + (Vector2.Multiply(direction, 250 @@ 3000)))
+  
+  member this.RespawnPathEdges = List.consecutivePairs this.RespawnPath
+  
   override this.Edges: CircusMaximus.LineSegment.LineSegment list =
     (List.consecutivePairs this.Points) @ (List.consecutivePairs this.OuterPoints)
+  
+  override this.Draw(spriteBatch, pixelTexture, redLines) =
+    base.Draw(spriteBatch, pixelTexture, redLines)
+    this.RespawnPathEdges |> List.iter (fun (start, ``end``) ->
+        spriteBatch.Draw(pixelTexture, new Rectangle(start.X - 3.f |> int, start.Y - 3.f |> int, 6, 6), Color.DarkGreen)
+        spriteBatch.DrawLine(pixelTexture, start, ``end``, Color.Green))

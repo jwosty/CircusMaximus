@@ -14,7 +14,7 @@ let drawWorld ((sb, rect): PlayerScreen.PlayerScreen) assets (fontBatch: SpriteB
     for y in 0..2 do
       Racetrack.drawSingle sb assets.RacetrackTextures.[x, y] x y
   #if DEBUG
-  //Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
+  Racetrack.drawBounds Racetrack.collisionBounds assets.Pixel sb
   #endif
   List.iteri
     (fun i player -> PlayerGraphics.drawPlayer (sb, rect) player (i = mainPlayer) assets fontBatch)

@@ -9,7 +9,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
 open CircusMaximus.Collision
 
-type MotionState = Moving of Velocity | Crashed
+type MotionState = Moving of Velocity | Crashed of int
 type FinishState = | Racing | Finished of Placing
 
 type Player =
@@ -45,7 +45,7 @@ type Player =
   member this.position = this.bounds.Center
   /// Player direction, in radians
   member this.direction = this.bounds.Direction
-  member this.velocity = match this.motionState with | Moving v -> v | Crashed -> 0.
+  member this.velocity = match this.motionState with | Moving v -> v | Crashed _ -> 0.
   member this.collisionBox = BoundingPolygon(this.bounds)
   member this.finished = match this.finishState with | Racing -> false | _ -> true
 
@@ -57,13 +57,15 @@ module Player =
   /// The base player acceleration change in percent per frame
   let baseAcceleration = 0.005
   /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
-  let baseTopSpeed = 5.
+  let baseTopSpeed = 8.
   /// A normal turn speed, and the factor to convert a turn percentage into degrees
   let baseTurn = 1.5
   
   let unbalanceMidPoint = 0.5
   let maxStatUnbalance = 0.1
   let unbalanceTimes = 4
+  
+  let crashDuration = 250
   
   let getColor = function
     | 1 -> Color.Red
@@ -176,7 +178,7 @@ module Player =
     useItem items effects 0 itemIndex
   
   /// A basic function an updated version of the given player model. Players are not given a placing here.
-  let basicNext (input: PlayerInput) (player: Player) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
+  let basicNext (input: PlayerInput) (player: Player) (racetrack: RacetrackSpinaShape) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = Effect.nextEffects player.effects
@@ -187,7 +189,7 @@ module Player =
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
-          { player with motionState = Crashed }, Stopped
+          { player with motionState = Crashed 0 }, Stopped
         | _ ->
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
@@ -210,23 +212,35 @@ module Player =
             if player.velocity >= 0.75
             then Looping
             else Paused
-    | Crashed ->
-      { player with
-          tauntState = tauntState;
-          effects = effects;
-          particles = particles }, playerChariotSound
+    | Crashed timeCrashed ->
+      if timeCrashed < crashDuration then
+        { player with
+            motionState = Crashed (timeCrashed + 1)
+            tauntState = tauntState
+            effects = effects
+            particles = particles }, playerChariotSound
+      else
+        let respawnPoint =
+          racetrack.RespawnPath
+            |> List.minBy (fun p -> Vector2.DistanceSquared(player.position, p))
+        { player with
+            motionState = Moving 0.
+            bounds = new PlayerShape(respawnPoint, player.bounds.Width, player.bounds.Height, player.bounds.Direction)
+            tauntState = tauntState
+            effects = effects
+            particles = particles }, playerChariotSound
   
   /// Updates a player like basicNext, but also handles input things
-  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand collisionResult playerChariotSound player =
+  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand racetrack collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player, playerChariotSound =
       if player.number = 1 then
         basicNext
           (PlayerInput.initFromKeyboard (lastKeyboard, keyboard))
-          player collision Racetrack.center rand playerChariotSound
+          player racetrack collision Racetrack.center rand playerChariotSound
       else
         let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         basicNext
           (PlayerInput.initFromGamepad (lastGamepad, gamepad))
-          player collision Racetrack.center rand playerChariotSound
+          player racetrack collision Racetrack.center rand playerChariotSound
     player, playerChariotSound
