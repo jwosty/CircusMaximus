@@ -85,9 +85,11 @@ module List =
     if times < 1 then list
     else skip (times - 1) (List.tail list)
   
-  //let mapFold mappingFolder list (state: 'State) =
-  //  List.fold
-  //    (fun state x -> 
+  let inline wrapIndex (list: _ list) i =
+    let wi = i % (list.Length)
+    if wi < 0
+      then list.Length + wi
+      else wi
   
   let inline addIf cond createThing list = if cond then createThing() :: list else list
   let inline appendFrontIf cond createThings list = if cond then createThings() @ list else list

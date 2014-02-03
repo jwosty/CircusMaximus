@@ -65,7 +65,7 @@ module Player =
   let maxStatUnbalance = 0.1
   let unbalanceTimes = 4
   
-  let crashDuration = 250
+  let crashDuration = 200
   
   let getColor = function
     | 1 -> Color.Red
@@ -220,12 +220,19 @@ module Player =
             effects = effects
             particles = particles }, playerChariotSound
       else
-        let respawnPoint =
-          racetrack.RespawnPath
-            |> List.minBy (fun p -> Vector2.DistanceSquared(player.position, p))
+        // Respawn the player
+        let respawnPoint, respawnDirection =
+          let rspPoints = racetrack.RespawnPath
+          let rspI, rsp =
+            rspPoints
+              |> List.mapi (fun i p -> i, p)
+              |> List.minBy (fun (_, p) -> Vector2.DistanceSquared(player.position, p))
+          let direction = rspPoints.[List.wrapIndex rspPoints (rspI - 1)] - rsp
+          rsp, atan2 direction.Y direction.X |> float
+          
         { player with
             motionState = Moving 0.
-            bounds = new PlayerShape(respawnPoint, player.bounds.Width, player.bounds.Height, player.bounds.Direction)
+            bounds = new PlayerShape(respawnPoint, player.bounds.Width, player.bounds.Height, respawnDirection)
             tauntState = tauntState
             effects = effects
             particles = particles }, playerChariotSound
