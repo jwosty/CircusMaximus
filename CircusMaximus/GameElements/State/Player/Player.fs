@@ -9,7 +9,8 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
 open CircusMaximus.Collision
 
-type MotionState = Moving of Velocity | Crashed of int
+type SpawnState = Spawning of int | Spawned
+type MotionState = Moving of SpawnState * Velocity | Crashed of int
 type FinishState = | Racing | Finished of Placing
 
 type Player =
@@ -45,7 +46,7 @@ type Player =
   member this.position = this.bounds.Center
   /// Player direction, in radians
   member this.direction = this.bounds.Direction
-  member this.velocity = match this.motionState with | Moving v -> v | Crashed _ -> 0.
+  member this.velocity = match this.motionState with | Moving(_, v) -> v | Crashed _ -> 0.
   member this.collisionBox = BoundingPolygon(this.bounds)
   member this.finished = match this.finishState with | Racing -> false | _ -> true
 
@@ -76,7 +77,7 @@ module Player =
     | _ -> Color.White
   
   let init horses (bounds: PlayerShape) number =
-    { motionState = Moving(0.); finishState = Racing; tauntState = None
+    { motionState = Moving(Spawning 100, 0.); finishState = Racing; tauntState = None
       number = number; color = getColor number; items = [Item.SugarCubes; Item.SugarCubes; Item.SugarCubes; Item.SugarCubes; Item.SugarCubes]
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
@@ -185,12 +186,16 @@ module Player =
     let particles = nextParticles rand player.particles player.effects
     
     match player.motionState with
-    | Moving velocity ->
+    | Moving(spawnState, velocity) ->
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
           { player with motionState = Crashed 0 }, Stopped
         | _ ->
+          let spawnState =
+            match spawnState with
+            | Spawning safeTime -> Spawning (safeTime - 1)
+            | Spawned -> Spawned
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
           let velocity =
@@ -205,7 +210,7 @@ module Player =
               then useItem player.items effects selectedItem
               else player.items, effects
           { player with
-              motionState = Moving(velocity)
+              motionState = Moving(spawnState, velocity)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
               age = player.age + 1.; selectedItem = selectedItem; turns = turns; lastTurnedLeft = lastTurnedLeft
               tauntState = tauntState; effects = effects; items = items; particles = particles; intersectingLines = collisionResults },
@@ -231,7 +236,7 @@ module Player =
           rsp, atan2 direction.Y direction.X |> float
           
         { player with
-            motionState = Moving 0.
+            motionState = Moving(Spawning 100, 0.4)
             bounds = new PlayerShape(respawnPoint, player.bounds.Width, player.bounds.Height, respawnDirection)
             tauntState = tauntState
             effects = effects

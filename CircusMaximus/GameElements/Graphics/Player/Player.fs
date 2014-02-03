@@ -10,14 +10,22 @@ open CircusMaximus.State
 
 /// Renders a player, assuming spriteBatch.Begin has already been called
 let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (settings: GameSettings) (assets: GameContent) fontBatch =
-  // Draw a glow to show the player's color
-  sb.Draw(
-    assets.PlayerGlow, player.position, new Nullable<_>(), player.color, float32 player.direction,
-    (float32 assets.PlayerGlow.Width / 2.0f @@ float32 assets.PlayerGlow.Height / 2.0f),
-    1.0f, SpriteEffects.None, 0.f)
+  let playerAlpha, shouldDrawGlow =
+    match player.motionState with
+    | Moving(Spawning spawnTime, _) ->
+      if spawnTime % 15 < 5
+        then 255, true
+        else 128, false
+    | _ -> 255, true
+  if shouldDrawGlow then
+    // Draw a glow to show the player's color
+    sb.Draw(
+      assets.PlayerGlow, player.position, new Nullable<_>(), player.color, float32 player.direction,
+      (float32 assets.PlayerGlow.Width / 2.0f @@ float32 assets.PlayerGlow.Height / 2.0f),
+      1.0f, SpriteEffects.None, 0.f)
   // Draw the chariot
   sb.Draw(
-    assets.ChariotTexture, player.position, new Nullable<_>(), Color.White, float32 player.direction,
+    assets.ChariotTexture, player.position, new Nullable<_>(), new Color(Color.White, playerAlpha), float32 player.direction,
     (float32 assets.ChariotTexture.Width / 2.0f @@ float32 assets.ChariotTexture.Height / 2.0f),
     1.0f, SpriteEffects.None, 0.f)
   
@@ -31,7 +39,7 @@ let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer 
       sb.DrawCentered(assets.Particle, player.position + p.position, Color.White * fade))
   
   match player.motionState with
-  | Moving velocity ->
+  | Moving(_, velocity) ->
     // Draw the player's taunt, if any
     match player.tauntState with
     | Some(taunt, duration) ->
