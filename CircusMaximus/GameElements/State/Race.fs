@@ -77,8 +77,8 @@ module Race =
       0 players
   
   /// Returns the next race state. 
-  let next (race: Race) mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound (settings: GameSettings) =
-    let nextPlayer = Player.next (lastKeyboard, keyboard) (lastGamepads, gamepads) rand Racetrack.collisionShape
+  let next (race: Race) mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound settings =
+    let nextPlayer = Player.next (lastKeyboard, keyboard) (lastGamepads, gamepads) rand settings Racetrack.collisionShape
     match race.raceState with
     | PreRace ->
       let race, gameSounds =

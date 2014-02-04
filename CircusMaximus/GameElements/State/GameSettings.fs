@@ -7,4 +7,5 @@ open CircusMaximus.Extensions
 
 type GameSettings =
   { windowDimensions: Vector2
-    debugDrawBounds: Boolean }
+    debugDrawBounds: bool
+    debugLapIncrement: bool }

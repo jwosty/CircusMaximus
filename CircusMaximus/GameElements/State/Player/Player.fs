@@ -78,7 +78,7 @@ module Player =
   
   let init horses (bounds: PlayerShape) number =
     { motionState = Moving(Spawning 100, 0.); finishState = Racing; tauntState = None
-      number = number; color = getColor number; items = [Item.SugarCubes; Item.SugarCubes; Item.SugarCubes; Item.SugarCubes; Item.SugarCubes]
+      number = number; color = getColor number; items = List.init 11 (fun _ -> Item.SugarCubes)
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
@@ -243,16 +243,16 @@ module Player =
             particles = particles }, playerChariotSound
   
   /// Updates a player like basicNext, but also handles input things
-  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand racetrack collisionResult playerChariotSound player =
+  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand settings racetrack collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player, playerChariotSound =
       if player.number = 1 then
         basicNext
-          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard))
+          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) settings)
           player racetrack collision Racetrack.center rand playerChariotSound
       else
         let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         basicNext
-          (PlayerInput.initFromGamepad (lastGamepad, gamepad))
+          (PlayerInput.initFromGamepad (lastGamepad, gamepad) settings)
           player racetrack collision Racetrack.center rand playerChariotSound
     player, playerChariotSound

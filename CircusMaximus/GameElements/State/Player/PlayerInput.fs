@@ -3,6 +3,7 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
+open CircusMaximus.State
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 
@@ -34,7 +35,7 @@ module PlayerInput =
   let gpButtonJustPressed (lastGamepad: GamePadState, gamepad: GamePadState) button =
     lastGamepad.IsButtonUp(button) && gamepad.IsButtonDown(button)
   
-  let initFromKeyboard (lastKeyboard, keyboard) =
+  let initFromKeyboard (lastKeyboard, keyboard) (settings: GameSettings) =
     let keyJustReleased = keyJustReleased (lastKeyboard, keyboard)
     let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)
     { power = if keyboard.IsKeyDown(Keys.W) then 1. else 0.0
@@ -43,21 +44,21 @@ module PlayerInput =
         + (if keyboard.IsKeyDown(Keys.D) then 1. else 0.0)
         |> degreesToRadians
       expectingTaunt = keyboard.IsKeyDown(Keys.Q)
-      advanceLap = keyJustPressed Keys.L
+      advanceLap = settings.debugLapIncrement && keyJustPressed Keys.L
       selectorΔ =
         match keyJustPressed Keys.Left, keyJustPressed Keys.Right with
         | true, false -> -1
         | false, true -> 1
         | _ -> 0
-      isUsingItem = keyJustPressed Keys.E}
+      isUsingItem = keyJustPressed Keys.E }
   
-  let initFromGamepad (lastGamepad, gamepad) =
+  let initFromGamepad (lastGamepad, gamepad) (settings: GameSettings) =
     let gpButtonJustReleased = gpButtonJustReleased (lastGamepad, gamepad)
     let gpButtonJustPressed = gpButtonJustPressed (lastGamepad, gamepad)
     { power = float gamepad.Triggers.Right
       turn = float gamepad.ThumbSticks.Left.X |> degreesToRadians
       expectingTaunt = gamepad.IsButtonDown(Buttons.Y)
-      advanceLap = gpButtonJustPressed Buttons.X
+      advanceLap = settings.debugLapIncrement && gpButtonJustPressed Buttons.X
       selectorΔ =
         match gpButtonJustPressed Buttons.LeftShoulder, gpButtonJustPressed Buttons.RightShoulder with
         | true, false -> -1
