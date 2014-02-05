@@ -9,7 +9,9 @@ type EffectType = | Taunted | Sugar
 type Effect = EffectType * Duration
 
 module EffectDurations =
+  [<Literal>]
   let taunt = 750
+  [<Literal>]
   let sugar = 60
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
