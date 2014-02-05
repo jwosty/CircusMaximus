@@ -56,7 +56,7 @@ module Player =
   let numPlayers = 5
   
   /// The base player acceleration change in percent per frame
-  let baseAcceleration = 0.005
+  let baseAcceleration = 0.05
   /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
   let baseTopSpeed = 8.
   /// A normal turn speed, and the factor to convert a turn percentage into degrees
@@ -111,11 +111,7 @@ module Player =
   /// Returns the next position and direction of the player and change in direction
   let nextPositionDirection (player: Player) Δdirection =
     let Δdirection = Δdirection * player.horses.turn
-    let velocity = player.velocity * player.horses.topSpeed
-    let finalVelocity =
-      match Effect.findLongest player.effects EffectType.Sugar with
-      | Some(_, duration) -> velocity * 2.5
-      | None -> velocity
+    let velocity = player.velocity
     let finalΔdirection =
       // Being taunted affects players' turning ability
       match Effect.findLongest player.effects EffectType.Taunted with
@@ -123,7 +119,7 @@ module Player =
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
     
-    positionForward player.position finalDirection finalVelocity, finalDirection
+    positionForward player.position finalDirection velocity, finalDirection
   
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
   let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
@@ -198,12 +194,17 @@ module Player =
             | Spawned -> Spawned
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
+          let baseVelocity =
+            match Effect.findLongest player.effects EffectType.Sugar with
+            | Some(_, EffectDurations.sugar) -> 10.0
+            | _ -> player.velocity
+          let absPower = input.power * player.horses.topSpeed
           let velocity =
-            if player.velocity > input.power
-              then clampMin (player.velocity - player.horses.acceleration) input.power
-            elif player.velocity < input.power
-              then clampMax (player.velocity + player.horses.acceleration) input.power
-            else player.velocity
+            if baseVelocity > absPower
+              then baseVelocity - (player.horses.acceleration * 2.0)
+            elif baseVelocity < absPower
+              then baseVelocity + player.horses.acceleration
+            else baseVelocity
           let selectedItem = MathHelper.Clamp(player.selectedItem + input.selectorΔ, 0, player.items.Length - 1)
           let items, effects =
             if input.isUsingItem && player.items.Length > 0
