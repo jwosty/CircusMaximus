@@ -43,7 +43,7 @@
     </PlatformTarget>
     <LinkMode>Full</LinkMode>
     <UseSGen>false</UseSGen>
-    <IncludeMonoRuntime>true</IncludeMonoRuntime>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <ConsolePause>false</ConsolePause>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CodeSigningKey>Developer ID Application</CodeSigningKey>

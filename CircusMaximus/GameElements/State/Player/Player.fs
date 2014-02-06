@@ -201,7 +201,7 @@ module Player =
           let absPower = input.power * player.horses.topSpeed
           let velocity =
             if baseVelocity > absPower
-              then baseVelocity - (player.horses.acceleration * 2.0)
+              then clampMin 0.0 (baseVelocity - (player.horses.acceleration * 2.0))
             elif baseVelocity < absPower
               then baseVelocity + player.horses.acceleration
             else baseVelocity
