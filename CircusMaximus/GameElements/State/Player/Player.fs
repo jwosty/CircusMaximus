@@ -67,6 +67,7 @@ module Player =
   let unbalanceTimes = 4
   
   let crashDuration = 200
+  let spawnDuration = 100
   
   let getColor = function
     | 1 -> Color.Red
@@ -77,7 +78,7 @@ module Player =
     | _ -> Color.White
   
   let init horses (bounds: PlayerShape) number =
-    { motionState = Moving(Spawning 100, 0.); finishState = Racing; tauntState = None
+    { motionState = Moving(Spawning spawnTime, 0.); finishState = Racing; tauntState = None
       number = number; color = getColor number; items = List.init 11 (fun _ -> Item.SugarCubes)
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
@@ -186,7 +187,7 @@ module Player =
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
-          { player with motionState = Crashed 0 }, Stopped
+          { player with motionState = Crashed crashDuration }, Stopped
         | _ ->
           let spawnState =
             match spawnState with
@@ -222,10 +223,10 @@ module Player =
             if player.velocity >= 0.75
             then Looping
             else Paused
-    | Crashed timeCrashed ->
-      if timeCrashed < crashDuration then
+    | Crashed timeUntilRespawn ->
+      if timeUntilRespawn <= 0 then
         { player with
-            motionState = Crashed (timeCrashed + 1)
+            motionState = Crashed (timeUntilRespawn - 1)
             tauntState = tauntState
             effects = effects
             particles = particles }, playerChariotSound
