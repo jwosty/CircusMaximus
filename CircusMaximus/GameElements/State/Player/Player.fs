@@ -78,7 +78,7 @@ module Player =
     | _ -> Color.White
   
   let init horses (bounds: PlayerShape) number =
-    { motionState = Moving(Spawning spawnTime, 0.); finishState = Racing; tauntState = None
+    { motionState = Moving(Spawning spawnDuration, 0.); finishState = Racing; tauntState = None
       number = number; color = getColor number; items = List.init 11 (fun _ -> Item.SugarCubes)
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses
       intersectingLines = [false; false; false; false]
