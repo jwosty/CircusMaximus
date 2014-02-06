@@ -192,24 +192,28 @@ module Player =
             match spawnState with
             | Spawning safeTime -> Spawning (safeTime - 1)
             | Spawned -> Spawned
+          
           let position, direction = nextPositionDirection player input.turn
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
-          let baseVelocity =
+          
+          let absPower = input.power * player.horses.topSpeed
+          let velocity =
             match Effect.findLongest player.effects EffectType.Sugar with
             | Some(_, EffectDurations.sugar) -> 10.0
             | _ -> player.velocity
-          let absPower = input.power * player.horses.topSpeed
           let velocity =
-            if baseVelocity > absPower
-              then clampMin 0.0 (baseVelocity - (player.horses.acceleration * 2.0))
-            elif baseVelocity < absPower
-              then baseVelocity + player.horses.acceleration
-            else baseVelocity
+            if velocity > absPower
+              then clampMin 0.0 (velocity - (player.horses.acceleration * 2.0))
+            elif velocity < absPower
+              then velocity + player.horses.acceleration
+            else velocity
+          
           let selectedItem = MathHelper.Clamp(player.selectedItem + input.selectorΔ, 0, player.items.Length - 1)
           let items, effects =
             if input.isUsingItem && player.items.Length > 0
               then useItem player.items effects selectedItem
               else player.items, effects
+          
           { player with
               motionState = Moving(spawnState, velocity)
               bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
