@@ -20,6 +20,8 @@ type Player =
     number: int
     /// The player's color
     color: Color
+    /// The word for the player's color
+    colorString: string
     /// The number of frames that this player has existed for
     age: float
     /// Player bounds for collision
@@ -69,19 +71,21 @@ module Player =
   let crashDuration = 200
   let spawnDuration = 100
   
-  let getColor = function
-    | 1 -> Color.Red
-    | 2 -> Color.Yellow
-    | 3 -> Color.Green
-    | 4 -> Color.Cyan
-    | 5 -> Color.Blue
-    | _ -> Color.White
+  let colorWithString = function
+    | 1 -> Color.Red, "ruber"
+    | 2 -> Color.Yellow, "fulvus"
+    | 3 -> Color.Green, "prasinus"
+    | 4 -> Color.Cyan, "querquedulus" // querquedulus = teal, the closest I could find
+    | 5 -> Color.Blue, "caeruleus"
+    | _ -> Color.White, "albus"
   
   let init horses (bounds: PlayerShape) number =
+    let color, colorString = colorWithString number
     { motionState = Moving(Spawning spawnDuration, 0.); finishState = Racing; tauntState = None
-      number = number; color = getColor number; items = List.init 11 (fun _ -> Item.SugarCubes)
+      number = number; color = color; colorString = colorString;
+      items = List.init 11 (fun _ -> Item.SugarCubes)
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses
-      intersectingLines = [false; false; false; false]
+      intersectingLines = [false; false; false; false; false; false]
       turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
       effects = []; particles = []
       lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }

@@ -48,15 +48,17 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) conti
       let playerNumber = i + 1
       let x = vecx game.settings.windowDimensions / (float horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
       
+      let playerColor, playerColorString = Player.colorWithString playerNumber
+      
       let barLeftX = x - (float32 assets.AwardBackground.Width / 2.0f)
       let lx = x - (float32 assets.AwardBackground.Width / 2.f) |> float32
       generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)
       
       // title (player)
-      let str = "Auriga " + (toRoman playerNumber)
-      FlatSpriteFont.drawString assets.Font fontBatch str (x @@ (bgTop + 17.f)) 2.f Color.White (Center, Center)
+      let str = "Auriga " + playerColorString
+      FlatSpriteFont.drawString assets.Font fontBatch str (x @@ (bgTop + 17.f)) 2.f playerColor (Center, Center)
       // TODO: check translation
-      FlatSpriteFont.drawString assets.Font fontBatch "Informatiae Equo" (x @@ (bgTop + 34.f)) 2.f Color.White (Center, Center)
+      FlatSpriteFont.drawString assets.Font fontBatch "Informatiae Equo" (x @@ (bgTop + 34.f)) 2.f playerColor (Center, Center)
       
       // "acc." = acceleratio
       drawHorseBarData generalBatch fontBatch barTop barBottom (barLeftX + (barSpacing * 1.f)) (float32 horse.acceleration * accFactor) "acc." assets
