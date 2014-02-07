@@ -224,7 +224,7 @@ module Player =
             then Looping
             else Paused
     | Crashed timeUntilRespawn ->
-      if timeUntilRespawn <= 0 then
+      if timeUntilRespawn > 0 then
         { player with
             motionState = Crashed (timeUntilRespawn - 1)
             tauntState = tauntState
@@ -240,7 +240,7 @@ module Player =
               |> List.minBy (fun (_, p) -> Vector2.DistanceSquared(player.position, p))
           let direction = rspPoints.[List.wrapIndex rspPoints (rspI - 1)] - rsp
           rsp, atan2 direction.Y direction.X |> float
-          
+        
         { player with
             motionState = Moving(Spawning 100, 0.4)
             bounds = new PlayerShape(respawnPoint, player.bounds.Width, player.bounds.Height, respawnDirection)
