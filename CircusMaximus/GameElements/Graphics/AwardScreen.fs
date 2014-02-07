@@ -13,7 +13,7 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (awardScreen: Awar
   awardScreen.playerDataAndWinnings |> List.iter
     (fun (playerData, playerWinnings) ->
       // Do some quick calculations
-      let playerN = "Histrio " + toRoman playerData.number
+      let playerN = "Auriga " + toRoman playerData.number
       let x = vecx settings.windowDimensions / (float awardScreen.playerDataAndWinnings.Length + 0.25) * (float (playerData.number - 1) + 0.625)
       let playerCoinAmtStr, playerCoinsStrCol =
         // TODO: extract this first part out into a function since it will be useful throughout the

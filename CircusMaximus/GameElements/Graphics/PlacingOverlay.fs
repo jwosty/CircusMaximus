@@ -18,7 +18,7 @@ let drawOverlay (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (screenWidt
       (fun i player ->
         let center = (screenWidth / 2) @@ (spacing * (float i + (float padding * 0.5)))
         generalBatch.DrawCentered(assets.PlacingBackground, center - (0 @@ 3), new Color(Color.White, 255))
-        let str = "Locus " + (player |> placing |> toRoman) + ":      Histrio " + (player.number |> toRoman)
+        let str = "Locus " + (player |> placing |> toRoman) + ":      Auriga " + (player.number |> toRoman)
         FlatSpriteFont.drawString
           assets.Font fontBatch str center 4.0f
           (player |> placing |> placingColor)

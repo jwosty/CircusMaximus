@@ -53,7 +53,7 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) conti
       generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)
       
       // title (player)
-      let str = "Histrio " + (toRoman playerNumber)
+      let str = "Auriga " + (toRoman playerNumber)
       FlatSpriteFont.drawString assets.Font fontBatch str (x @@ (bgTop + 17.f)) 2.f Color.White (Center, Center)
       // TODO: check translation
       FlatSpriteFont.drawString assets.Font fontBatch "Informatiae Equo" (x @@ (bgTop + 34.f)) 2.f Color.White (Center, Center)

@@ -15,7 +15,7 @@ let drawInfo fontBatch (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) 
       3.f color (FlatSpriteFont.Center, FlatSpriteFont.Min)
   match player.motionState with
   | Moving(spawnTime, velocity) ->
-    drawString ("Histrio " + (player.number |> toRoman)) 0. Color.White
+    drawString ("Auriga " + (player.number |> toRoman)) 0. Color.White
     drawString ("Flexus: " + (MathHelper.Clamp(player.turns, 0, Int32.MaxValue) |> toRoman)) 1. Color.White
     match player.finishState with
     | Finished placing ->
