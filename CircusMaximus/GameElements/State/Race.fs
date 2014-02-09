@@ -118,7 +118,7 @@ module Race =
         // No player placings
         | PostRace continueButton ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
-          let raceState = PostRace(Button.next continueButton mouse)
+          let raceState = PostRace(Button.next mouse gamepads continueButton)
           let raceStatus =
             match continueButton.buttonState with
             | Releasing -> SwitchToAwards

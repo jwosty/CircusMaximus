@@ -13,8 +13,7 @@ type AwardScreen =
     playerDataAndWinnings: (PlayerData * int) list
     /// A list of players' horses saved from the last race, which will be passed onto the next
     playerHorses: Horses list
-    mainMenuButton: Button
-    continueButton: Button }
+    buttonGroup: ButtonGroup }
 
 /// Contains functions and constants pertaining to award screens
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -23,31 +22,28 @@ module AwardScreen =
   let init (settings: GameSettings) (playerDataAndWinnings: (PlayerData * int) list) playerHorses =
     let x = settings.windowDimensions.X / 2.f
     let y8 = settings.windowDimensions.Y / 10.f
+    let inline initb i label =
+      Button.initCenter
+        (x @@ y8 * i)
+        Button.defaultButtonSize label
     // The new playerData that the game should now use
     let newPlayerData =
       playerDataAndWinnings |> List.map
         (fun (playerData, winnings) -> { playerData with coinBalance = playerData.coinBalance + winnings })
-    
     { timer = 0
       playerDataAndWinnings = playerDataAndWinnings
       playerHorses = playerHorses
-      continueButton =
-        Button.initCenter
-          (x @@ y8)
-          Button.defaultButtonSize "Contine"
-      mainMenuButton =
-        Button.initCenter
-          (x @@ y8 * 2.f)
-          Button.defaultButtonSize "Exi cursus" },
+      buttonGroup = ButtonGroup.init [initb 1.f "Contine"; initb 2.f "Exi cursus"] },
     newPlayerData
   
   /// Updates an award screen and returns the new model
-  let next (awardScreen: AwardScreen) mouse =
-    match awardScreen.continueButton.buttonState, awardScreen.mainMenuButton.buttonState with
+  let next (awardScreen: AwardScreen) (lastKeyboard, keyboard) mouse gamepads =
+    let inline buttonState label = ButtonGroup.buttonState awardScreen.buttonGroup label
+    match buttonState "Contine", buttonState "Exi cursus" with
     | Releasing, _ -> SwitchToRaces(awardScreen.playerHorses)
     | _, Releasing -> SwitchToMainMenu
     | _ ->
       { awardScreen with
           timer = awardScreen.timer + 1
-          continueButton = Button.next awardScreen.continueButton mouse
-          mainMenuButton = Button.next awardScreen.mainMenuButton mouse } |> NoSwitch
+          buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads awardScreen.buttonGroup }
+      |> NoSwitch

@@ -6,8 +6,7 @@ open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
-/// Represents the current state a button is in. Click actions should be taken if the button state
-/// is Releasing.
+/// Represents the current state a button is in
 type ButtonState =
   | Pressing | Down
   | Releasing | Up
@@ -16,7 +15,8 @@ type Button =
   { position: Vector2
     width: int; height: int
     label: string
-    buttonState: ButtonState }
+    buttonState: ButtonState
+    isSelected: bool }
   /// The button's bottom left corner coordinates
   member this.bottomLeft = (this.position.X + float32 this.width) @@ (this.position.Y + float32 this.height)
 
@@ -28,25 +28,35 @@ module Button =
     { position = position
       width = width; height = height
       label = label
-      buttonState = Up }
+      buttonState = Up
+      isSelected = false }
   
   let initCenter (center: Vector2) (width, height) label =
     { position = (center.X - (float32 width / 2.0f) @@ center.Y - (float32 height / 2.0f))
       width = width; height = height
       label = label
-      buttonState = Up }
+      buttonState = Up
+      isSelected = false }
   
-  /// Returns the next button state with the given conditions
-  let next (button: Button) (mouse: MouseState) =
+  let basicNext (button: Button) isSelected =
+    { button with
+        buttonState =
+          match button.buttonState with
+          | Releasing | Up ->   if isSelected then Pressing else Up
+          | Pressing  | Down -> if not isSelected then Releasing else Down }
+  
+  /// Returns the next button state, taking into account the input devices
+  let next (mouse: MouseState) gamepads (button: Button) =
     let leftDown = mouse.LeftButton = Input.ButtonState.Pressed
     let leftUp = not leftDown
     let mouseInBounds =
       (   float32 mouse.Position.X > button.position.X    && float32 mouse.Position.Y > button.position.Y)
       && (float32 mouse.Position.X < button.bottomLeft.X  && float32 mouse.Position.Y < button.bottomLeft.Y)
-    let nextState =
-      match button.buttonState with
-      | Releasing ->  if leftDown && mouseInBounds  then Pressing   else Up
-      | Up ->         if leftDown && mouseInBounds  then Pressing   else Up
-      | Pressing ->   if leftUp                     then Releasing  else Down
-      | Down ->       if leftUp                     then Releasing  else Down
-    { button with buttonState = nextState }
+    let isInputPressing =
+      (leftDown && mouseInBounds) ||
+      (button.isSelected && (List.exists (fun (gamepad: GamePadState) -> gamepad.IsButtonDown Buttons.A) gamepads))
+    { button with
+        buttonState =
+          match button.buttonState with
+          | Releasing | Up -> if isInputPressing then Pressing else Up
+          | Pressing | Down -> if not isInputPressing then Releasing else Down }

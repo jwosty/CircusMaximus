@@ -65,7 +65,7 @@ module Game =
           gameState, game.gameSounds
         
         | HorseScreen(playerHorses, continueButton) ->
-          let continueButton = Button.next continueButton mouse
+          let continueButton = Button.next mouse gamepads continueButton
           let gameState =
             match continueButton.buttonState with
             | Releasing -> SwitchToRaces(playerHorses)
@@ -84,7 +84,7 @@ module Game =
           gameState, gameSounds
           
         | AwardScreen awardScreen ->
-          ScreenStatus.map AwardScreen (AwardScreen.next awardScreen mouse),
+          ScreenStatus.map AwardScreen (AwardScreen.next awardScreen (lastKeyboard, keyboard) mouse gamepads),
           game.gameSounds
       
       match gameState with

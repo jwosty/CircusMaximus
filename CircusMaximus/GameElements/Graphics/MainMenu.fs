@@ -10,8 +10,7 @@ open CircusMaximus.State
 
 /// Draws a main menu
 let draw (mainMenu: MainMenu) (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) assets =
-  fontBatch.DoWithPointClamp
-    (fun fb ->
-      generalBatch.DoBasic (fun gb ->
-        ButtonGraphics.draw fb gb mainMenu.playButton assets
-        ButtonGraphics.draw fb gb mainMenu.quitButton assets))
+  fontBatch.DoWithPointClamp (fun fb -> generalBatch.DoBasic (fun gb ->
+    List.iter
+      (fun button -> ButtonGraphics.draw fb gb button assets)
+      mainMenu.buttonGroup.buttons))

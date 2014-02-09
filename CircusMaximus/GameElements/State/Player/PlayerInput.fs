@@ -23,18 +23,6 @@ type PlayerInput =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module PlayerInput =
-  let keyJustReleased (lastKeyboard: KeyboardState, keyboard: KeyboardState) key =
-    lastKeyboard.IsKeyDown(key) && keyboard.IsKeyUp(key)
-  
-  let keyJustPressed (lastKeyboard: KeyboardState, keyboard: KeyboardState) key =
-    lastKeyboard.IsKeyUp(key) && keyboard.IsKeyDown(key)
-  
-  let gpButtonJustReleased (lastGamepad: GamePadState, gamepad: GamePadState) button =
-    lastGamepad.IsButtonDown(button) && gamepad.IsButtonUp(button)
-  
-  let gpButtonJustPressed (lastGamepad: GamePadState, gamepad: GamePadState) button =
-    lastGamepad.IsButtonUp(button) && gamepad.IsButtonDown(button)
-  
   let initFromKeyboard (lastKeyboard, keyboard) (settings: GameSettings) =
     let keyJustReleased = keyJustReleased (lastKeyboard, keyboard)
     let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)

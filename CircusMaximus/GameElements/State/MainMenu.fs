@@ -6,28 +6,26 @@ open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
-type MainMenu = { playButton: Button; quitButton: Button }
+type MainMenu = { buttonGroup: ButtonGroup }
 
 /// Contains functions and constants pertaining to main menus
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MainMenu =
   let init (settings: GameSettings) =
-    { playButton =
-        Button.initCenter
-          (settings.windowDimensions * (0.5 @@ 0.333))
-          Button.defaultButtonSize "Incipe"
-      quitButton =
-        Button.initCenter
-          (settings.windowDimensions * (0.5 @@ 0.666))
-          Button.defaultButtonSize "Exi" }
+    let inline initb y label =
+      Button.initCenter
+        (settings.windowDimensions * (0.5 @@ y))
+        Button.defaultButtonSize label
+    { buttonGroup =
+        ButtonGroup.init [ initb 0.333 "Incipe"; initb 0.666 "Exi" ] }
   
   /// Updates the main menu
-  let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepad) =
-    match mainMenu.playButton.buttonState, mainMenu.quitButton.buttonState with
+  let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
+    let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label
+    match buttonState "Incipe", buttonState "Exi" with
     | _, Releasing -> NativeExit
     | Releasing, _ -> SwitchToHorseScreen
     | _, _ ->
       NoSwitch(
         { mainMenu with
-            playButton = Button.next mainMenu.playButton mouse
-            quitButton = Button.next mainMenu.quitButton mouse })
+            buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads mainMenu.buttonGroup })

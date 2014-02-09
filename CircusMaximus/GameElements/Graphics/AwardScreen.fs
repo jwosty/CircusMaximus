@@ -31,8 +31,9 @@ let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (awardScreen: Awar
       fontBatch.DoWithPointClamp (fun fontBatch ->
         generalBatch.DoBasic (fun generalBatch ->
           // Draw the buttons
-          ButtonGraphics.draw fontBatch generalBatch awardScreen.continueButton assets
-          ButtonGraphics.draw fontBatch generalBatch awardScreen.mainMenuButton assets
+          List.iter
+            (fun button -> ButtonGraphics.draw fontBatch generalBatch button assets)
+            awardScreen.buttonGroup.buttons
           
           // Draw the player background image
           generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)

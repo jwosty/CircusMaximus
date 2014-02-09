@@ -1,0 +1,44 @@
+namespace CircusMaximus.State
+open System
+open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Input
+open CircusMaximus
+open CircusMaximus.Extensions
+open CircusMaximus.HelperFunctions
+
+type ButtonGroup =
+  { buttons: Button list
+    selected: int }
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ButtonGroup =
+  /// Initializes a button group
+  let init buttons =
+    { buttons = buttons
+      selected = 0 }
+  
+  /// Returns the next button group state, updating all children buttons
+  let next (lastKeyboard: KeyboardState, keyboard: KeyboardState) mouse gamepads buttonSystem =
+    let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)
+    let selected =
+      match keyJustPressed Keys.Up, keyJustPressed Keys.Down with
+      | true, false -> -1
+      | false, true -> 1
+      | _ -> 0
+      + buttonSystem.selected
+      |> clamp 0 (buttonSystem.buttons.Length - 1)
+    { buttonSystem with
+        selected = selected
+        buttons =
+          buttonSystem.buttons |> List.mapi (fun i button ->
+            match i = buttonSystem.selected, button.isSelected with
+            | true, false -> { button with isSelected = true }
+            | false, true -> { button with isSelected = false }
+            | _ -> button
+            |> Button.next mouse gamepads)}
+  
+  let findByLabel (buttonGroup: ButtonGroup) label =
+    List.find (fun (button: Button) -> button.label = label) buttonGroup.buttons
+  
+  let buttonState buttonGroup label =
+    (findByLabel buttonGroup label).buttonState

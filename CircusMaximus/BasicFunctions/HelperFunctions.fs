@@ -4,6 +4,7 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
+open Microsoft.Xna.Framework.Input
 open CircusMaximus.TupleClassExtensions
 
 /// 2D Vector constructor
@@ -21,16 +22,6 @@ let inline vecy (vector2: Vector2) = float vector2.Y
 /// Vector2 cross product
 let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
-
-let clampMin min value =
-  if value < min
-  then min
-  else value
-
-let clampMax max value =
-  if value > max
-  then max
-  else value
 
 /// Randomly changes two values so that all values still add up to the same total
 let unbalanceRandom minUnbalance maxUnbalance (rand: Random) values =
@@ -57,7 +48,17 @@ let rec repeat f x n =
 
 let ( *@*@* ) a b c = a, b, c
 
-let clamp value min max = value |> clampMin min |> clampMax max
+let inline clampMin min value =
+  if value < min
+  then min
+  else value
+
+let inline clampMax max value =
+  if value > max
+  then max
+  else value
+
+let inline clamp min max = clampMin min >> clampMax max
 
 /// Creates a sort of lazy evaluation by "delaying" the result
 let (...<|) f x = fun () -> f x
@@ -86,6 +87,18 @@ let placingColor = function
   | 2 -> Color.Silver
   | 3 -> new Color(205, 127, 50)
   | _ -> Color.White
+
+let keyJustReleased (lastKeyboard: KeyboardState, keyboard: KeyboardState) key =
+    lastKeyboard.IsKeyDown(key) && keyboard.IsKeyUp(key)
+  
+let keyJustPressed (lastKeyboard: KeyboardState, keyboard: KeyboardState) key =
+  lastKeyboard.IsKeyUp(key) && keyboard.IsKeyDown(key)
+
+let gpButtonJustReleased (lastGamepad: GamePadState, gamepad: GamePadState) button =
+  lastGamepad.IsButtonDown(button) && gamepad.IsButtonUp(button)
+
+let gpButtonJustPressed (lastGamepad: GamePadState, gamepad: GamePadState) button =
+  lastGamepad.IsButtonUp(button) && gamepad.IsButtonDown(button)
 
 let tup2 x = x, x
 let tup3 x = x, x, x
