@@ -30,7 +30,7 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
   | MainMenu mainMenu ->
     MainMenuGraphics.draw mainMenu fontBatch generalBatch assets
   
-  | HorseScreen(horses, continueButton) -> HorseScreenGraphics.draw fontBatch generalBatch game continueButton assets horses
+  | HorseScreen(horses, buttonGroup) -> HorseScreenGraphics.draw fontBatch generalBatch game buttonGroup assets horses
   
   | Race race ->
     match race.raceState with
@@ -58,13 +58,15 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
               FlatSpriteFont.drawString
                 assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen
                 (FlatSpriteFont.Center, FlatSpriteFont.Center))
-      | PostRace(continueButton) ->
+      | PostRace(buttonGroup) ->
         fontBatch.DoWithPointClamp
           (fun fontBatch ->
             generalBatch.DoBasic
               (fun generalBatch ->
                 PlacingOverlayGraphics.drawOverlay generalBatch fontBatch (windowRect.Width, windowRect.Height) assets race.players
-                ButtonGraphics.draw fontBatch generalBatch continueButton assets))
+                List.iter
+                  (fun button -> ButtonGraphics.draw fontBatch generalBatch button assets)
+                  buttonGroup.buttons))
   
   | AwardScreen awardScreen ->
     AwardScreenGraphics.draw fontBatch generalBatch awardScreen game.settings assets

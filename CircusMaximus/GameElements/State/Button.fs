@@ -46,15 +46,16 @@ module Button =
           | Pressing  | Down -> if not isSelected then Releasing else Down }
   
   /// Returns the next button state, taking into account the input devices
-  let next (mouse: MouseState) gamepads (button: Button) =
+  let next (mouse: MouseState) (keyboard: KeyboardState) gamepads (button: Button) =
     let leftDown = mouse.LeftButton = Input.ButtonState.Pressed
     let leftUp = not leftDown
     let mouseInBounds =
       (   float32 mouse.Position.X > button.position.X    && float32 mouse.Position.Y > button.position.Y)
       && (float32 mouse.Position.X < button.bottomLeft.X  && float32 mouse.Position.Y < button.bottomLeft.Y)
     let isInputPressing =
-      (leftDown && mouseInBounds) ||
-      (button.isSelected && (List.exists (fun (gamepad: GamePadState) -> gamepad.IsButtonDown Buttons.A) gamepads))
+      (button.isSelected && ((keyboard.IsKeyDown Keys.Space) || keyboard.IsKeyDown Keys.Enter)) ||
+      (button.isSelected && (List.exists (fun (gamepad: GamePadState) -> gamepad.IsButtonDown Buttons.A) gamepads)) ||
+      (leftDown && mouseInBounds)
     { button with
         buttonState =
           match button.buttonState with

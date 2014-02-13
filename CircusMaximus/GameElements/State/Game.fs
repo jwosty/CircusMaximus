@@ -8,7 +8,7 @@ open CircusMaximus.HelperFunctions
 
 type GameState =
   | MainMenu of MainMenu
-  | HorseScreen of Horses list * Button
+  | HorseScreen of Horses list * ButtonGroup
   | Race of Race
   | AwardScreen of AwardScreen
 
@@ -48,7 +48,11 @@ module Game =
       printfn "Player %i\n\tacceleration = %f\n\ttop speed = %f\n\tturn = %f" (i + 1) h.acceleration h.topSpeed h.turn
       h)
     { game with
-        gameState = HorseScreen(horses, Button.initCenter (game.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonSize "Contine")
+        gameState =
+          HorseScreen(
+            horses,
+            ButtonGroup.init(
+              [ Button.initCenter (game.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonSize "Contine" ]))
         gameSounds = gameSounds }
   
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
@@ -64,12 +68,12 @@ module Game =
             |> ScreenStatus.map MainMenu
           gameState, game.gameSounds
         
-        | HorseScreen(playerHorses, continueButton) ->
-          let continueButton = Button.next mouse gamepads continueButton
+        | HorseScreen(playerHorses, buttonGroup) ->
+          let buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads buttonGroup
           let gameState =
-            match continueButton.buttonState with
+            match buttonGroup.buttons.[0].buttonState with
             | Releasing -> SwitchToRaces(playerHorses)
-            | _ -> NoSwitch(HorseScreen(playerHorses, continueButton))
+            | _ -> NoSwitch(HorseScreen(playerHorses, buttonGroup))
           gameState, game.gameSounds
         
         | Race oldRace ->

@@ -9,7 +9,7 @@ open CircusMaximus.Input
 
 type LastPlacing = int
 
-type RaceState = | PreRace | MidRace of LastPlacing | PostRace of Button
+type RaceState = | PreRace | MidRace of LastPlacing | PostRace of ButtonGroup
 
 type Race = { raceState: RaceState; players: Player list; timer: int }
 
@@ -29,9 +29,10 @@ module Race =
   let maxTurns = 13
   
   let initPostRaceState defaultButtonSize (settings: GameSettings) =
-    PostRace(Button.initCenter
-      (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y / 6.f * 1.f)
-      defaultButtonSize "Continue")
+    PostRace(ButtonGroup.init
+      [ Button.initCenter
+          (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y / 6.f * 1.f)
+          defaultButtonSize "Continue" ])
   
   let init (playerHorses: _ list) settings =
     let playerY n = (n - 1) * 210 + 740 |> float32
@@ -116,11 +117,11 @@ module Race =
             | None -> NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
           else NoSwitch(race), MidRace(latestPlacing), players, newGameSound
         // No player placings
-        | PostRace continueButton ->
+        | PostRace buttonGroup ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions gameSound.Chariots race.players
-          let raceState = PostRace(Button.next mouse gamepads continueButton)
+          let raceState = PostRace(ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads buttonGroup)
           let raceStatus =
-            match continueButton.buttonState with
+            match buttonGroup.buttons.[0].buttonState with
             | Releasing -> SwitchToAwards
             | _ -> NoSwitch(race)
           raceStatus, raceState, players, { gameSound with Chariots = chariotSounds }
