@@ -10,6 +10,7 @@ type GameContent =
     RacetrackTextures: Texture2D[,]
     Font: Texture2D
     Button: Texture2D
+    ButtonSelector: Texture2D
     ChariotTexture: Texture2D
     PlayerGlow: Texture2D
     Particle: Texture2D
@@ -43,6 +44,7 @@ module GameContentFunctions =
       RacetrackTextures = Array2D.init 10 3 (fun x y -> loadImage (sprintf "racetrack/%i-%i.png" y x))
       Font = loadImage "font"
       Button = loadImage "button"
+      ButtonSelector = loadImage "buttonselector"
       ChariotTexture = loadImage "chariot"
       PlayerGlow = loadImage "pglow"
       Particle = loadImage "particle"

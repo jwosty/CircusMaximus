@@ -193,5 +193,6 @@
     <BundleResource Include="Content\sounds\cheer1.wav" />
     <BundleResource Include="Content\sounds\chariot.wav" />
     <BundleResource Include="Content\images\itemselector.png" />
+    <BundleResource Include="Content\images\buttonselector.png" />
   </ItemGroup>
 </Project>
