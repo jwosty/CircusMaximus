@@ -21,10 +21,20 @@ module ButtonGroup =
   let next (lastKeyboard, keyboard) mouse gamepads buttonGroup =
     let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)
     let selected =
-      match keyJustPressed Keys.Up, keyJustPressed Keys.Down with
-      | true, false -> -1
-      | false, true -> 1
-      | _ -> 0
+      // Selection from arrow keys
+      let kDirection = 
+        match keyJustPressed Keys.Up, keyJustPressed Keys.Down with
+        | true, false -> -1
+        | false, true -> 1
+        | _ -> 0
+      // Selection from each gamepad's left thumbstick
+      List.fold
+        (fun direction (gamepad: GamePadState) ->
+          direction + (-gamepad.ThumbSticks.Left.Y |> round |> int))
+        0 gamepads
+      // Combine keyboard arrows and gamepad thumbsticks
+      + kDirection
+      // Change from current selection
       + buttonGroup.selected
       |> clamp 0 (buttonGroup.buttons.Length - 1)
     { buttonGroup with
