@@ -30,7 +30,7 @@ let combineResultsPair a b =
 /// Combines multiple collision results into one, typically all of the same object
 let combineResults results = List.reduce combineResultsPair results
 
-let collide_LineSeg_LineSeg a b = a -+- b |> twice |> Tuple.t2Map Result_Line
+let collide_LineSeg_LineSeg a b = Result_Line(a -+- b) |> twice
 
 /// Returns the indices of every edge that is intersecting the given line segment
 let collide_Poly_LineSeg (poly: Polygon) (seg: LineSegment) =
