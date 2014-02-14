@@ -58,11 +58,11 @@ module Player =
   let numPlayers = 5
   
   /// The base player acceleration change in percent per frame
-  let baseAcceleration = 0.05
+  let baseAcceleration = 2.0
   /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
-  let baseTopSpeed = 8.
-  /// A normal turn speed, and the factor to convert a turn percentage into degrees
-  let baseTurn = 1.5
+  let baseTopSpeed = 8.0
+  /// A normal turn speed, and the factor to convert a turn percentage into radians
+  let baseTurn = 0.03125  // 1/32nd radian
   
   let unbalanceMidPoint = 0.5
   let maxStatUnbalance = 0.1
@@ -116,7 +116,6 @@ module Player =
   /// Returns the next position and direction of the player and change in direction
   let nextPositionDirection (player: Player) Δdirection =
     let Δdirection = Δdirection * player.horses.turn
-    let velocity = player.velocity
     let finalΔdirection =
       // Being taunted affects players' turning ability
       match Effect.findLongest player.effects EffectType.Taunted with
@@ -124,7 +123,7 @@ module Player =
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
     
-    positionForward player.position finalDirection velocity, finalDirection
+    positionForward player.position finalDirection player.velocity, finalDirection
   
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
   let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
@@ -198,20 +197,28 @@ module Player =
             | Spawning safeTime -> Spawning (safeTime - 1)
             | Spawned -> Spawned
           
-          let position, direction = nextPositionDirection player input.turn
-          let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
-          
-          let absPower = input.power * player.horses.topSpeed
+          let turn = -input.leftReignPull + input.rightReignPull
           let velocity =
             match Effect.findLongest player.effects EffectType.Sugar with
-            | Some(_, EffectDurations.sugar) -> 10.0
-            | _ -> player.velocity
-          let velocity =
-            if velocity > absPower
-              then clampMin 0.0 (velocity - (player.horses.acceleration * 2.0))
-            elif velocity < absPower
-              then velocity + player.horses.acceleration
-            else velocity
+            | Some(_, EffectDurations.sugar) -> baseTopSpeed * 2.5
+            | _ ->
+              // Accelerate if the player so wishes
+              let v =
+                if input.flickReigns
+                then player.velocity + player.horses.acceleration
+                else player.velocity
+              // Slow down depending on how hard the reigns are being pulled
+              let v =
+                clampMin
+                  (baseTopSpeed * -0.25)
+                  (v - (input.leftReignPull * input.rightReignPull / 2.0))
+              // Slow down if the horses are going faster than they normally can
+              if v > player.horses.topSpeed
+                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * 0.5))
+                else v
+          
+          let position, direction = nextPositionDirection player turn
+          let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
           
           let selectedItem = MathHelper.Clamp(player.selectedItem + input.selectorΔ, 0, player.items.Length - 1)
           let items, effects =

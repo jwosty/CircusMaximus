@@ -8,10 +8,12 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 
 type PlayerInput =
-  { /// Forward push; ranges from 0 to 1
-    power: float
-    /// Turn amount; ranges from 0 to 1
-    turn: float
+  { /// How hard the player is pulling on the left reign; ranges from 0 to 1
+    leftReignPull: float
+    /// How hard the player is puling on the right reign; ranges from 0 to 1
+    rightReignPull: float
+    /// Whether or not the player is pressing the button to flick the reigns (controls speed)
+    flickReigns: bool
     /// True when the player presses the taunt button (Q on the keyboard, A on the controller)
     expectingTaunt: bool
     /// Debug input to advance one lap
@@ -26,11 +28,11 @@ module PlayerInput =
   let initFromKeyboard (lastKeyboard, keyboard) (settings: GameSettings) =
     let keyJustReleased = keyJustReleased (lastKeyboard, keyboard)
     let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)
-    { power = if keyboard.IsKeyDown(Keys.W) then 1. else 0.0
-      turn =
-        (  if keyboard.IsKeyDown(Keys.A) then -1. else 0.0)
-        + (if keyboard.IsKeyDown(Keys.D) then 1. else 0.0)
-        |> degreesToRadians
+    { /// TODO: change reign input to be more precise (e.g. Q is pulls left reign lightly, A is harder, and Z is hardest)
+      leftReignPull = if keyboard.IsKeyDown Keys.A then 1. else 0.
+      /// TODO: change reign input to be more precise (e.g. E is pulls right reign lightly, D is harder, and C is hardest)
+      rightReignPull = if keyboard.IsKeyDown Keys.D then 1. else 0.
+      flickReigns = keyJustPressed Keys.Space
       expectingTaunt = keyboard.IsKeyDown(Keys.Q)
       advanceLap = settings.debugLapIncrement && keyJustPressed Keys.L
       selectorΔ =
@@ -43,8 +45,9 @@ module PlayerInput =
   let initFromGamepad (lastGamepad, gamepad) (settings: GameSettings) =
     let gpButtonJustReleased = gpButtonJustReleased (lastGamepad, gamepad)
     let gpButtonJustPressed = gpButtonJustPressed (lastGamepad, gamepad)
-    { power = float gamepad.Triggers.Right
-      turn = float gamepad.ThumbSticks.Left.X |> degreesToRadians
+    { leftReignPull = float gamepad.Triggers.Left
+      rightReignPull = float gamepad.Triggers.Right
+      flickReigns = gpButtonJustPressed Buttons.LeftStick || gpButtonJustPressed Buttons.RightStick
       expectingTaunt = gamepad.IsButtonDown(Buttons.Y)
       advanceLap = settings.debugLapIncrement && gpButtonJustPressed Buttons.X
       selectorΔ =
