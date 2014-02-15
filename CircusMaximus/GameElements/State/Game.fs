@@ -8,6 +8,7 @@ open CircusMaximus.HelperFunctions
 
 type GameState =
   | MainMenu of MainMenu
+  | Tutorial of Tutorial
   | HorseScreen of Horses list * ButtonGroup
   | Race of Race
   | AwardScreen of AwardScreen
@@ -34,19 +35,16 @@ module Game =
       playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
       gameSounds = GameSounds.allStopped Player.numPlayers }
   
-  /// Initializes the game state to a HorseScreen
+  /// Initializes the HorseScreen game state
   let switchToHorseScreen game gameSounds =
     let horses = List.init Player.numPlayers (fun i ->
       let values =
         let ump = Player.unbalanceMidPoint * 100.0 |> int
         repeat (unbalanceRandom 0 (Player.maxStatUnbalance * 100. |> int) game.rand) [ump; ump; ump] Player.unbalanceTimes
         |> List.map (fun n -> float n / 100.0)
-      let h =
-        { acceleration = Player.baseAcceleration * values.[0]
-          topSpeed = Player.baseTopSpeed * values.[1]
-          turn = Player.baseTurn * values.[2]}
-      printfn "Player %i\n\tacceleration = %f\n\ttop speed = %f\n\tturn = %f" (i + 1) h.acceleration h.topSpeed h.turn
-      h)
+      { acceleration = Player.baseAcceleration * values.[0]
+        topSpeed = Player.baseTopSpeed * values.[1]
+        turn = Player.baseTurn * values.[2]})
     { game with
         gameState =
           HorseScreen(
@@ -67,6 +65,10 @@ module Game =
             (MainMenu.next mainMenu (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads))
             |> ScreenStatus.map MainMenu
           gameState, game.gameSounds
+        
+        | Tutorial tutorial ->
+          let tutorial, gameSounds = Tutorial.next (lastKeyboard, keyboard) (lastGamepads, gamepads) game.rand game.settings game.gameSounds tutorial
+          ScreenStatus.map Tutorial tutorial, gameSounds
         
         | HorseScreen(playerHorses, buttonGroup) ->
           let buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads buttonGroup
@@ -93,8 +95,9 @@ module Game =
       
       match gameState with
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds })
-      | SwitchToHorseScreen -> Some(switchToHorseScreen game gameSounds)
       | SwitchToMainMenu -> Some({ game with gameState = MainMenu(MainMenu.init game.settings); gameSounds = gameSounds })
+      | SwitchToTutorial -> Some({ game with gameState = Tutorial(Tutorial.init ()) })
+      | SwitchToHorseScreen -> Some(switchToHorseScreen game gameSounds)
       | SwitchToRaces(playerHorses) -> Some({ game with gameState = Race(Race.init playerHorses game.settings); gameSounds = gameSounds })
       | SwitchToAwards ->
         // Update player data

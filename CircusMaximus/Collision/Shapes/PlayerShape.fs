@@ -10,6 +10,9 @@ open CircusMaximus.LineSegment
 type PlayerShape(center, width, height, direction) =
   inherit Polygon(center)
   
+  static member standardWidth = 64.0f
+  static member standardHeight = 29.0f
+  
   member this.Width: float32 = width
   member this.Height: float32 = height
   member this.Direction: float = direction
@@ -23,9 +26,9 @@ type PlayerShape(center, width, height, direction) =
   override this.Points =
     let origin, direction = this.Center, this.Direction
     // Offsets from the center
-    [ this.HalfWidth  @@ -this.HalfHeight;
-      this.HalfWidth  @@ this.HalfHeight;
-      -this.HalfWidth @@ this.HalfHeight;
+    [  this.HalfWidth @@ -this.HalfHeight;
+       this.HalfWidth @@  this.HalfHeight;
+      -this.HalfWidth @@  this.HalfHeight;
       -this.HalfWidth @@ -this.HalfHeight]
     // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
       |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)

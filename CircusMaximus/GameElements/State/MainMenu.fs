@@ -17,15 +17,20 @@ module MainMenu =
         (settings.windowDimensions * (0.5 @@ y))
         Button.defaultButtonSize label
     { buttonGroup =
-        ButtonGroup.init [ initb 0.333 "Incipe"; initb 0.666 "Exi" ] }
+        ButtonGroup.init [ initb 0.25 "Disce"; initb 0.5 "Incipe"; initb 0.75 "Exi" ] }
   
   /// Updates the main menu
   let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
     let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label
-    match buttonState "Incipe", buttonState "Exi" with
-    | _, Releasing -> NativeExit
-    | Releasing, _ -> SwitchToHorseScreen
-    | _, _ ->
-      NoSwitch(
-        { mainMenu with
-            buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads mainMenu.buttonGroup })
+    match buttonState "Exi" with
+    | Releasing -> NativeExit
+    | _ ->
+      match buttonState "Disce" with
+      | Releasing -> SwitchToTutorial
+      | _ ->
+        match buttonState "Incipe" with
+        | Releasing -> SwitchToHorseScreen
+        | _ ->
+          NoSwitch(
+            { mainMenu with
+                buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads mainMenu.buttonGroup })

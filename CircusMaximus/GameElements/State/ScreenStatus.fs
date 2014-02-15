@@ -5,6 +5,7 @@ type ScreenStatus<'a> =
   /// Continue updating as usual
   | NoSwitch of 'a
   | SwitchToMainMenu
+  | SwitchToTutorial
   | SwitchToHorseScreen
   | SwitchToRaces of Horses list
   | SwitchToAwards
@@ -17,8 +18,9 @@ module ScreenStatus =
   let map mapping screenStatus =
     match screenStatus with
     | NoSwitch x -> NoSwitch(mapping x)
-    | SwitchToHorseScreen -> SwitchToHorseScreen
     | SwitchToMainMenu -> SwitchToMainMenu
+    | SwitchToTutorial -> SwitchToTutorial
+    | SwitchToHorseScreen -> SwitchToHorseScreen
     | SwitchToRaces(playerHorses) -> SwitchToRaces(playerHorses)
     | SwitchToAwards -> SwitchToAwards
     | NativeExit -> NativeExit

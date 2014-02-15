@@ -116,6 +116,7 @@
     <Compile Include="GameElements\State\Player\Horses.fs" />
     <Compile Include="GameElements\State\Player\Player.fs" />
     <Compile Include="GameElements\State\ScreenStatus.fs" />
+    <Compile Include="GameElements\State\Tutorial.fs" />
     <Compile Include="GameElements\State\Race.fs" />
     <Compile Include="GameElements\State\MainMenu.fs" />
     <Compile Include="GameElements\State\AwardScreen.fs" />
@@ -128,6 +129,7 @@
     <Compile Include="GameElements\Graphics\Player\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\Player\HUD.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlay.fs" />
+    <Compile Include="GameElements\Graphics\Tutorial.fs" />
     <Compile Include="GameElements\Graphics\MainMenu.fs" />
     <Compile Include="GameElements\Graphics\HorseScreen.fs" />
     <Compile Include="GameElements\Graphics\AwardScreen.fs" />

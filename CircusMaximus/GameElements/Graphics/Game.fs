@@ -30,6 +30,8 @@ let drawGame windowCenter (windowRect: Rectangle) playerScreens assets (generalB
   | MainMenu mainMenu ->
     MainMenuGraphics.draw mainMenu fontBatch generalBatch assets
   
+  | Tutorial(Tutorial.Tutorial(players)) -> drawScreens playerScreens assets game.settings fontBatch players
+  
   | HorseScreen(horses, buttonGroup) -> HorseScreenGraphics.draw fontBatch generalBatch game buttonGroup assets horses
   
   | Race race ->
