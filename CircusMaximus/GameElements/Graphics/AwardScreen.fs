@@ -8,7 +8,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.State
 
-let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (awardScreen: AwardScreen) (settings: GameSettings) (assets: GameContent) =
+let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (settings: GameSettings) (awardScreen: AwardScreen) =
   let y = (settings.windowDimensions / (2 @@ 2)).Y
   awardScreen.playerDataAndWinnings |> List.iter
     (fun (playerData, playerWinnings) ->

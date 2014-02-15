@@ -129,6 +129,8 @@
     <Compile Include="GameElements\Graphics\Player\PlayerScreen.fs" />
     <Compile Include="GameElements\Graphics\Player\HUD.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlay.fs" />
+    <Compile Include="GameElements\Graphics\World.fs" />
+    <Compile Include="GameElements\Graphics\Race.fs" />
     <Compile Include="GameElements\Graphics\Tutorial.fs" />
     <Compile Include="GameElements\Graphics\MainMenu.fs" />
     <Compile Include="GameElements\Graphics\HorseScreen.fs" />

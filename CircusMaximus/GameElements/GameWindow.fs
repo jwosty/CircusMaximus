@@ -109,4 +109,4 @@ type GameWindow() as this =
     // background and become whatever color the screen is cleared with
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw(gameTime)
-    GameGraphics.drawGame this.WindowCenter this.WindowRect playerScreens assets generalBatch fontBatch game
+    GameGraphics.drawGame assets generalBatch fontBatch this.WindowCenter this.WindowRect playerScreens game
