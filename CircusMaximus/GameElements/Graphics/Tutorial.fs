@@ -8,6 +8,5 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.State
 
-let drawTutorial spriteBatch fontBatch playerScreens (Tutorial(players)) = ()
-  //List.iter2
-    //(fun player playerScreen -> PlayerGraphics.drawPlayer playerScreen player
+let draw assets fontBatch playerScreens settings (Tutorial.Tutorial(players)) =
+  WorldGraphics.drawScreens assets fontBatch playerScreens settings players

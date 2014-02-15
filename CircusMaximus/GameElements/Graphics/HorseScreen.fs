@@ -28,7 +28,7 @@ let drawHorseBarData generalBatch fontBatch barTop barBottom x percent name asse
     assets.Font fontBatch name (x @@ barBottom + 10.f) 1.5f Color.White
     (Center, Center)
 
-let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (game: Game) (buttonGroup: ButtonGroup) assets horses =
+let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) horses (buttonGroup: ButtonGroup) (game: Game) =
   fontBatch.DoWithPointClamp (fun fontBatch ->
   generalBatch.DoBasic (fun generalBatch ->
     List.iter

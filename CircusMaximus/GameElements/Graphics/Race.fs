@@ -8,7 +8,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.State
 
-let drawRace assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: Rectangle) playerScreens settings (race: Race) =
+let draw assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: Rectangle) playerScreens settings (race: Race) =
   match race.raceState with
     | PreRace ->
       WorldGraphics.drawScreens assets fontBatch playerScreens settings race.players

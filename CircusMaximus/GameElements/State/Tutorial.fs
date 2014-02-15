@@ -27,7 +27,7 @@ module Tutorial =
         let player, playerChariotSound =
           Player.next
             (lastKeyboard, keyboard) (lastGamepads, gamepads)
-            rand settings Racetrack.collisionShape (Result_Poly [false; false; false; false; false; false])
+            rand settings Racetrack.collisionShape.RespawnPath (Result_Poly [false; false; false; false; false; false])
             playerChariotSound player
         let restPlayers, restPlayerChariotSounds = next restPlayers restPlayerChariotSounds
         player :: restPlayers, playerChariotSound :: restPlayerChariotSounds

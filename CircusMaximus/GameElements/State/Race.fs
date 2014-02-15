@@ -79,7 +79,7 @@ module Race =
   
   /// Returns the next race state. 
   let next (race: Race) mouse (lastKeyboard, keyboard) (lastGamepads, gamepads) rand gameSound settings =
-    let nextPlayer = Player.next (lastKeyboard, keyboard) (lastGamepads, gamepads) rand settings Racetrack.collisionShape
+    let nextPlayer = Player.next (lastKeyboard, keyboard) (lastGamepads, gamepads) rand settings Racetrack.collisionShape.RespawnPath
     match race.raceState with
     | PreRace ->
       let race, gameSounds =

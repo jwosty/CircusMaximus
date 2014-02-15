@@ -179,7 +179,7 @@ module Player =
     useItem items effects 0 itemIndex
   
   /// A basic function an updated version of the given player model. Players are not given a placing here.
-  let basicNext (input: PlayerInput) (player: Player) (racetrack: RacetrackSpinaShape) collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
+  let basicNext (input: PlayerInput) (player: Player) respawnPoints collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = Effect.nextEffects player.effects
@@ -244,12 +244,11 @@ module Player =
       else
         // Respawn the player
         let respawnPoint, respawnDirection =
-          let rspPoints = racetrack.RespawnPath
           let rspI, rsp =
-            rspPoints
+            respawnPoints
               |> List.mapi (fun i p -> i, p)
               |> List.minBy (fun (_, p) -> Vector2.DistanceSquared(player.position, p))
-          let direction = rspPoints.[List.wrapIndex rspPoints (rspI - 1)] - rsp
+          let direction = respawnPoints.[List.wrapIndex respawnPoints (rspI - 1)] - rsp
           rsp, atan2 direction.Y direction.X |> float
         
         { player with
@@ -260,16 +259,16 @@ module Player =
             particles = particles }, playerChariotSound
   
   /// Updates a player like basicNext, but also handles input things
-  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand settings racetrack collisionResult playerChariotSound player =
+  let next (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) rand settings respawnPoints collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player, playerChariotSound =
       if player.number = 1 then
         basicNext
           (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) settings)
-          player racetrack collision Racetrack.center rand playerChariotSound
+          player respawnPoints collision Racetrack.center rand playerChariotSound
       else
         let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
         basicNext
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) settings)
-          player racetrack collision Racetrack.center rand playerChariotSound
+          player respawnPoints collision Racetrack.center rand playerChariotSound
     player, playerChariotSound
