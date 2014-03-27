@@ -7,30 +7,3 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
 type MainMenu = { buttonGroup: ButtonGroup }
-
-/// Contains functions and constants pertaining to main menus
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module MainMenu =
-  let init (settings: GameSettings) =
-    let inline initb y label =
-      Button.initCenter
-        (settings.windowDimensions * (0.5 @@ y))
-        Button.defaultButtonSize label
-    { buttonGroup =
-        ButtonGroup.init [ initb 0.25 "Disce"; initb 0.5 "Incipe"; initb 0.75 "Exi" ] }
-  
-  /// Updates the main menu
-  let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
-    let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label
-    match buttonState "Exi" with
-    | Releasing -> NativeExit
-    | _ ->
-      match buttonState "Disce" with
-      | Releasing -> SwitchToTutorial
-      | _ ->
-        match buttonState "Incipe" with
-        | Releasing -> SwitchToHorseScreen
-        | _ ->
-          NoSwitch(
-            { mainMenu with
-                buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads mainMenu.buttonGroup })

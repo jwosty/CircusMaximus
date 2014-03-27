@@ -104,6 +104,37 @@
     <Compile Include="Collision\Collision.fs" />
     <Compile Include="GameElements\Sound.fs" />
     <Compile Include="GameElements\Taunt.fs" />
+    <Compile Include="GameElements\Types\Racetrack.fs" />
+    <Compile Include="GameElements\Types\GameSettings.fs" />
+    <Compile Include="GameElements\Types\Button.fs" />
+    <Compile Include="GameElements\Types\ButtonGroup.fs" />
+    <Compile Include="GameElements\Types\BoundParticle.fs" />
+    <Compile Include="GameElements\Types\Player\Effect.fs" />
+    <Compile Include="GameElements\Types\Item.fs" />
+    <Compile Include="GameElements\Types\Player\PlayerInput.fs" />
+    <Compile Include="GameElements\Types\Player\PlayerData.fs" />
+    <Compile Include="GameElements\Types\Player\Horses.fs" />
+    <Compile Include="GameElements\Types\Player\Player.fs" />
+    <Compile Include="GameElements\Types\ScreenStatus.fs" />
+    <Compile Include="GameElements\Types\Tutorial.fs" />
+    <Compile Include="GameElements\Types\Race.fs" />
+    <Compile Include="GameElements\Types\MainMenu.fs" />
+    <Compile Include="GameElements\Types\AwardScreen.fs" />
+    <Compile Include="GameElements\Types\Game.fs" />
+    <Compile Include="GameElements\Types\FButton.fs" />
+    <Compile Include="GameElements\Types\FButtonGroup.fs" />
+    <Compile Include="GameElements\Types\FBoundParticle.fs" />
+    <Compile Include="GameElements\Types\Player\FEffect.fs" />
+    <Compile Include="GameElements\Types\FItem.fs" />
+    <Compile Include="GameElements\Types\Player\FPlayerInput.fs" />
+    <Compile Include="GameElements\Types\Player\FPlayerData.fs" />
+    <Compile Include="GameElements\Types\Player\FPlayer.fs" />
+    <Compile Include="GameElements\Types\FScreenStatus.fs" />
+    <Compile Include="GameElements\Types\FTutorial.fs" />
+    <Compile Include="GameElements\Types\FRace.fs" />
+    <Compile Include="GameElements\Types\FMainMenu.fs" />
+    <Compile Include="GameElements\Types\FAwardScreen.fs" />
+    <Compile Include="GameElements\Types\FGame.fs" />
     <Compile Include="GameElements\Graphics\GameContent.fs" />
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\Button.fs" />
@@ -122,23 +153,6 @@
     <Compile Include="GameElements\Graphics\Game.fs" />
     <Compile Include="GameElements\GameWindow.fs" />
     <Compile Include="Main.fs" />
-    <Compile Include="GameElements\Types\Racetrack.fs" />
-    <Compile Include="GameElements\Types\GameSettings.fs" />
-    <Compile Include="GameElements\Types\Button.fs" />
-    <Compile Include="GameElements\Types\ButtonGroup.fs" />
-    <Compile Include="GameElements\Types\BoundParticle.fs" />
-    <Compile Include="GameElements\Types\Player\Effect.fs" />
-    <Compile Include="GameElements\Types\Item.fs" />
-    <Compile Include="GameElements\Types\Player\PlayerInput.fs" />
-    <Compile Include="GameElements\Types\Player\PlayerData.fs" />
-    <Compile Include="GameElements\Types\Player\Horses.fs" />
-    <Compile Include="GameElements\Types\Player\Player.fs" />
-    <Compile Include="GameElements\Types\ScreenStatus.fs" />
-    <Compile Include="GameElements\Types\Tutorial.fs" />
-    <Compile Include="GameElements\Types\Race.fs" />
-    <Compile Include="GameElements\Types\MainMenu.fs" />
-    <Compile Include="GameElements\Types\AwardScreen.fs" />
-    <Compile Include="GameElements\Types\Game.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -155,7 +169,6 @@
     <Folder Include="GameElements\Graphics\Player\" />
     <Folder Include="GameElements\Types\" />
     <Folder Include="GameElements\Types\Player\" />
-    <Folder Include="GameElements\New Folder\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\images\chariot.png" />

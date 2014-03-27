@@ -7,6 +7,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.Types
+open CircusMaximus.Functions
 
 let draw assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: Rectangle) playerScreens settings (race: Race) =
   match race.raceState with

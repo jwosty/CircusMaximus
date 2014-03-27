@@ -13,6 +13,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 open CircusMaximus.Graphics
+open CircusMaximus.Functions
 
 /// Default Project Template
 type GameWindow() as this =

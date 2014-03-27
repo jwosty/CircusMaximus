@@ -8,6 +8,7 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.Types
 open CircusMaximus.FlatSpriteFont
+open CircusMaximus.Functions
 
 let drawBarData (generalBatch: SpriteBatch) (topLeft: Vector2) (bottomRight: Vector2) percent (assets: GameContent) =
   let centerColor =

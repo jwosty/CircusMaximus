@@ -9,19 +9,3 @@ type PlayerData =
   { number: int
     // TODO: base values on real Roman currency
     coinBalance: int }
-
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module PlayerData =
-  /// Initializes a PlayerData with default values
-  let initEmpty number =
-    { number = number
-      coinBalance = 0 }
-  
-  let playerWinnings placing =
-    match placing with
-    | 1 -> 100
-    | 2 -> 50
-    | 3 -> 25
-    | _ -> 0
-  
-  let findByNumber number playerData = List.find (fun (playerData: PlayerData) -> playerData.number = number) playerData
