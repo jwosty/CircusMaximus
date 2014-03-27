@@ -5,7 +5,7 @@ open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.State
+open CircusMaximus.Types
 
 let getItemImage item (assets: GameContent) =
   match item with

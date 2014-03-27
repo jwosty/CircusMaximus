@@ -11,7 +11,7 @@ open Microsoft.Xna.Framework.Media
 open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
-open CircusMaximus.State
+open CircusMaximus.Types
 open CircusMaximus.Graphics
 
 /// Default Project Template

@@ -1,4 +1,4 @@
-namespace CircusMaximus.State
+namespace CircusMaximus.Types
 open System
 open System.Diagnostics
 open Microsoft.Xna.Framework

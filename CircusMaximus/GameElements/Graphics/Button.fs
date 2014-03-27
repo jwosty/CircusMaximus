@@ -6,7 +6,7 @@ open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
-open CircusMaximus.State
+open CircusMaximus.Types
 
 /// Draws a button state, assuming SpriteBatch.Begin has been called
 let draw (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (button: Button) (assets: GameContent) =

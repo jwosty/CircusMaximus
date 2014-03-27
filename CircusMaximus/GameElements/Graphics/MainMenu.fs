@@ -6,7 +6,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
-open CircusMaximus.State
+open CircusMaximus.Types
 
 /// Draws a main menu
 let draw assets (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (mainMenu: MainMenu) =

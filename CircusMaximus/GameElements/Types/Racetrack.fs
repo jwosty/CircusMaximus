@@ -1,4 +1,4 @@
-﻿module CircusMaximus.State.Racetrack
+﻿module CircusMaximus.Types.Racetrack
 open System
 open Microsoft.Xna.Framework
 open CircusMaximus

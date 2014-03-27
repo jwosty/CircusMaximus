@@ -6,7 +6,7 @@ open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
-open CircusMaximus.State
+open CircusMaximus.Types
 
 /// Renders a player, assuming spriteBatch.Begin has already been called
 let drawPlayer (sb: SpriteBatch, rect: Rectangle) (player: Player) isMainPlayer (settings: GameSettings) (assets: GameContent) fontBatch =

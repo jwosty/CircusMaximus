@@ -6,7 +6,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
-open CircusMaximus.State
+open CircusMaximus.Types
 
 let draw ((sb, rect): PlayerScreen.PlayerScreen) assets (settings: GameSettings) (fontBatch: SpriteBatch) players mainPlayer =
   RacetrackGraphics.draw assets sb

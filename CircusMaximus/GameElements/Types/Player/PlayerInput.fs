@@ -3,7 +3,7 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
-open CircusMaximus.State
+open CircusMaximus.Types
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 

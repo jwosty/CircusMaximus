@@ -6,7 +6,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
-open CircusMaximus.State
+open CircusMaximus.Types
 
 let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (settings: GameSettings) (awardScreen: AwardScreen) =
   let y = (settings.windowDimensions / (2 @@ 2)).Y

@@ -2,7 +2,7 @@ module CircusMaximus.PlayerScreen
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
-open CircusMaximus.State
+open CircusMaximus.Types
 
 type PlayerScreen = SpriteBatch * Rectangle
 

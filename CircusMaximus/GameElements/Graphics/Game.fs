@@ -7,7 +7,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
-open CircusMaximus.State
+open CircusMaximus.Types
 
 /// Draw a game state
 let draw assets generalBatch fontBatch windowCenter windowRect playerScreens (game: Game) =

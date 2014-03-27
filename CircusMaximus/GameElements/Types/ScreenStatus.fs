@@ -1,4 +1,4 @@
-namespace CircusMaximus.State
+namespace CircusMaximus.Types
 open System
 
 type ScreenStatus<'a> =

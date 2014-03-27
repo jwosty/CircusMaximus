@@ -1,4 +1,4 @@
-namespace CircusMaximus.State
+namespace CircusMaximus.Types
 open System
 open CircusMaximus
 open CircusMaximus.Extensions

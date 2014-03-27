@@ -5,7 +5,7 @@ open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.State
+open CircusMaximus.Types
 
 /// Draws the play placing overlay. Does not call (but needs) SpriteBatch.Begin and SpriteBatch.End
 let drawOverlay (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (screenWidth, screenHeight) (assets: GameContent) players =

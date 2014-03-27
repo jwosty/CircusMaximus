@@ -5,7 +5,7 @@ open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.State
+open CircusMaximus.Types
 
 /// Draws the top portion of the HUD, which contains information about the player and how they are doing
 let drawInfo fontBatch (player: Player) ((sb, rect): PlayerScreen.PlayerScreen) (assets: GameContent) =
