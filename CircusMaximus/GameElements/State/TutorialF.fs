@@ -10,15 +10,6 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Tutorial =
-  let init () =
-    List.init Player.numPlayers (fun i -> 
-      let horses =
-        { acceleration = Player.baseAcceleration * Player.unbalanceMidPoint
-          topSpeed = Player.baseTopSpeed * Player.unbalanceMidPoint
-          turn = Player.baseTurn * Player.unbalanceMidPoint }
-      Player.init horses (new PlayerShape(0 @@ i * 100, PlayerShape.standardHeight, PlayerShape.standardHeight, 0.0)) (i + 1))
-    |> CircusMaximus.Types.Tutorial
-  
   let next (lastKeyboard, keyboard) (lastGamepads, gamepads) rand settings (gameSounds: GameSounds) (CircusMaximus.Types.Tutorial(players)) =
     let rec next players playerChariotSounds =
       match players, playerChariotSounds with

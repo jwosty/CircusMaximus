@@ -9,3 +9,8 @@ type PlayerData =
   { number: int
     // TODO: base values on real Roman currency
     coinBalance: int }
+  
+  /// Initializes a PlayerData with default values
+  static member initEmpty number =
+    { number = number
+      coinBalance = 0 }

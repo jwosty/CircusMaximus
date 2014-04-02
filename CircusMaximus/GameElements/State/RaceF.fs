@@ -10,30 +10,8 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Race =
-  let preRaceTicks, preRaceMaxCount = 200, 3
-  let preRaceTicksPerCount = float preRaceTicks / float preRaceMaxCount |> ceil |> int
-  
-  /// The amount of time into the race that it can still be said that it has "just begun"
-  let midRaceBeginPeriod = preRaceTicksPerCount * 2
-  
   /// Calculates the intersections for all objects
   let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld
-  
-  /// Finishes players that made the last lap
-  let maxTurns = 13
-  
-  let initPostRaceState defaultButtonSize (settings: GameSettings) =
-    PostRace(ButtonGroup.init
-      [ Button.initCenter
-          (settings.windowDimensions.X / 2.f @@ settings.windowDimensions.Y / 6.f * 1.f)
-          defaultButtonSize "Continue" ])
-  
-  let init (playerHorses: _ list) settings =
-    let playerY n = (n - 1) * 210 + 740 |> float32
-    { raceState = PreRace
-      players =
-        [ for n in 1..5 -> Player.init playerHorses.[n - 1] (new PlayerShape(820.f @@ playerY n, 64.0f, 29.0f, 0.)) n ]
-      timer = 0 }
   
   /// Takes a list of players and calculates the effects they have on all the other players, returning a new player list
   let applyPlayerEffects players =
@@ -54,7 +32,7 @@ module Race =
         playerChariotSound :: restPlayerChariotSounds,
         player :: restPlayers ->
           let player, nextPlayerChariotSound = nextPlayerFunction playerCollision playerChariotSound player
-          let player, lastPlacing = Player.nextPlayerFinish maxTurns lastPlacing player
+          let player, lastPlacing = Player.nextPlayerFinish Race.maxTurns lastPlacing player
           nextPlayers
             (updatedPlayers @ [player]) lastPlacing (updatedChariotSounds @ [nextPlayerChariotSound])
             nextPlayerFunction restPlayerCollisions restPlayerChariotSounds restPlayers
@@ -77,7 +55,7 @@ module Race =
     match race.raceState with
     | PreRace ->
       let race, gameSounds =
-        if race.timer >= preRaceTicks then
+        if race.timer >= Race.preRaceTicks then
           // Begin the race when it's time
           { raceState = MidRace(getLastPlacing race.players)  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
             players = race.players
@@ -108,7 +86,7 @@ module Race =
             // Check if there are any players that are still racing
             match players |> List.tryFind (fun player -> not player.finished) with
             | Some _ -> NoSwitch(race), MidRace(latestPlacing), players, newGameSound
-            | None -> NoSwitch(race), initPostRaceState Button.defaultButtonSize settings, players, newGameSound
+            | None -> NoSwitch(race), Race.initPostRaceState Button.defaultButtonSize settings, players, newGameSound
           else NoSwitch(race), MidRace(latestPlacing), players, newGameSound
         // No player placings
         | PostRace buttonGroup ->

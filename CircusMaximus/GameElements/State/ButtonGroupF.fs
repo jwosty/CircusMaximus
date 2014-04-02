@@ -9,11 +9,6 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ButtonGroup =
-  /// Initializes a button group
-  let init buttons =
-    { buttons = buttons
-      selected = 0 }
-  
   /// Returns the next button group state, updating all children buttons
   let next (lastKeyboard, keyboard) mouse gamepads buttonGroup =
     let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)

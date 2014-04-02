@@ -9,14 +9,6 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MainMenu =
-  let init (settings: GameSettings) : MainMenu =
-    let inline initb y label =
-      Button.initCenter
-        (settings.windowDimensions * (0.5 @@ y))
-        Button.defaultButtonSize label
-    { buttonGroup =
-        ButtonGroup.init [ initb 0.25 "Disce"; initb 0.5 "Incipe"; initb 0.75 "Exi" ] }
-  
   /// Updates the main menu
   let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
     let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label

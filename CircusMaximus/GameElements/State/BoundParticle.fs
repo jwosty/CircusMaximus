@@ -11,3 +11,5 @@ type BoundParticle =
     List.init
       ((rand.NextDouble() ** 32.) * 3. |> round |> int)
       (fun _ -> BoundParticle.RandInit rand factor)
+  
+  static member particleAge = 100.53

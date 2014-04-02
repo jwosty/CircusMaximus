@@ -126,7 +126,6 @@
     <Compile Include="GameElements\State\BoundParticleF.fs" />
     <Compile Include="GameElements\State\Player\EffectF.fs" />
     <Compile Include="GameElements\State\ItemF.fs" />
-    <Compile Include="GameElements\State\Player\PlayerInputF.fs" />
     <Compile Include="GameElements\State\Player\PlayerDataF.fs" />
     <Compile Include="GameElements\State\Player\PlayerF.fs" />
     <Compile Include="GameElements\State\ScreenStatusF.fs" />

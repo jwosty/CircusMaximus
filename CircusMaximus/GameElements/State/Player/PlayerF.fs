@@ -12,25 +12,6 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Player =
-  let colorWithString = function
-    | 1 -> Color.Red, "ruber"
-    | 2 -> Color.Yellow, "fulvus"
-    | 3 -> Color.Green, "prasinus"
-    | 4 -> Color.Cyan, "querquedulus" // querquedulus = teal, the closest I could find
-    | 5 -> Color.Blue, "caeruleus"
-    | _ -> Color.White, "albus"
-  
-  let init horses (bounds: PlayerShape) number =
-    let color, colorString = colorWithString number
-    { motionState = Moving(Spawning Player.spawnDuration, 0.); finishState = Racing; tauntState = None
-      number = number; color = color; colorString = colorString;
-      items = List.init 11 (fun _ -> Item.SugarCubes)
-      selectedItem = 0; age = 0.; bounds = bounds; horses = horses
-      intersectingLines = [false; false; false; false; false; false]
-      turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
-      effects = []; particles = []
-      lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
-  
   let getBB (player: Player) = BoundingPolygon(player.bounds)
   
   /// Returns the new effects that the source player imposes on the destination player

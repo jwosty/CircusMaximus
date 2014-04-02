@@ -88,6 +88,15 @@ let placingColor = function
   | 3 -> new Color(205, 127, 50)
   | _ -> Color.White
 
+/// Gives a player's color and the human-readable form, given the player's number/index
+let playerColorWithString = function
+    | 1 -> Color.Red, "ruber"
+    | 2 -> Color.Yellow, "fulvus"
+    | 3 -> Color.Green, "prasinus"
+    | 4 -> Color.Cyan, "querquedulus" // querquedulus = teal, the closest I could find
+    | 5 -> Color.Blue, "caeruleus"
+    | _ -> Color.White, "albus"
+
 let keyJustReleased (lastKeyboard: KeyboardState, keyboard: KeyboardState) key =
     lastKeyboard.IsKeyDown(key) && keyboard.IsKeyUp(key)
   

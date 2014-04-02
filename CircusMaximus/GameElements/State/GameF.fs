@@ -9,36 +9,6 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
-  /// Initializes a game state with the given random number generator and window dimensions
-  let init rand startingWindowDimensions =
-    let settings =
-      { windowDimensions = startingWindowDimensions
-        debugDrawBounds = false
-        debugLapIncrement = false }
-    { gameState = GameMainMenu(MainMenu.init settings)
-      settings = settings
-      rand = rand
-      playerData = List.init Player.numPlayers (fun i -> PlayerData.initEmpty (i + 1))
-      gameSounds = GameSounds.allStopped Player.numPlayers }
-  
-  /// Initializes the HorseScreen game state
-  let switchToHorseScreen game gameSounds =
-    let horses = List.init Player.numPlayers (fun i ->
-      let values =
-        let ump = Player.unbalanceMidPoint * 100.0 |> int
-        repeat (unbalanceRandom 0 (Player.maxStatUnbalance * 100. |> int) game.rand) [ump; ump; ump] Player.unbalanceTimes
-        |> List.map (fun n -> float n / 100.0)
-      { acceleration = Player.baseAcceleration * values.[0]
-        topSpeed = Player.baseTopSpeed * values.[1]
-        turn = Player.baseTurn * values.[2]})
-    { game with
-        gameState =
-          GameHorseScreen(
-            horses,
-            ButtonGroup.init(
-              [ Button.initCenter (game.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonSize "Contine" ]))
-        gameSounds = gameSounds }
-  
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
   let next (game: Game) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
     if keyboard.IsKeyDown(Keys.Escape) then
@@ -83,7 +53,7 @@ module Game =
       | NoSwitch gameState -> Some({ game with gameState = gameState; gameSounds = gameSounds })
       | SwitchToMainMenu -> Some({ game with gameState = GameMainMenu(MainMenu.init game.settings); gameSounds = gameSounds })
       | SwitchToTutorial -> Some({ game with gameState = GameTutorial(Tutorial.init ()) })
-      | SwitchToHorseScreen -> Some(switchToHorseScreen game gameSounds)
+      | SwitchToHorseScreen -> Some(Game.switchToHorseScreen game gameSounds)
       | SwitchToRaces(playerHorses) -> Some({ game with gameState = GameRace(Race.init playerHorses game.settings); gameSounds = gameSounds })
       | SwitchToAwards ->
         // Update player data

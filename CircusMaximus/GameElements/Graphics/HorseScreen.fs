@@ -51,7 +51,7 @@ let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBat
       let playerNumber = i + 1
       let x = vecx game.settings.windowDimensions / (float horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
       
-      let playerColor, playerColorString = Player.colorWithString playerNumber
+      let playerColor, playerColorString = playerColorWithString playerNumber
       
       let barLeftX = x - (float32 assets.AwardBackground.Width / 2.0f)
       let lx = x - (float32 assets.AwardBackground.Width / 2.f) |> float32

@@ -22,3 +22,35 @@ type PlayerInput =
     selectorΔ: int
     /// Whether or not the user pressed the use item button
     isUsingItem: bool }
+  
+  static member initFromKeyboard (lastKeyboard, keyboard) (settings: GameSettings) =
+    let keyJustReleased = keyJustReleased (lastKeyboard, keyboard)
+    let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)
+    { /// TODO: change reign input to be more precise (e.g. Q is pulls left reign lightly, A is harder, and Z is hardest)
+      leftReignPull = if keyboard.IsKeyDown Keys.A then 1. else 0.
+      /// TODO: change reign input to be more precise (e.g. E is pulls right reign lightly, D is harder, and C is hardest)
+      rightReignPull = if keyboard.IsKeyDown Keys.D then 1. else 0.
+      flickReigns = keyJustPressed Keys.Space
+      expectingTaunt = keyboard.IsKeyDown(Keys.Q)
+      advanceLap = settings.debugLapIncrement && keyJustPressed Keys.L
+      selectorΔ =
+        match keyJustPressed Keys.Left, keyJustPressed Keys.Right with
+        | true, false -> -1
+        | false, true -> 1
+        | _ -> 0
+      isUsingItem = keyJustPressed Keys.E }
+  
+  static member initFromGamepad (lastGamepad, gamepad) (settings: GameSettings) =
+    let gpButtonJustReleased = gpButtonJustReleased (lastGamepad, gamepad)
+    let gpButtonJustPressed = gpButtonJustPressed (lastGamepad, gamepad)
+    { leftReignPull = float gamepad.Triggers.Left
+      rightReignPull = float gamepad.Triggers.Right
+      flickReigns = gpButtonJustPressed Buttons.LeftStick || gpButtonJustPressed Buttons.RightStick
+      expectingTaunt = gamepad.IsButtonDown(Buttons.Y)
+      advanceLap = settings.debugLapIncrement && gpButtonJustPressed Buttons.X
+      selectorΔ =
+        match gpButtonJustPressed Buttons.LeftShoulder, gpButtonJustPressed Buttons.RightShoulder with
+        | true, false -> -1
+        | false, true -> 1
+        | _ -> 0
+      isUsingItem = gpButtonJustPressed Buttons.A}

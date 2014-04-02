@@ -7,11 +7,6 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module PlayerData =
-  /// Initializes a PlayerData with default values
-  let initEmpty number =
-    { number = number
-      coinBalance = 0 }
-  
   let playerWinnings placing =
     match placing with
     | 1 -> 100

@@ -67,3 +67,14 @@ type Player =
   
   static member crashDuration = 200
   static member spawnDuration = 100
+  
+  static member init horses (bounds: PlayerShape) number =
+    let color, colorString = playerColorWithString number
+    { motionState = Moving(Spawning Player.spawnDuration, 0.); finishState = Racing; tauntState = None
+      number = number; color = color; colorString = colorString;
+      items = List.init 11 (fun _ -> Item.SugarCubes)
+      selectedItem = 0; age = 0.; bounds = bounds; horses = horses
+      intersectingLines = [false; false; false; false; false; false]
+      turns = if bounds.Center.Y >= Racetrack.center.Y then 0 else -1
+      effects = []; particles = []
+      lastTurnedLeft = bounds.Center.Y >= Racetrack.center.Y }
