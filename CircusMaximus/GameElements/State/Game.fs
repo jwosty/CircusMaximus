@@ -7,10 +7,14 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
 type GameState =
+  | GamePreMainMenu
   | GameMainMenu of MainMenu
   | GameTutorial of Tutorial
+  | GamePreHorseScreen
   | GameHorseScreen of Horses list * ButtonGroup
+  | GamePreRace of Horses list
   | GameRace of Race
+  | GamePreAwardScreen of Race
   | GameAwardScreen of AwardScreen
 
 /// Holds the state of the entire game
@@ -50,3 +54,22 @@ type Game =
             ButtonGroup.init(
               [ Button.initCenter (game.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonSize "Contine" ]))
         gameSounds = gameSounds }
+  
+  static member switchToAwardsScreen findPlayerWinnings findPlayerDataByNumber game gameSounds =
+    // Update player data
+    let players =
+      match game.gameState with
+      | GameRace race -> race.players
+      | _ -> failwith "The awards screen can only be accessed after a race ends"
+    let playerDataAndWinnings =
+      players |> List.map
+        (fun player ->
+          let winnings =
+            match player.finishState with
+            | Finished placing -> findPlayerWinnings placing
+            // Something strange is happening if there's an unfinished player after the race has ended
+            | Racing -> 0
+          findPlayerDataByNumber player.number game.playerData, winnings)
+    let playerHorses = players |> List.map (fun player -> player.horses)
+    let awardScreen, playerData = AwardScreen.init game.settings playerDataAndWinnings playerHorses
+    { game with gameState = GameAwardScreen(awardScreen); gameSounds = gameSounds; playerData = playerData }

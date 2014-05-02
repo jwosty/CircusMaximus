@@ -25,4 +25,4 @@ module Tutorial =
       | _ -> raise (new ArgumentException("The lists had different lengths."))
     
     let players, playerChariotSounds = next players gameSounds.Chariots
-    NoSwitch(Tutorial(players)), { gameSounds with Chariots = playerChariotSounds }
+    Tutorial(players), { gameSounds with Chariots = playerChariotSounds }

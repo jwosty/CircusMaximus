@@ -10,17 +10,16 @@ open CircusMaximus.Types
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MainMenu =
   /// Updates the main menu
-  let next (mainMenu: MainMenu) (lastMouse, mouse) (lastKeyboard, keyboard: KeyboardState) (lastGamepads, gamepads) =
+  let next (mainMenu: MainMenu) (lastMouse, mouse) keyboard (lastGamepads, gamepads) =
     let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label
     match buttonState "Exi" with
-    | Releasing -> NativeExit
+    | Releasing -> None
     | _ ->
       match buttonState "Disce" with
-      | Releasing -> SwitchToTutorial
+      | Releasing -> Some(GameTutorial(Tutorial.init ()))
       | _ ->
         match buttonState "Incipe" with
-        | Releasing -> SwitchToHorseScreen
+        | Releasing -> Some(GamePreHorseScreen)
         | _ ->
-          NoSwitch(
-            { mainMenu with
-                buttonGroup = ButtonGroup.next (lastKeyboard, keyboard) mouse gamepads mainMenu.buttonGroup })
+            let buttonGroup = ButtonGroup.next keyboard mouse gamepads mainMenu.buttonGroup
+            Some(GameMainMenu({ mainMenu with buttonGroup = buttonGroup }))
