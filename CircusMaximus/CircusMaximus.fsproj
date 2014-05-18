@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9D6F5346-E139-49EB-8B7A-BC09FA58C4DD}</ProjectGuid>
     <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{4925A630-B079-445D-BCD4-3A9C94FE9307}</ProjectTypeGuids>
@@ -104,15 +104,16 @@
     <Compile Include="Collision\Collision.fs" />
     <Compile Include="GameElements\Sound.fs" />
     <Compile Include="GameElements\Taunt.fs" />
-    <Compile Include="GameElements\State\Racetrack.fs" />
     <Compile Include="GameElements\State\GameSettings.fs" />
+    <Compile Include="GameElements\State\Player\PlayerData.fs" />
+    <Compile Include="GameElements\State\IGameScreen.fs" />
+    <Compile Include="GameElements\State\Racetrack.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\ButtonGroup.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
     <Compile Include="GameElements\State\Player\Effect.fs" />
     <Compile Include="GameElements\State\Item.fs" />
     <Compile Include="GameElements\State\Player\PlayerInput.fs" />
-    <Compile Include="GameElements\State\Player\PlayerData.fs" />
     <Compile Include="GameElements\State\Player\Horses.fs" />
     <Compile Include="GameElements\State\Player\Player.fs" />
     <Compile Include="GameElements\State\ScreenStatus.fs" />

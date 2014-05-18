@@ -7,28 +7,27 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Input
 
-type AwardScreen =
-  { timer: int
-    /// A list of player data and the amounts they just earned
-    playerDataAndWinnings: (PlayerData * int) list
-    /// A list of players' horses saved from the last race, which will be passed onto the next
-    playerHorses: Horses list
-    buttonGroup: ButtonGroup }
+type AwardScreen(timer, playerDataAndWinnings, playerHorses, buttonGroup) =
+  member this.timer = timer
+  /// A list of player data and the amounts they just earned
+  member this.playerDataAndWinnings = playerDataAndWinnings
+  /// A list of players' horses saved from the last race, which will be passed onto the next
+  member this.playerHorses: Horses list = playerHorses
+  member this.buttonGroup = buttonGroup
+  
+  interface IGameScreen with
+    member this.Next rand input = AwardScreen.next this rand input
+  
+  static member val next = Unchecked.defaultof<_> with get, set
   
   /// The default initialized award screen
-  static member init (settings: GameSettings) (playerDataAndWinnings: (PlayerData * int) list) playerHorses =
-    let x = settings.windowDimensions.X / 2.f
-    let y8 = settings.windowDimensions.Y / 10.f
+  static member init fields playerDataAndWinnings playerHorses =
+    let x = fields.settings.windowDimensions.X / 2.f
+    let y = fields.settings.windowDimensions.Y / 10.f
     let inline initb i label =
       Button.initCenter
-        (x @@ y8 * i)
+        (x @@ y * i)
         Button.defaultButtonSize label
-    // The new playerData that the game should now use
-    let newPlayerData =
-      playerDataAndWinnings |> List.map
+    new AwardScreen(0, playerDataAndWinnings, playerHorses, ButtonGroup.init [initb 1.f "Contine"; initb 2.f "Exi cursus"]),
+    playerDataAndWinnings |> List.map
         (fun (playerData, winnings) -> { playerData with coinBalance = playerData.coinBalance + winnings })
-    { timer = 0
-      playerDataAndWinnings = playerDataAndWinnings
-      playerHorses = playerHorses
-      buttonGroup = ButtonGroup.init [initb 1.f "Contine"; initb 2.f "Exi cursus"] },
-    newPlayerData

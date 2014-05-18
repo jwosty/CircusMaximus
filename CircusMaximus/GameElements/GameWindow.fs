@@ -86,8 +86,8 @@ type GameWindow() as this =
     base.Update(gameTime)
     let mouse, keyboard, gamepads = Mouse.GetState(), Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
-    match Game.next game (lastMouse, mouse) (lastKeyboard, keyboard) (lastGamepads, gamepads) with
-    | Some newState -> (game <- newState)
+    match Game.next game ((lastMouse, mouse), (lastKeyboard, keyboard), (lastGamepads, gamepads)) with
+    | Some(newGame, newFields) -> (game <- { game with fields = newFields })
     | None -> this.Exit()
     
     lastMouse <- mouse
@@ -95,14 +95,13 @@ type GameWindow() as this =
     lastGamepads <- gamepads
     
     // Play, pause, or stop sounds if needed
-    game <-
-      { game with
-          gameSounds =
-            { Chariots =
-                List.map2
-                  (fun sound realSound -> this.UpdateSound(sound, realSound))
-                  game.gameSounds.Chariots assets.ChariotSound
-              CrowdCheer = this.UpdateSound(game.gameSounds.CrowdCheer, assets.CrowdCheerSound) } }
+    let sounds =
+      { Chariots =
+          List.map2
+            (fun sound realSound -> this.UpdateSound(sound, realSound))
+            game.fields.sounds.Chariots assets.ChariotSound
+        CrowdCheer = this.UpdateSound(game.fields.sounds.CrowdCheer, assets.CrowdCheerSound) } 
+    game <- { game with fields = { game.fields with sounds = sounds } }
   
   /// This is called when the game should draw itself.
   override this.Draw(gameTime:GameTime) =

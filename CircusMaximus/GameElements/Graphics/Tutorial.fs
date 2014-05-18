@@ -8,5 +8,5 @@ open CircusMaximus.Extensions
 open CircusMaximus.Graphics
 open CircusMaximus.Types
 
-let draw assets fontBatch playerScreens settings (Tutorial.Tutorial(players)) =
-  WorldGraphics.drawScreens assets fontBatch playerScreens settings players
+let draw assets fontBatch playerScreens settings (tutorial: Tutorial) =
+  WorldGraphics.drawScreens assets fontBatch playerScreens settings tutorial.players

@@ -36,7 +36,7 @@ let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBat
       (fun button -> ButtonGraphics.draw fontBatch generalBatch button assets)
       buttonGroup.buttons
     
-    let y = game.settings.windowDimensions.Y / 2.f
+    let y = game.fields.settings.windowDimensions.Y / 2.f
     let bgTop = y - (float32 assets.AwardBackground.Height / 2.f)
     let bgBottom = y + (float32 assets.AwardBackground.Height / 2.f)
     let barTop = bgTop + 51.f
@@ -49,7 +49,7 @@ let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBat
     
     horses |> List.iteri (fun i (horse: Horses) ->
       let playerNumber = i + 1
-      let x = vecx game.settings.windowDimensions / (float horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
+      let x = vecx game.fields.settings.windowDimensions / (float horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
       
       let playerColor, playerColorString = playerColorWithString playerNumber
       
