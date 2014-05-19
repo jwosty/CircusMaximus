@@ -19,9 +19,11 @@ module MainMenu =
       | Releasing -> Some(Tutorial.init () :> IGameScreen, fields)
       | _ ->
         match buttonState "Incipe" with
-        | Releasing -> Some(upcast MainMenu.init fields.settings, fields)
+        | Releasing ->
+          let horseScreen, fields = HorseScreen.init fields
+          Some(upcast horseScreen, fields)
         | _ ->
-            let buttonGroup = ButtonGroup.next keyboard mouse gamepads mainMenu.buttonGroup
-            Some(upcast new MainMenu(buttonGroup), fields)
+          let buttonGroup = ButtonGroup.next keyboard mouse gamepads mainMenu.buttonGroup
+          Some(upcast new MainMenu(buttonGroup), fields)
   
   MainMenu.next <- next

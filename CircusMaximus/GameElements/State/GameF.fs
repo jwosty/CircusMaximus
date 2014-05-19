@@ -12,7 +12,8 @@ open CircusMaximus.Types
 module Game =
   /// Sets up game screen update functions -- MUST be called before game is started!
   let initFunctions () =
-    // TODO: Find a better way to do this...
+    // TODO: Find a better way to do this... Maybe with some clever reflection and/or Attributes?
+    Types.HorseScreen.next <- HorseScreen.next
     Types.Tutorial.next <- Tutorial.next
     Types.Race.next <- Race.next
     Types.MainMenu.next <- MainMenu.next

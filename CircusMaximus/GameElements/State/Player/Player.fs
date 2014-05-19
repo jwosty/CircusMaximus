@@ -52,7 +52,7 @@ type Player =
   member this.collisionBox = BoundingPolygon(this.bounds)
   member this.finished = match this.finishState with | Racing -> false | _ -> true
   
-  /// The default number of players participating in the race
+  /// The default number of players participating in the race (TODO: make all uses parameterized)
   static member numPlayers = 5
   /// The base player acceleration change in percent per frame
   static member baseAcceleration = 2.0
