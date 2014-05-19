@@ -29,12 +29,12 @@ let drawHorseBarData generalBatch fontBatch barTop barBottom x percent name asse
     assets.Font fontBatch name (x @@ barBottom + 10.f) 1.5f Color.White
     (Center, Center)
 
-let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) horses (buttonGroup: ButtonGroup) (game: Game) =
+let draw (assets: GameContent) (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (horseScreen: HorseScreen) (game: Game) =
   fontBatch.DoWithPointClamp (fun fontBatch ->
   generalBatch.DoBasic (fun generalBatch ->
     List.iter
       (fun button -> ButtonGraphics.draw fontBatch generalBatch button assets)
-      buttonGroup.buttons
+      horseScreen.buttons.buttons
     
     let y = game.fields.settings.windowDimensions.Y / 2.f
     let bgTop = y - (float32 assets.AwardBackground.Height / 2.f)
@@ -47,9 +47,9 @@ let draw (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBat
     let tsFactor = 1.0f / float32 Player.baseTopSpeed
     let tuFactor = 1.0f / float32 Player.baseTurn
     
-    horses |> List.iteri (fun i (horse: Horses) ->
+    horseScreen.horses |> List.iteri (fun i (horse: Horses) ->
       let playerNumber = i + 1
-      let x = vecx game.fields.settings.windowDimensions / (float horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
+      let x = vecx game.fields.settings.windowDimensions / (float horseScreen.horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
       
       let playerColor, playerColorString = playerColorWithString playerNumber
       
