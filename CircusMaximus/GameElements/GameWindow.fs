@@ -88,7 +88,7 @@ type GameWindow() as this =
     let mouse, keyboard, gamepads = Mouse.GetState(), Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
     match Game.next game ((lastMouse, mouse), (lastKeyboard, keyboard), (lastGamepads, gamepads)) with
-    | Some(newScreen, newFields) -> (game <- { game with gameState = newScreen; fields = newFields })
+    | Some(newScreen, newFields) -> (game <- { game with gameScreen = newScreen; fields = newFields })
     | None -> this.Exit()
     
     lastMouse <- mouse

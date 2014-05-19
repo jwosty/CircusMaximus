@@ -8,7 +8,7 @@ open CircusMaximus.HelperFunctions
 
 /// Holds the state of the entire game
 type Game =
-  { gameState: IGameScreen
+  { gameScreen: IGameScreen
     fields: GameFields }
   
   /// Initializes a game state with the given random number generator and window dimensions
@@ -17,7 +17,7 @@ type Game =
       { windowDimensions = startingWindowDimensions
         debugDrawBounds = false
         debugLapIncrement = false }
-    { gameState = MainMenu.init settings
+    { gameScreen = MainMenu.init settings
       fields =
         { settings = settings
           rand = rand

@@ -11,10 +11,10 @@ open CircusMaximus.Types
 
 /// Draw a game state
 let draw assets generalBatch fontBatch windowCenter windowRect playerScreens (game: Game) =
-  match game.gameState with
+  match game.gameScreen with
   | :? MainMenu as mainMenu ->        MainMenuGraphics.draw     assets fontBatch generalBatch mainMenu
   | :? Tutorial as tutorial ->        TutorialGraphics.draw     assets fontBatch playerScreens game.fields.settings tutorial
   | :? HorseScreen as horseScreen ->  HorseScreenGraphics.draw  assets fontBatch generalBatch horseScreen.horses horseScreen.buttons game
   | :? Race as race ->                RaceGraphics.draw         assets generalBatch fontBatch windowCenter windowRect playerScreens game.fields.settings race
-  | :? AwardScreen as awardScreen ->     AwardScreenGraphics.draw  assets generalBatch fontBatch game.fields.settings awardScreen
+  | :? AwardScreen as awardScreen ->  AwardScreenGraphics.draw  assets generalBatch fontBatch game.fields.settings awardScreen
   | _ -> ()

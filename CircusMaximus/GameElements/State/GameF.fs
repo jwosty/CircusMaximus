@@ -25,4 +25,4 @@ module Game =
     if keyboard.IsKeyDown Keys.Escape then
       None // Indicate that we want to exit
     else
-      game.gameState.Next game.fields gameInput
+      game.gameScreen.Next game.fields gameInput
