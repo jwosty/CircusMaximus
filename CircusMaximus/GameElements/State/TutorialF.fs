@@ -10,9 +10,9 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Tutorial =
-  let next fields (lastKeyboard, keyboard) (lastGamepads, gamepads) (gameSounds: GameSounds) (tutorial: Tutorial) =
-    let rec next players playerChariotSounds =
-      match players, playerChariotSounds with
+  let next (tutorial: Tutorial) fields ((lastKeyboard, keyboard), (lastKeyboard, keyboard), (lastGamepads, gamepads)) =
+    let rec next players chariotSounds =
+      match players, chariotSounds with
       | player :: restPlayers, playerChariotSound :: restPlayerChariotSounds ->
         let player, playerChariotSound =
           Player.next
@@ -24,7 +24,5 @@ module Tutorial =
       | [], [] -> [], []
       | _ -> raise (new ArgumentException("The lists had different lengths."))
     
-    let players, playerChariotSounds = next tutorial.players gameSounds.Chariots
-    let t = tutorial :> IGameScreen
-    
-    new Tutorial(players), { gameSounds with Chariots = playerChariotSounds }
+    let players, chariotSounds = next tutorial.players fields.sounds.Chariots
+    Some(new Tutorial(players) :> IGameScreen, { fields with sounds = { fields.sounds with Chariots = chariotSounds } } )

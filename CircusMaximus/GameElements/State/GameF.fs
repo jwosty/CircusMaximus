@@ -10,6 +10,14 @@ open CircusMaximus.Types
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
+  /// Sets up game screen update functions -- MUST be called before game is started!
+  let initFunctions () =
+    // TODO: Find a better way to do this...
+    Types.Tutorial.next <- Tutorial.next
+    Types.Race.next <- Race.next
+    Types.MainMenu.next <- MainMenu.next
+    Types.AwardScreen.next <- AwardScreen.next
+  
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
   let next (game: Game) (gameInput: GameInput) =
     let ((_, _), (_, keyboard: KeyboardState), (_, _)) = gameInput

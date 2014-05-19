@@ -6,17 +6,6 @@ open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
-(*
-type GameState =
-  | GameMainMenu of MainMenu
-  | GameTutorial of Tutorial
-  | GameHorseScreen of Horses list * ButtonGroup
-  | GamePreRace of Horses list
-  | GameRace of Race
-  | GamePreAwardScreen of Race
-  | GameAwardScreen of AwardScreen
-*)
-
 /// Holds the state of the entire game
 type Game =
   { gameState: IGameScreen

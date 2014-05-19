@@ -50,6 +50,7 @@ type GameWindow() as this =
   /// we'll use the viewport to initialize some values.
   override this.Initialize() =
     base.Initialize()
+    Game.initFunctions ()
     this.IsMouseVisible <- true
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice Player.numPlayers
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
@@ -83,11 +84,11 @@ type GameWindow() as this =
   /// Allows the game to run logic such as updating the world,
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
-    base.Update(gameTime)
+    base.Update gameTime
     let mouse, keyboard, gamepads = Mouse.GetState(), Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
     match Game.next game ((lastMouse, mouse), (lastKeyboard, keyboard), (lastGamepads, gamepads)) with
-    | Some(newGame, newFields) -> (game <- { game with fields = newFields })
+    | Some(newScreen, newFields) -> (game <- { game with gameState = newScreen; fields = newFields })
     | None -> this.Exit()
     
     lastMouse <- mouse
