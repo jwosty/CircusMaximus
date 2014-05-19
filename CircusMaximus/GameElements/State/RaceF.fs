@@ -78,7 +78,7 @@ module Race =
           { fields with sounds = { fields.sounds with CrowdCheer = Playing 1 } } )   // The crowd gets exited when the race begins
       else
         Some(
-          upcast new Race(race.raceState, race.players, race.timer),   // Simply increment the timer until the race starts
+          upcast new Race(race.raceState, race.players, race.timer + 1),   // Simply increment the timer until the race starts
           fields)   // No sounds here
     
     | _ ->
