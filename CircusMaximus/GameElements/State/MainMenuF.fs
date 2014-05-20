@@ -24,5 +24,3 @@ module MainMenu =
         | _ ->
           let buttonGroup = ButtonGroup.next keyboard mouse gamepads mainMenu.buttonGroup
           Some(upcast new MainMenu(buttonGroup), fields)
-  
-  MainMenu.next <- next
