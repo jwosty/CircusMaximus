@@ -7,7 +7,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Button =
   let basicNext (button: Button) isSelected =
     { button with

@@ -8,7 +8,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.Input
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module AwardScreen =
   /// Updates an award screen and returns the new model
   let next (awardScreen: AwardScreen) fields ((lastMouse, mouse), (lastKeyboard, keyboard), (lastGamepads, gamepads)) =

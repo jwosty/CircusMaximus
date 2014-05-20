@@ -8,7 +8,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.Input
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HorseScreen =
   let next (horseScreen: HorseScreen) fields (mouse, keyboard, gamepads) =
     let buttons = ButtonGroup.next keyboard (snd mouse) (snd gamepads) horseScreen.buttons

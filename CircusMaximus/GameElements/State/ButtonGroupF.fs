@@ -7,7 +7,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ButtonGroup =
   /// Returns the next button group state, updating all children buttons
   let next (lastKeyboard, keyboard) mouse gamepads buttonGroup =

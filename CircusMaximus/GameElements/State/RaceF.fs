@@ -8,7 +8,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.Input
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Race =
   /// Calculates the intersections for all objects
   let collideWorld players racetrackBounds = racetrackBounds :: (List.map Player.getBB players) |> Collision.collideWorld

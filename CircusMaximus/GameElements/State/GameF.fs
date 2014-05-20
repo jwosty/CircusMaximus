@@ -8,7 +8,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Game =
   /// Sets up game screen update functions -- MUST be called before game is started!
   let initFunctions () =

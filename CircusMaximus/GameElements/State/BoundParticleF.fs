@@ -4,7 +4,6 @@ open Microsoft.Xna.Framework
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BoundParticle =
   let nextParticle particle =
     { particle with

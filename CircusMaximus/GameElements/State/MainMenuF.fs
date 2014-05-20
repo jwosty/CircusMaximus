@@ -7,7 +7,6 @@ open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MainMenu =
   /// Updates the main menu
   let next (mainMenu: MainMenu) fields (((_, mouse), keyboard, (lastGamepads, gamepads)): GameInput) =

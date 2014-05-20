@@ -8,7 +8,6 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Collision
 open CircusMaximus.Types
 
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Tutorial =
   let next (tutorial: Tutorial) fields ((lastKeyboard, keyboard), (lastKeyboard, keyboard), (lastGamepads, gamepads)) =
     let rec next players chariotSounds =
