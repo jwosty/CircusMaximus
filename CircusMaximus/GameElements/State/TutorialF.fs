@@ -9,13 +9,13 @@ open CircusMaximus.Collision
 open CircusMaximus.Types
 
 module Tutorial =
-  let next (tutorial: Tutorial) fields ((lastKeyboard, keyboard), (lastKeyboard, keyboard), (lastGamepads, gamepads)) =
+  let next (tutorial: Tutorial) fields input =
     let rec next players chariotSounds =
       match players, chariotSounds with
       | player :: restPlayers, playerChariotSound :: restPlayerChariotSounds ->
         let player, playerChariotSound =
           Player.next
-            fields (lastKeyboard, keyboard) (lastGamepads, gamepads)
+            fields input
             Racetrack.collisionShape.RespawnPath (Result_Poly [false; false; false; false; false; false])
             playerChariotSound player
         let restPlayers, restPlayerChariotSounds = next restPlayers restPlayerChariotSounds

@@ -9,7 +9,7 @@ open CircusMaximus.Types
 
 module MainMenu =
   /// Updates the main menu
-  let next (mainMenu: MainMenu) fields (((_, mouse), keyboard, (lastGamepads, gamepads)): GameInput) =
+  let next (mainMenu: MainMenu) fields input =
     let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label
     match buttonState "Exi" with
     | Releasing -> None
@@ -22,5 +22,5 @@ module MainMenu =
           let horseScreen, fields = HorseScreen.init fields
           Some(upcast horseScreen, fields)
         | _ ->
-          let buttonGroup = ButtonGroup.next keyboard mouse gamepads mainMenu.buttonGroup
+          let buttonGroup = ButtonGroup.next mainMenu.buttonGroup input
           Some(upcast new MainMenu(buttonGroup), fields)

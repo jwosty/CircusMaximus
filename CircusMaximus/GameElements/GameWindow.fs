@@ -27,10 +27,8 @@ type GameWindow() as this =
   let mutable generalBatch = Unchecked.defaultof<_>
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable assets = Unchecked.defaultof<_>
-  
-  let mutable lastMouse = Mouse.GetState()
-  let mutable lastKeyboard = Keyboard.GetState()
-  let mutable lastGamepads = [for i in 0..3 -> GamePad.GetState(enum i)]
+
+  let mutable input = GameInput.initInitial <| Keyboard.GetState () <| Mouse.GetState () <| [for i in 0..3 -> GamePad.GetState(enum i)]
   
   do
     this.Content.RootDirectory <- "Content"
@@ -85,15 +83,13 @@ type GameWindow() as this =
   /// checking for collisions, gathering input, and playing audio.
   override this.Update(gameTime:GameTime) =
     base.Update gameTime
-    let mouse, keyboard, gamepads = Mouse.GetState(), Keyboard.GetState(), [for i in 0..3 -> GamePad.GetState(enum i)]
+    // Fetch input
+    input <- input.shift <| Keyboard.GetState () <| Mouse.GetState () <| [for i in 0..3 -> GamePad.GetState <| enum i]
+    
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
-    match Game.next game ((lastMouse, mouse), (lastKeyboard, keyboard), (lastGamepads, gamepads)) with
+    match Game.next game input with
     | Some(newScreen, newFields) -> (game <- { game with gameScreen = newScreen; fields = newFields })
     | None -> this.Exit()
-    
-    lastMouse <- mouse
-    lastKeyboard <- keyboard
-    lastGamepads <- gamepads
     
     // Play, pause, or stop sounds if needed
     let sounds =

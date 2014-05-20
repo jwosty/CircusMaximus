@@ -9,8 +9,8 @@ open CircusMaximus.Types
 
 module ButtonGroup =
   /// Returns the next button group state, updating all children buttons
-  let next (lastKeyboard, keyboard) mouse gamepads buttonGroup =
-    let keyJustPressed = keyJustPressed (lastKeyboard, keyboard)
+  let next buttonGroup input =
+    let keyJustPressed = keyJustPressed (input.lastKeyboard, input.keyboard)
     let selected =
       // Selection from arrow keys
       let kDirection = 
@@ -22,7 +22,7 @@ module ButtonGroup =
       List.fold
         (fun direction (gamepad: GamePadState) ->
           direction + (-gamepad.ThumbSticks.Left.Y |> round |> int))
-        0 gamepads
+        0 input.gamepads
       // Combine keyboard arrows and gamepad thumbsticks
       + kDirection
       // Change from current selection
@@ -36,7 +36,7 @@ module ButtonGroup =
             | true, false -> { button with isSelected = true }
             | false, true -> { button with isSelected = false }
             | _ -> button
-            |> Button.next mouse keyboard gamepads) }
+            |> Button.next input) }
   
   let findByLabel (buttonGroup: ButtonGroup) label =
     List.find (fun (button: Button) -> button.label = label) buttonGroup.buttons

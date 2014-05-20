@@ -64,16 +64,16 @@ module Race =
     { fields with playerData = playerData }
   
   /// Returns the next race state. 
-  let next (race: Race) fields ((lastMouse, mouse), (lastKeyboard, keyboard), (lastGamepads, gamepads)) : option<IGameScreen * _> =
-    let nextPlayer = Player.next fields (lastKeyboard, keyboard) (lastGamepads, gamepads) Racetrack.collisionShape.RespawnPath
+  let next (race: Race) fields input =
+    let nextPlayer = Player.next fields input Racetrack.collisionShape.RespawnPath
     match race.raceState with
     | PreRace ->
       if race.timer >= Race.preRaceTicks then
         Some(
           // Begin the race when it's time
-          upcast new Race(
+          new Race(
             MidRace(getLastPlacing race.players),  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
-            race.players, 0),
+            race.players, 0) :> IGameScreen,
           { fields with sounds = { fields.sounds with CrowdCheer = Playing 1 } } )   // The crowd gets exited when the race begins
       else
         Some(
@@ -112,5 +112,5 @@ module Race =
             | Releasing -> fst <| switchToAwardScreen race fields
             | _ -> upcast race
           race, { fields.sounds with Chariots = chariotSounds }
-        
+      
       Some(screen, { fields with sounds = sounds })

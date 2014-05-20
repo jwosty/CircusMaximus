@@ -19,9 +19,8 @@ module Game =
     Types.AwardScreen.next <- AwardScreen.next
   
   /// Returns an option of a new game state (based on the input game state); None indicating that the game should stop
-  let next (game: Game) (gameInput: GameInput) =
-    let ((_, _), (_, keyboard: KeyboardState), (_, _)) = gameInput
-    if keyboard.IsKeyDown Keys.Escape then
+  let next (game: Game) input =
+    if input.keyboard.IsKeyDown Keys.Escape then
       None // Indicate that we want to exit
     else
-      game.gameScreen.Next game.fields gameInput
+      game.gameScreen.Next game.fields input

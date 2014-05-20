@@ -9,8 +9,8 @@ open CircusMaximus.Input
 open CircusMaximus.Types
 
 module HorseScreen =
-  let next (horseScreen: HorseScreen) fields (mouse, keyboard, gamepads) =
-    let buttons = ButtonGroup.next keyboard (snd mouse) (snd gamepads) horseScreen.buttons
+  let next (horseScreen: HorseScreen) fields input =
+    let buttons = ButtonGroup.next horseScreen.buttons input
     let screen =
       match buttons.buttons.[0].buttonState with
       | Releasing -> Race.init horseScreen.horses fields.settings :> IGameScreen

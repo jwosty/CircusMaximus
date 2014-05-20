@@ -181,15 +181,15 @@ module Player =
             particles = particles }, playerChariotSound
   
   /// Updates a player like basicNext, but also handles input things
-  let next fields (lastKeyboard: KeyboardState, keyboard) (lastGamepads: GamePadState list, gamepads: _ list) respawnPoints collisionResult playerChariotSound player =
+  let next fields input respawnPoints collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player, playerChariotSound =
       if player.number = 1 then
         basicNext
-          (PlayerInput.initFromKeyboard (lastKeyboard, keyboard) fields.settings)
+          (PlayerInput.initFromKeyboard (input.lastKeyboard, input.keyboard) fields.settings)
           player respawnPoints collision Racetrack.center fields.rand playerChariotSound
       else
-        let lastGamepad, gamepad = lastGamepads.[player.number - 2], gamepads.[player.number - 2]
+        let lastGamepad, gamepad = input.lastGamepads.[player.number - 2], input.gamepads.[player.number - 2]
         basicNext
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) fields.settings)
           player respawnPoints collision Racetrack.center fields.rand playerChariotSound
