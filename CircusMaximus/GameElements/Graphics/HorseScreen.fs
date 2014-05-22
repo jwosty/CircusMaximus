@@ -23,7 +23,6 @@ let drawBarData (generalBatch: SpriteBatch) (topLeft: Vector2) (bottomRight: Vec
   generalBatch.Draw(assets.Pixel, new Rectangle(int topLeft.X + 2, int barY + 2, bottomRight.X - topLeft.X - 4.f |> int, bottomRight.Y - barY - 4.f |> int), centerColor)
 
 let drawHorseBarData generalBatch fontBatch barTop barBottom x percent name assets =
-  
   drawBarData generalBatch (x - 10.f @@ barTop) (x + 10.f @@ barBottom) percent assets
   FlatSpriteFont.drawString
     assets.Font fontBatch name (x @@ barBottom + 10.f) 1.5f Color.White

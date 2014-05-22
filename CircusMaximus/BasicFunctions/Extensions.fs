@@ -20,9 +20,9 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
   /// Begins the sprite batch with no arguments and calls the predicate with the sprite batch
   /// before ending
   member this.DoBasic(predicate) =
-    this.Begin()
+    this.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied)
     predicate this |> ignore
-    this.End()
+    this.End ()
   
   member this.DrawCentered(texture: Texture2D, center, color) =
     this.Draw(texture, center - (float texture.Width / 2. @@ float texture.Height / 2.), color)
@@ -31,7 +31,7 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
   /// before ending
   member this.DoWithPointClamp(predicate) =
     // SamplerState.PointClamp disables anti-aliasing, which just looks horrible on scaled bitmap fonts
-    this.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null)
+    this.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null)
     predicate this |> ignore
     this.End()
 

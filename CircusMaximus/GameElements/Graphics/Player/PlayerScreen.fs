@@ -70,7 +70,7 @@ let createScreens graphics quantity = List.init quantity (createScreen graphics)
 
 let beginScrollClipSpriteBatch (sb: SpriteBatch) samplerState player rect =
   sb.Begin(
-    SpriteSortMode.Immediate, BlendState.AlphaBlend,
+    SpriteSortMode.Immediate, BlendState.NonPremultiplied,
     samplerState, null, rasterizerState, null,
     createPlayerTranslationMatrix player rect)
 

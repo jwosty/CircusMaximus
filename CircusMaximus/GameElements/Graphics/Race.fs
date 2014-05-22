@@ -14,9 +14,7 @@ let draw assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: 
     | PreRace ->
       WorldGraphics.drawScreens assets fontBatch playerScreens settings race.players
       // Draw a dark overlay to indicate that the game hasn't started yet
-      generalBatch.Begin()
-      generalBatch.Draw(assets.Pixel, windowRect, new Color(Color.Black, 192))
-      generalBatch.End()
+      generalBatch.DoBasic (fun generalBatch -> generalBatch.Draw(assets.Pixel, windowRect, new Color(Color.Black, 192)))
       // Draw a countdown
       fontBatch.DoWithPointClamp
         (fun (fb: SpriteBatch) ->
