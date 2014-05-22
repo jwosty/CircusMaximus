@@ -75,21 +75,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="MonoMac">
-      <HintPath>..\lib\MonoMac.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>..\lib\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Lidgren.Network">
-      <HintPath>..\lib\Lidgren.Network.dll</HintPath>
-    </Reference>
-    <Reference Include="Tao.Sdl">
-      <HintPath>..\lib\Tao.Sdl.dll</HintPath>
-    </Reference>
+    <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.fs" />
@@ -159,7 +145,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>
-    <Folder Include="Content\" />
     <Folder Include="Properties\" />
     <Folder Include="BasicFunctions\" />
     <Folder Include="GameElements\" />
@@ -169,6 +154,7 @@
     <Folder Include="GameElements\Graphics\Player\" />
     <Folder Include="GameElements\State\" />
     <Folder Include="GameElements\State\Player\" />
+    <Folder Include="Content\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Content\images\chariot.png" />
@@ -213,5 +199,33 @@
     <BundleResource Include="Content\sounds\chariot.wav" />
     <BundleResource Include="Content\images\itemselector.png" />
     <BundleResource Include="Content\images\buttonselector.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\lib\MonoGame\MonoGame.Framework\MonoGame.Framework.SDL2.csproj">
+      <Project>{35253CE1-C864-4CD3-8249-4D1319748E8F}</Project>
+      <Name>MonoGame.Framework.SDL2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\MonoGame\ThirdParty\SDL2#\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830E-72FD794AD3F6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\MonoGame\ThirdParty\TheoraPlay#\TheoraPlay-CS.csproj">
+      <Project>{47CF0C2E-3710-4188-BB11-30D248B2B5FB}</Project>
+      <Name>TheoraPlay-CS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <NativeReference Include="..\lib\libSDL2-2.0.0.dylib">
+      <IsCxx>False</IsCxx>
+      <Kind>Dynamic</Kind>
+    </NativeReference>
+    <NativeReference Include="..\lib\libopenal.1.dylib">
+      <IsCxx>False</IsCxx>
+      <Kind>Dynamic</Kind>
+    </NativeReference>
+    <NativeReference Include="..\lib\libSDL2_image-2.0.0.dylib">
+      <IsCxx>False</IsCxx>
+      <Kind>Dynamic</Kind>
+    </NativeReference>
   </ItemGroup>
 </Project>
