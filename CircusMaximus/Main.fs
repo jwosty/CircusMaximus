@@ -7,10 +7,7 @@ type AppDelegate() =
   inherit NSApplicationDelegate()
   
   override this.FinishedLaunching notification =
-    let game = new GameWindow()
-    game.Run ()
-    // For some reason, MG-SDL2 doesn't seem to close the SDL2 window when the games exits, which causes the application to stay open
-    SDL2.SDL.SDL_DestroyWindow <| SDL2.SDL.SDL_GL_GetCurrentWindow ()
+    using (new GameWindow()) (fun game -> game.Run ())
   
   override this.ApplicationShouldTerminateAfterLastWindowClosed(sender) =
     true
