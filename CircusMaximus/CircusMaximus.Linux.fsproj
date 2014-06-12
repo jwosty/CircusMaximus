@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8F09C616-3D87-430B-B68E-C41AB85554D1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>CircusMaximus</RootNamespace>
+    <AssemblyName>CircusMaximus</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>bin\Linux\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget />
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Linux\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget />
+    <Externalconsole>true</Externalconsole>
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.fs" />
+    <Compile Include="BasicFunctions\TupleExtensions.fs" />
+    <Compile Include="BasicFunctions\HelperFunctions.fs" />
+    <Compile Include="BasicFunctions\Extensions.fs" />
+    <Compile Include="BasicFunctions\Aliases.fs" />
+    <Compile Include="Collision\Shapes\LineSegment.fs" />
+    <Compile Include="Collision\Shapes\Polygon.fs" />
+    <Compile Include="Collision\Shapes\PlayerShape.fs" />
+    <Compile Include="Collision\Shapes\RacetrackShape.fs" />
+    <Compile Include="Collision\Collision.fs" />
+    <Compile Include="GameElements\Sound.fs" />
+    <Compile Include="GameElements\Taunt.fs" />
+    <Compile Include="GameElements\State\GameSettings.fs" />
+    <Compile Include="GameElements\State\Player\PlayerData.fs" />
+    <Compile Include="GameElements\State\IGameScreen.fs" />
+    <Compile Include="GameElements\State\Racetrack.fs" />
+    <Compile Include="GameElements\State\Button.fs" />
+    <Compile Include="GameElements\State\ButtonGroup.fs" />
+    <Compile Include="GameElements\State\BoundParticle.fs" />
+    <Compile Include="GameElements\State\Player\Effect.fs" />
+    <Compile Include="GameElements\State\Item.fs" />
+    <Compile Include="GameElements\State\Player\PlayerInput.fs" />
+    <Compile Include="GameElements\State\Player\Horses.fs" />
+    <Compile Include="GameElements\State\Player\Player.fs" />
+    <Compile Include="GameElements\State\Tutorial.fs" />
+    <Compile Include="GameElements\State\Race.fs" />
+    <Compile Include="GameElements\State\HorseScreen.fs" />
+    <Compile Include="GameElements\State\MainMenu.fs" />
+    <Compile Include="GameElements\State\AwardScreen.fs" />
+    <Compile Include="GameElements\State\Game.fs" />
+    <Compile Include="GameElements\State\ButtonF.fs" />
+    <Compile Include="GameElements\State\ButtonGroupF.fs" />
+    <Compile Include="GameElements\State\BoundParticleF.fs" />
+    <Compile Include="GameElements\State\Player\EffectF.fs" />
+    <Compile Include="GameElements\State\ItemF.fs" />
+    <Compile Include="GameElements\State\Player\PlayerDataF.fs" />
+    <Compile Include="GameElements\State\Player\PlayerF.fs" />
+    <Compile Include="GameElements\State\TutorialF.fs" />
+    <Compile Include="GameElements\State\RaceF.fs" />
+    <Compile Include="GameElements\State\HorseScreenF.fs" />
+    <Compile Include="GameElements\State\MainMenuF.fs" />
+    <Compile Include="GameElements\State\AwardScreenF.fs" />
+    <Compile Include="GameElements\State\GameF.fs" />
+    <Compile Include="GameElements\Graphics\GameContent.fs" />
+    <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
+    <Compile Include="GameElements\Graphics\Button.fs" />
+    <Compile Include="GameElements\Graphics\Racetrack.fs" />
+    <Compile Include="GameElements\Graphics\Player\Item.fs" />
+    <Compile Include="GameElements\Graphics\Player\Player.fs" />
+    <Compile Include="GameElements\Graphics\Player\PlayerScreen.fs" />
+    <Compile Include="GameElements\Graphics\Player\HUD.fs" />
+    <Compile Include="GameElements\Graphics\PlacingOverlay.fs" />
+    <Compile Include="GameElements\Graphics\World.fs" />
+    <Compile Include="GameElements\Graphics\Race.fs" />
+    <Compile Include="GameElements\Graphics\Tutorial.fs" />
+    <Compile Include="GameElements\Graphics\MainMenu.fs" />
+    <Compile Include="GameElements\Graphics\HorseScreen.fs" />
+    <Compile Include="GameElements\Graphics\AwardScreen.fs" />
+    <Compile Include="GameElements\Graphics\Game.fs" />
+    <Compile Include="GameElements\GameWindow.fs" />
+    <Compile Include="LinuxMain.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Content\images\chariot.png" />
+    <BundleResource Include="Content\images\racetrack\0-0.png" />
+    <BundleResource Include="Content\images\racetrack\0-1.png" />
+    <BundleResource Include="Content\images\racetrack\0-2.png" />
+    <BundleResource Include="Content\images\racetrack\0-3.png" />
+    <BundleResource Include="Content\images\racetrack\0-4.png" />
+    <BundleResource Include="Content\images\racetrack\0-5.png" />
+    <BundleResource Include="Content\images\racetrack\0-6.png" />
+    <BundleResource Include="Content\images\racetrack\0-7.png" />
+    <BundleResource Include="Content\images\racetrack\0-8.png" />
+    <BundleResource Include="Content\images\racetrack\0-9.png" />
+    <BundleResource Include="Content\images\racetrack\1-0.png" />
+    <BundleResource Include="Content\images\racetrack\1-1.png" />
+    <BundleResource Include="Content\images\racetrack\1-2.png" />
+    <BundleResource Include="Content\images\racetrack\1-3.png" />
+    <BundleResource Include="Content\images\racetrack\1-4.png" />
+    <BundleResource Include="Content\images\racetrack\1-5.png" />
+    <BundleResource Include="Content\images\racetrack\1-6.png" />
+    <BundleResource Include="Content\images\racetrack\1-7.png" />
+    <BundleResource Include="Content\images\racetrack\1-8.png" />
+    <BundleResource Include="Content\images\racetrack\1-9.png" />
+    <BundleResource Include="Content\images\racetrack\2-0.png" />
+    <BundleResource Include="Content\images\racetrack\2-1.png" />
+    <BundleResource Include="Content\images\racetrack\2-2.png" />
+    <BundleResource Include="Content\images\racetrack\2-3.png" />
+    <BundleResource Include="Content\images\racetrack\2-4.png" />
+    <BundleResource Include="Content\images\racetrack\2-5.png" />
+    <BundleResource Include="Content\images\racetrack\2-6.png" />
+    <BundleResource Include="Content\images\racetrack\2-7.png" />
+    <BundleResource Include="Content\images\racetrack\2-8.png" />
+    <BundleResource Include="Content\images\racetrack\2-9.png" />
+    <BundleResource Include="Content\images\font.png" />
+    <BundleResource Include="Content\images\placingbg.png" />
+    <BundleResource Include="Content\images\particle.png" />
+    <BundleResource Include="Content\images\button.png" />
+    <BundleResource Include="Content\images\awardbg.png" />
+    <BundleResource Include="Content\images\pglow.png" />
+    <BundleResource Include="Content\images\items\sugarcubes.png" />
+    <BundleResource Include="Content\sounds\cheer1.wav" />
+    <BundleResource Include="Content\sounds\chariot.wav" />
+    <BundleResource Include="Content\images\itemselector.png" />
+    <BundleResource Include="Content\images\buttonselector.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\lib\MonoGame\MonoGame.Framework\MonoGame.Framework.SDL2.csproj">
+      <Project>{35253CE1-C864-4CD3-8249-4D1319748E8F}</Project>
+      <Name>MonoGame.Framework.SDL2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\MonoGame\ThirdParty\SDL2#\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830E-72FD794AD3F6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\MonoGame\ThirdParty\TheoraPlay#\TheoraPlay-CS.csproj">
+      <Project>{47CF0C2E-3710-4188-BB11-30D248B2B5FB}</Project>
+      <Name>TheoraPlay-CS</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
