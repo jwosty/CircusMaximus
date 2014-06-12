@@ -159,20 +159,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\lib\native\linux-32\libSDL2-2.0.so.0">
-      <Link>lib\native\linux-32\libSDL2-2.0.so.0</Link>
+      <Link>native\linux-32\libSDL2-2.0.so.0</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\lib\native\linux-32\libopenal.so.1">
-      <Link>lib\native\linux-32\libopenal.so.1</Link>
+      <Link>native\linux-32\libopenal.so.1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\lib\native\linux-64\libSDL2-2.0.so.0">
-      <Link>lib\native\linux-64\libSDL2-2.0.so.0</Link>
+      <Link>native\linux-64\libSDL2-2.0.so.0</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\lib\native\linux-64\libopenal.so.1">
-      <Link>lib\native\linux-64\libSDL2-2.0.so.0</Link>
+      <Link>native\linux-64\libSDL2-2.0.so.0</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Linux\SDL2-CS.dll.config">
+      <Link>SDL2-CS.dll.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
