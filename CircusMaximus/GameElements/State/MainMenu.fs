@@ -20,4 +20,4 @@ type MainMenu(buttonGroup: ButtonGroup) =
       Button.initCenter
         (settings.windowDimensions * (0.5 @@ y))
         Button.defaultButtonSize label
-    new MainMenu(ButtonGroup.init [ initb 0.25 "Disce"; initb 0.5 "Incipe"; initb 0.75 "Exi" ])
+    new MainMenu(ButtonGroup.init [ initb 0.33 "Incipe"; initb 0.66 "Exi" ])

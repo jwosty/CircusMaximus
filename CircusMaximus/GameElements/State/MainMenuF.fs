@@ -14,13 +14,10 @@ module MainMenu =
     match buttonState "Exi" with
     | Releasing -> None
     | _ ->
-      match buttonState "Disce" with
-      | Releasing -> Some(Tutorial.init () :> IGameScreen, fields)
+      match buttonState "Incipe" with
+      | Releasing ->
+        let horseScreen, fields = HorseScreen.init fields
+        Some(horseScreen :> IGameScreen, fields)
       | _ ->
-        match buttonState "Incipe" with
-        | Releasing ->
-          let horseScreen, fields = HorseScreen.init fields
-          Some(upcast horseScreen, fields)
-        | _ ->
-          let buttonGroup = ButtonGroup.next mainMenu.buttonGroup input
-          Some(upcast new MainMenu(buttonGroup), fields)
+        let buttonGroup = ButtonGroup.next mainMenu.buttonGroup input
+        Some(upcast new MainMenu(buttonGroup), fields)
