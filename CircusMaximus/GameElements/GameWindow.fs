@@ -49,7 +49,7 @@ type GameWindow() as this =
   override this.Initialize() =
     base.Initialize()
     Game.initFunctions ()
-    this.IsMouseVisible <- true
+    this.IsMouseVisible <- false
     playerScreens <- PlayerScreen.createScreens this.GraphicsDevice Player.numPlayers
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
