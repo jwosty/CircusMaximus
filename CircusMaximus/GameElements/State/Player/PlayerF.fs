@@ -84,7 +84,9 @@ module Player =
       let factor = (float duration) / (float EffectDurations.taunt)
       particles @ BoundParticle.RandBatchInit rand factor 0.5
       // Player is not being taunted, so don't generate any more particles
-    | None -> particles |> List.map BoundParticle.nextParticle |> List.filter (fun p -> p.age < BoundParticle.particleAge) // Update particles, culling the old ones
+    | None -> particles
+    |> List.map BoundParticle.nextParticle
+    |> List.filter (fun p -> p.age < BoundParticle.particleAge) // Update particles, culling the old ones
   
   /// Uses the given item, deleting the item and adding the appropriate effect
   let useItem items effects itemIndex =
