@@ -10,6 +10,7 @@ open CircusMaximus.Input
 open CircusMaximus.Collision
 open CircusMaximus.Types
 
+#nowarn "49"
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Player =
   let getBB (player: Player) = BoundingPolygon(player.bounds)
@@ -19,9 +20,9 @@ module Player =
     match source.tauntState with
     | Some(_, duration) when source <> destination ->
       if duration = EffectDurations.taunt
-      then [EffectType.Taunted, EffectDurations.taunt]  // Source player has just started taunting, so create one new effect
-      else []                                           // Source player has already been taunting, so nothing new
-    | _ -> []                                           // Source player isn't taunting, so nothing new
+      then (TurnVelocityDecreased, EffectDurations.taunt) :: (if source.ability = TauntSlow then [VelocityDecreased, EffectDurations.taunt] else [])
+      else []
+    | _ -> []
   
   let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
     if lastTurnedLeft && position.X > center.X then
@@ -40,12 +41,12 @@ module Player =
     let Δdirection = Δdirection * player.horses.turn
     let finalΔdirection =
       // Being taunted affects players' turning ability
-      match Effect.findLongest player.effects EffectType.Taunted with
+      match Effect.findLongest player.effects EffectType.TurnVelocityDecreased with
       | Some _ -> Δdirection * 0.75
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
-    
-    positionForward player.position finalDirection player.velocity, finalDirection
+    let finalVelocity = (if List.exists (fst >> ((=) VelocityDecreased)) player.effects then player.velocity * 0.5 else player.velocity)
+    positionForward player.position finalDirection finalVelocity, finalDirection
   
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
   let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
@@ -77,17 +78,13 @@ module Player =
   
   /// Updates/adds/destroys player particles
   let nextParticles rand particles effects =
-    match Effect.findLongest effects EffectType.Taunted with
+    match Effect.findLongest effects EffectType.TurnVelocityDecreased with
       // Player is being taunted, so randomly generate particles
     | Some(effect, duration) ->
       let factor = (float duration) / (float EffectDurations.taunt)
-      particles @ BoundParticle.RandBatchInit rand factor
+      particles @ BoundParticle.RandBatchInit rand factor 0.5
       // Player is not being taunted, so don't generate any more particles
-    | None -> particles
-      // Update particles
-    |> List.map BoundParticle.nextParticle
-      // Delete old particles
-    |> List.filter (fun p -> p.age < BoundParticle.particleAge)
+    | None -> particles |> List.map BoundParticle.nextParticle |> List.filter (fun p -> p.age < BoundParticle.particleAge) // Update particles, culling the old ones
   
   /// Uses the given item, deleting the item and adding the appropriate effect
   let useItem items effects itemIndex =
@@ -121,7 +118,7 @@ module Player =
           
           let turn = -input.leftReignPull + input.rightReignPull
           let velocity =
-            match Effect.findLongest player.effects EffectType.Sugar with
+            match Effect.findLongest player.effects VelocityIncreased with
             | Some(_, EffectDurations.sugar) -> Player.baseTopSpeed * 2.5
             | _ ->
               // Accelerate if the player so wishes
@@ -136,7 +133,7 @@ module Player =
                   (v - (input.leftReignPull * input.rightReignPull / 2.0))
               // Slow down if the horses are going faster than they normally can
               if v > player.horses.topSpeed
-                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * 0.5))
+                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * 0.25))
                 else v
           
           let position, direction = nextPositionDirection player turn

@@ -22,6 +22,8 @@ type Player =
     color: Color
     /// The word for the player's color
     colorString: string
+    /// The player's unique ability
+    ability: Ability
     /// The number of frames that this player has existed for
     age: float
     /// Player bounds for collision
@@ -70,7 +72,8 @@ type Player =
   
   static member init horses (bounds: PlayerShape) number =
     let color, colorString = playerColorWithString number
-    { motionState = Moving(Spawning Player.spawnDuration, 0.); finishState = Racing; tauntState = None
+    { motionState = Moving(Spawning Player.spawnDuration, 0.); finishState = Racing;
+      tauntState = None; ability = TauntSlow
       number = number; color = color; colorString = colorString;
       items = List.init 11 (fun _ -> Item.SugarCubes)
       selectedItem = 0; age = 0.; bounds = bounds; horses = horses

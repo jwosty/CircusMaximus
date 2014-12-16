@@ -38,8 +38,8 @@ module Race =
       | [], [], [] -> updatedPlayers, lastPlacing, updatedChariotSounds
       | _ -> raise (new ArgumentException("The lists had different lengths."))
     
-    // Not curried because it gives an ugly function signature
-    nextPlayers [] latestPlacing [] playerMapper playerCollisions playerChariotSounds players
+    let players, latestPlacing, soundState = nextPlayers [] latestPlacing [] playerMapper playerCollisions playerChariotSounds players
+    players |> applyPlayerEffects, latestPlacing, soundState
   
   /// A quick 'n dirty function to find the last player placing so we know what to use next when someone
   /// else finishes.

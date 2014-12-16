@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9D6F5346-E139-49EB-8B7A-BC09FA58C4DD}</ProjectGuid>
-    <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{4925A630-B079-445D-BCD4-3A9C94FE9307}</ProjectTypeGuids>
+    <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{F2A71F9B-5D33-465A-A702-920D77279786}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>CircusMaximus</RootNamespace>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
@@ -25,11 +25,7 @@
     <UseSGen>false</UseSGen>
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <EnablePackageSigning>false</EnablePackageSigning>
-    <CodeSigningKey>Mac Developer</CodeSigningKey>
     <CreatePackage>false</CreatePackage>
-    <PackageSigningKey>Developer ID Installer</PackageSigningKey>
-    <I18n>
-    </I18n>
     <Externalconsole>true</Externalconsole>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
@@ -98,6 +94,7 @@
     <Compile Include="GameElements\State\ButtonGroup.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
     <Compile Include="GameElements\State\Player\Effect.fs" />
+    <Compile Include="GameElements\State\Player\Ability.fs" />
     <Compile Include="GameElements\State\Item.fs" />
     <Compile Include="GameElements\State\Player\PlayerInput.fs" />
     <Compile Include="GameElements\State\Player\Horses.fs" />

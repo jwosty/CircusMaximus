@@ -5,7 +5,7 @@ open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 
-type EffectType = | Taunted | Sugar
+type EffectType = | VelocityDecreased | VelocityIncreased | TurnVelocityDecreased
 type Effect = EffectType * Duration
 
 module EffectDurations =

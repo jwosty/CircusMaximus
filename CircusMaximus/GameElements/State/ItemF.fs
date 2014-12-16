@@ -10,4 +10,4 @@ module Item =
   /// Gets and item's appropriate effect when used
   let getEffect item : Effect =
     match item with
-    | Item.SugarCubes -> EffectType.Sugar, EffectDurations.sugar
+    | Item.SugarCubes -> EffectType.VelocityIncreased, EffectDurations.sugar
