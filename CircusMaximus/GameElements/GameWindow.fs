@@ -19,7 +19,6 @@ open CircusMaximus.Functions
 type GameWindow() as this =
   inherit Microsoft.Xna.Framework.Game()
   let graphics = new GraphicsDeviceManager(this)
-  let mutable playerScreens = Unchecked.defaultof<_>
   let mutable game = Unchecked.defaultof<_>
   // 1st place, 2nd place, etc
   let mutable lastPlacing = 0
@@ -50,7 +49,6 @@ type GameWindow() as this =
     base.Initialize()
     Game.initFunctions ()
     this.IsMouseVisible <- false
-    playerScreens <- PlayerScreen.createScreens this.GraphicsDevice Player.numPlayers
     generalBatch <- new SpriteBatch(this.GraphicsDevice)
     fontBatch <- new SpriteBatch(this.GraphicsDevice)
     game <- Game.init (new Random()) this.WindowDimensions

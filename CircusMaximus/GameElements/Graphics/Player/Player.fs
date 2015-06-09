@@ -9,7 +9,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
 open CircusMaximus.Functions
 
-/// Renders a player. Does not make any calls to SpriteBatch#Begin or SpriteBatch#End
+/// Render a player without calling any SpriteBatch#Begin or SpriteBatch#End
 let drawPlayer (spriteBatch: SpriteBatch) (player: Player) (settings: GameSettings) (assets: GameContent) (fontBatch: SpriteBatch) =
   let playerAlpha, shouldDrawGlow =
     match player.motionState with
@@ -51,7 +51,8 @@ let drawPlayer (spriteBatch: SpriteBatch) (player: Player) (settings: GameSettin
         (FlatSpriteFont.Center, FlatSpriteFont.Center)
     | None -> ()
   | Crashed timeCrashed ->
-    // Indicate a crashe player
+    // Indicate a crashed player
     FlatSpriteFont.drawString
       assets.Font fontBatch "Strepebat!" player.position 3.0f Color.Red
       (FlatSpriteFont.Center, FlatSpriteFont.Center)
+  HUDGraphics.draw spriteBatch fontBatch assets player
