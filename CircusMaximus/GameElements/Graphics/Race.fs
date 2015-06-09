@@ -9,12 +9,13 @@ open CircusMaximus.Graphics
 open CircusMaximus.Types
 open CircusMaximus.Functions
 
-let draw assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: Rectangle) playerScreens settings (race: Race) =
+let draw (graphics: GraphicsDeviceManager) assets spriteBatch fontBatch (windowRect: Rectangle) settings (race: Race) =
+  let windowCenter = float32 graphics.PreferredBackBufferWidth / 2.f @@ float32 graphics.PreferredBackBufferHeight / 2.f
   match race.raceState with
     | PreRace ->
-      WorldGraphics.drawScreens assets fontBatch playerScreens settings race.players
+      WorldGraphics.draw graphics spriteBatch assets settings fontBatch race.players
       // Draw a dark overlay to indicate that the game hasn't started yet
-      generalBatch.DoBasic (fun generalBatch -> generalBatch.Draw(assets.Pixel, windowRect, new Color(Color.Black, 192)))
+      spriteBatch.DoBasic (fun spriteBatch -> spriteBatch.Draw(assets.Pixel, windowRect, new Color(Color.Black, 192)))
       // Draw a countdown
       fontBatch.DoWithPointClamp
         (fun (fb: SpriteBatch) ->
@@ -23,12 +24,12 @@ let draw assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: 
             windowCenter 8.0f Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     
     | _ ->
-      WorldGraphics.drawScreens assets fontBatch playerScreens settings race.players
+      WorldGraphics.draw graphics spriteBatch assets settings fontBatch race.players
       match race.raceState with
       | MidRace lastPlacing ->
         fontBatch.DoWithPointClamp
           (fun fb ->
-            List.iter2 (HUDGraphics.draw generalBatch fb assets) race.players playerScreens
+            //List.iter2 (HUDGraphics.draw spriteBatch fb assets) race.players playerScreens
             if race.timer <= Race.midRaceBeginPeriod then
               FlatSpriteFont.drawString
                 assets.Font fontBatch "Vaditis!" windowCenter 8.0f Color.ForestGreen
@@ -36,7 +37,7 @@ let draw assets (generalBatch: SpriteBatch) fontBatch windowCenter (windowRect: 
       | PostRace(buttonGroup) ->
         fontBatch.DoWithPointClamp
           (fun fontBatch ->
-            generalBatch.DoBasic
+            spriteBatch.DoBasic
               (fun generalBatch ->
                 PlacingOverlayGraphics.drawOverlay generalBatch fontBatch (windowRect.Width, windowRect.Height) assets race.players
                 List.iter

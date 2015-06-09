@@ -9,7 +9,7 @@ open CircusMaximus.Graphics
 open CircusMaximus.Types
 
 /// Draws a main menu
-let draw assets (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (mainMenu: MainMenu) =
+let draw graphics assets (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (mainMenu: MainMenu) =
   fontBatch.DoWithPointClamp (fun fb -> generalBatch.DoBasic (fun gb ->
     List.iter
       (fun button -> ButtonGraphics.draw fb gb button assets)

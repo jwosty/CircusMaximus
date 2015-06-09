@@ -29,7 +29,7 @@ type Race(raceState, players, timer) =
   static member midRaceBeginPeriod = Race.preRaceTicksPerCount * 2
   
   /// Finishes players that made the last lap
-  static member maxTurns = 13
+  static member maxTurns = 4
   
   static member initPostRaceState defaultButtonSize fields =
     PostRace(ButtonGroup.init
