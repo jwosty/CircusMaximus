@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9D6F5346-E139-49EB-8B7A-BC09FA58C4DD}</ProjectGuid>
-    <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{4925A630-B079-445D-BCD4-3A9C94FE9307}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>CircusMaximus</RootNamespace>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <AssemblyName>CircusMaximus</AssemblyName>
     <SuppressXamMacUpsell>True</SuppressXamMacUpsell>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+    <ProjectGuid>{9d6f5346-e139-49eb-8b7a-bc09fa58c4dd}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -73,10 +73,19 @@
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="BasicFunctions\TupleExtensions.fs" />
@@ -91,17 +100,17 @@
     <Compile Include="GameElements\Sound.fs" />
     <Compile Include="GameElements\Taunt.fs" />
     <Compile Include="GameElements\State\GameSettings.fs" />
-    <Compile Include="GameElements\State\Player\PlayerData.fs" />
+    <Compile Include="GameElements\State\PlayerData.fs" />
     <Compile Include="GameElements\State\IGameScreen.fs" />
     <Compile Include="GameElements\State\Racetrack.fs" />
     <Compile Include="GameElements\State\Button.fs" />
     <Compile Include="GameElements\State\ButtonGroup.fs" />
     <Compile Include="GameElements\State\BoundParticle.fs" />
-    <Compile Include="GameElements\State\Player\Effect.fs" />
+    <Compile Include="GameElements\State\Effect.fs" />
     <Compile Include="GameElements\State\Item.fs" />
-    <Compile Include="GameElements\State\Player\PlayerInput.fs" />
-    <Compile Include="GameElements\State\Player\Horses.fs" />
-    <Compile Include="GameElements\State\Player\Player.fs" />
+    <Compile Include="GameElements\State\PlayerInput.fs" />
+    <Compile Include="GameElements\State\Horses.fs" />
+    <Compile Include="GameElements\State\Player.fs" />
     <Compile Include="GameElements\State\Tutorial.fs" />
     <Compile Include="GameElements\State\Race.fs" />
     <Compile Include="GameElements\State\HorseScreen.fs" />
@@ -111,10 +120,10 @@
     <Compile Include="GameElements\State\ButtonF.fs" />
     <Compile Include="GameElements\State\ButtonGroupF.fs" />
     <Compile Include="GameElements\State\BoundParticleF.fs" />
-    <Compile Include="GameElements\State\Player\EffectF.fs" />
+    <Compile Include="GameElements\State\EffectF.fs" />
     <Compile Include="GameElements\State\ItemF.fs" />
-    <Compile Include="GameElements\State\Player\PlayerDataF.fs" />
-    <Compile Include="GameElements\State\Player\PlayerF.fs" />
+    <Compile Include="GameElements\State\PlayerDataF.fs" />
+    <Compile Include="GameElements\State\PlayerF.fs" />
     <Compile Include="GameElements\State\TutorialF.fs" />
     <Compile Include="GameElements\State\RaceF.fs" />
     <Compile Include="GameElements\State\HorseScreenF.fs" />
@@ -125,10 +134,10 @@
     <Compile Include="GameElements\Graphics\FlatSpriteFont.fs" />
     <Compile Include="GameElements\Graphics\Button.fs" />
     <Compile Include="GameElements\Graphics\Racetrack.fs" />
-    <Compile Include="GameElements\Graphics\Player\Item.fs" />
-    <Compile Include="GameElements\Graphics\Player\Player.fs" />
-    <Compile Include="GameElements\Graphics\Player\PlayerScreen.fs" />
-    <Compile Include="GameElements\Graphics\Player\HUD.fs" />
+    <Compile Include="GameElements\Graphics\Item.fs" />
+    <Compile Include="GameElements\Graphics\Player.fs" />
+    <Compile Include="GameElements\Graphics\PlayerScreen.fs" />
+    <Compile Include="GameElements\Graphics\HUD.fs" />
     <Compile Include="GameElements\Graphics\PlacingOverlay.fs" />
     <Compile Include="GameElements\Graphics\World.fs" />
     <Compile Include="GameElements\Graphics\Race.fs" />
@@ -139,93 +148,160 @@
     <Compile Include="GameElements\Graphics\Game.fs" />
     <Compile Include="GameElements\GameWindow.fs" />
     <Compile Include="Main.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Info.plist" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
-  <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="BasicFunctions\" />
-    <Folder Include="GameElements\" />
-    <Folder Include="Collision\" />
-    <Folder Include="Collision\Shapes\" />
-    <Folder Include="GameElements\Graphics\" />
-    <Folder Include="GameElements\Graphics\Player\" />
-    <Folder Include="GameElements\State\" />
-    <Folder Include="GameElements\State\Player\" />
-    <Folder Include="Content\" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Content\images\chariot.png" />
-    <BundleResource Include="Content\images\racetrack\0-0.png" />
-    <BundleResource Include="Content\images\racetrack\0-1.png" />
-    <BundleResource Include="Content\images\racetrack\0-2.png" />
-    <BundleResource Include="Content\images\racetrack\0-3.png" />
-    <BundleResource Include="Content\images\racetrack\0-4.png" />
-    <BundleResource Include="Content\images\racetrack\0-5.png" />
-    <BundleResource Include="Content\images\racetrack\0-6.png" />
-    <BundleResource Include="Content\images\racetrack\0-7.png" />
-    <BundleResource Include="Content\images\racetrack\0-8.png" />
-    <BundleResource Include="Content\images\racetrack\0-9.png" />
-    <BundleResource Include="Content\images\racetrack\1-0.png" />
-    <BundleResource Include="Content\images\racetrack\1-1.png" />
-    <BundleResource Include="Content\images\racetrack\1-2.png" />
-    <BundleResource Include="Content\images\racetrack\1-3.png" />
-    <BundleResource Include="Content\images\racetrack\1-4.png" />
-    <BundleResource Include="Content\images\racetrack\1-5.png" />
-    <BundleResource Include="Content\images\racetrack\1-6.png" />
-    <BundleResource Include="Content\images\racetrack\1-7.png" />
-    <BundleResource Include="Content\images\racetrack\1-8.png" />
-    <BundleResource Include="Content\images\racetrack\1-9.png" />
-    <BundleResource Include="Content\images\racetrack\2-0.png" />
-    <BundleResource Include="Content\images\racetrack\2-1.png" />
-    <BundleResource Include="Content\images\racetrack\2-2.png" />
-    <BundleResource Include="Content\images\racetrack\2-3.png" />
-    <BundleResource Include="Content\images\racetrack\2-4.png" />
-    <BundleResource Include="Content\images\racetrack\2-5.png" />
-    <BundleResource Include="Content\images\racetrack\2-6.png" />
-    <BundleResource Include="Content\images\racetrack\2-7.png" />
-    <BundleResource Include="Content\images\racetrack\2-8.png" />
-    <BundleResource Include="Content\images\racetrack\2-9.png" />
-    <BundleResource Include="Content\images\font.png" />
-    <BundleResource Include="Content\images\placingbg.png" />
-    <BundleResource Include="Content\images\particle.png" />
-    <BundleResource Include="Content\images\button.png" />
-    <BundleResource Include="Content\images\awardbg.png" />
-    <BundleResource Include="Content\images\pglow.png" />
-    <BundleResource Include="Content\images\items\sugarcubes.png" />
-    <BundleResource Include="Content\sounds\cheer1.wav" />
-    <BundleResource Include="Content\sounds\chariot.wav" />
-    <BundleResource Include="Content\images\itemselector.png" />
-    <BundleResource Include="Content\images\buttonselector.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\lib\MonoGame\MonoGame.Framework\MonoGame.Framework.SDL2.csproj">
-      <Project>{35253CE1-C864-4CD3-8249-4D1319748E8F}</Project>
-      <Name>MonoGame.Framework.SDL2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\MonoGame\ThirdParty\SDL2#\SDL2-CS.csproj">
-      <Project>{85480198-8711-4355-830E-72FD794AD3F6}</Project>
-      <Name>SDL2-CS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\MonoGame\ThirdParty\TheoraPlay#\TheoraPlay-CS.csproj">
-      <Project>{47CF0C2E-3710-4188-BB11-30D248B2B5FB}</Project>
-      <Name>TheoraPlay-CS</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Content\images\chariot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\0-9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\1-9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\racetrack\2-9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\font.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\placingbg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\particle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\button.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\awardbg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\pglow.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\items\sugarcubes.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\itemselector.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\images\buttonselector.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\sounds\cheer1.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\sounds\chariot.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\sounds\chariot.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\sounds\cheer1.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <NativeReference Include="..\lib\libSDL2-2.0.0.dylib">
       <IsCxx>False</IsCxx>
       <Kind>Dynamic</Kind>
+      <Link>libSDL2-2.0.0.dylib</Link>
     </NativeReference>
     <NativeReference Include="..\lib\libopenal.1.dylib">
       <IsCxx>False</IsCxx>
       <Kind>Dynamic</Kind>
+      <Link>libopenal.1.dylib</Link>
     </NativeReference>
     <NativeReference Include="..\lib\libSDL2_image-2.0.0.dylib">
       <IsCxx>False</IsCxx>
       <Kind>Dynamic</Kind>
+      <Link>libSDL2_image-2.0.0.dylib</Link>
     </NativeReference>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.4.0.459\lib\net40\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 </Project>

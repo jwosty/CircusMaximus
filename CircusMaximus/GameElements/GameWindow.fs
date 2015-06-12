@@ -31,7 +31,7 @@ type GameWindow() as this =
   let mutable input = GameInput.initInitial <| Keyboard.GetState () <| Mouse.GetState () <| [for i in 0..3 -> GamePad.GetState(enum i)]
   
   do
-    this.Content.RootDirectory <- "../Resources/Content"
+    this.Content.RootDirectory <- "Content"
 #if DEBUG
     graphics.IsFullScreen <- false
 #else

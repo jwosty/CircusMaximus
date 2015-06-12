@@ -52,7 +52,7 @@ module GameContentFunctions =
       AwardBackground = loadImage "awardbg"
       ItemSelector = loadImage "itemselector"
       ItemSugarCubes = loadImage "items\sugarcubes"
-      
+    
       ChariotSound =
         let snd = loadSound "chariot"
         List.init playerQuantity (fun _ -> initSoundInstance snd)

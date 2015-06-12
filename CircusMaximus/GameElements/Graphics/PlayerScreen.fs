@@ -72,7 +72,7 @@ let beginScrollClipSpriteBatch (sb: SpriteBatch) samplerState player rect =
   sb.Begin(
     SpriteSortMode.Immediate, BlendState.NonPremultiplied,
     samplerState, null, rasterizerState, null,
-    createPlayerTranslationMatrix player rect)
+    new Nullable<_>(createPlayerTranslationMatrix player rect))
 
 // Draw a single player's screen
 let drawSingle drawPredicate movingFontBatch playerNumber (player: Player) (screen: PlayerScreen) =
