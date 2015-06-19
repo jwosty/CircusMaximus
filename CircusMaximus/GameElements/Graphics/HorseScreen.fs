@@ -3,12 +3,13 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
-open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
-open CircusMaximus.Graphics
-open CircusMaximus.Types
 open CircusMaximus.FlatSpriteFont
 open CircusMaximus.Functions
+open CircusMaximus.Graphics
+open CircusMaximus.HelperFunctions
+open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
 let drawBarData (generalBatch: SpriteBatch) (topLeft: Vector2) (bottomRight: Vector2) percent (assets: GameContent) =
   let centerColor =
@@ -22,10 +23,10 @@ let drawBarData (generalBatch: SpriteBatch) (topLeft: Vector2) (bottomRight: Vec
   let barY = MathHelper.Lerp(bottomRight.Y, topLeft.Y, percent)
   generalBatch.Draw(assets.Pixel, new Rectangle(int topLeft.X + 2, int barY + 2, bottomRight.X - topLeft.X - 4.f |> int, bottomRight.Y - barY - 4.f |> int), centerColor)
 
-let drawHorseBarData generalBatch fontBatch barTop barBottom x percent name assets =
-  drawBarData generalBatch (x - 10.f @@ barTop) (x + 10.f @@ barBottom) percent assets
+let drawHorseBarData generalBatch fontBatch (barTop: float32<px>) barBottom x percent name assets =
+  drawBarData generalBatch (xnaVec2 (x - 10.f<px> @@ barTop)) (xnaVec2 (x + 10.f<px> @@ barBottom)) percent assets
   FlatSpriteFont.drawString
-    assets.Font fontBatch name (x @@ barBottom + 10.f) 1.5f Color.White
+    assets.Font fontBatch name (x @@ barBottom + 10.f<px>) 1.5 Color.White
     (Center, Center)
 
 let draw graphics (assets: GameContent) (generalBatch: SpriteBatch) (fontBatch: SpriteBatch) (horseScreen: HorseScreen) (game: Game) =
@@ -36,11 +37,11 @@ let draw graphics (assets: GameContent) (generalBatch: SpriteBatch) (fontBatch: 
       horseScreen.buttons.buttons
     
     let y = game.fields.settings.windowDimensions.Y / 2.f
-    let bgTop = y - (float32 assets.AwardBackground.Height / 2.f)
-    let bgBottom = y + (float32 assets.AwardBackground.Height / 2.f)
-    let barTop = bgTop + 51.f
-    let barBottom = bgBottom - 30.f
-    let barSpacing = float32 assets.AwardBackground.Width / 4.0f
+    let bgTop = y - (float32 assets.AwardBackground.Height * 1.f<px> / 2.f)
+    let bgBottom = y + (float32 assets.AwardBackground.Height * 1.f<px> / 2.f)
+    let barTop = bgTop + 51.f<px>
+    let barBottom = bgBottom - 30.f<px>
+    let barSpacing = float32 assets.AwardBackground.Width * 1.f<px> / 4.0f
     
     let accFactor = 1.0f / float32 Player.baseAcceleration
     let tsFactor = 1.0f / float32 Player.baseTopSpeed
@@ -48,19 +49,19 @@ let draw graphics (assets: GameContent) (generalBatch: SpriteBatch) (fontBatch: 
     
     horseScreen.horses |> List.iteri (fun i (horse: Horses) ->
       let playerNumber = i + 1
-      let x = vecx game.fields.settings.windowDimensions / (float horseScreen.horses.Length + 0.25) * (float (playerNumber - 1) + 0.625) |> float32
+      let x = game.fields.settings.windowDimensions.X / (float32 horseScreen.horses.Length + 0.25f) * (float32 (playerNumber - 1) + 0.625f)
       
       let playerColor, playerColorString = playerColorWithString playerNumber
       
-      let barLeftX = x - (float32 assets.AwardBackground.Width / 2.0f)
-      let lx = x - (float32 assets.AwardBackground.Width / 2.f) |> float32
-      generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)
+      let barLeftX = x - (float32 assets.AwardBackground.Width * 1.f<px> / 2.0f)
+      let lx = x - (float32 assets.AwardBackground.Width * 1.f<px> / 2.f) |> float32
+      generalBatch.DrawCentered(assets.AwardBackground, xnaVec2 (x @@ y), Color.White)
       
       // title (player)
       let str = "Auriga " + playerColorString
-      FlatSpriteFont.drawString assets.Font fontBatch str (x @@ (bgTop + 17.f)) 2.f playerColor (Center, Center)
+      FlatSpriteFont.drawString assets.Font fontBatch str (x @@ (bgTop + 17.f<px>)) 2. playerColor (Center, Center)
       // TODO: check translation
-      FlatSpriteFont.drawString assets.Font fontBatch "Informatiae Equo" (x @@ (bgTop + 34.f)) 2.f playerColor (Center, Center)
+      FlatSpriteFont.drawString assets.Font fontBatch "Informatiae Equo" (x @@ (bgTop + 34.f<px>)) 2. playerColor (Center, Center)
       
       // "acc." = acceleratio
       drawHorseBarData generalBatch fontBatch barTop barBottom (barLeftX + (barSpacing * 1.f)) (float32 horse.acceleration * accFactor) "acc." assets

@@ -1,10 +1,12 @@
 namespace CircusMaximus.Types
 open System
+open Microsoft.FSharp.Core.LanguagePrimitives
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
+open CircusMaximus.Types.UnitSymbols
 
 /// Represents the current state a button is in
 type ButtonState =
@@ -12,28 +14,24 @@ type ButtonState =
   | Releasing | Up
 
 type Button =
-  { position: Vector2
-    width: int; height: int
+  { position: Vector2<px>
+    dimensions: Vector2<px>
     label: string
     buttonState: ButtonState
     isSelected: bool }
   /// The button's bottom left corner coordinates
-  member this.bottomLeft = (this.position.X + float32 this.width) @@ (this.position.Y + float32 this.height)
+  member this.bottomLeft = this.position + this.dimensions
   
-  static member defaultButtonSize = 512, 64
+  static member defaultButtonDimensions = 512<px> @@ 64<px>
   
   /// Initialize a button at the given position with the given dimensions and label
-  static member init position (width, height) label =
-    { position = position
-      width = width; height = height
-      label = label
-      buttonState = Up
+  static member init position dimensions label =
+    { position = position; dimensions = dimensions
+      label = label; buttonState = Up
       isSelected = false }
   
   /// Initialize a button at a given center with the given dimensions and label
-  static member initCenter (center: Vector2) (width, height) label =
-    { position = (center.X - (float32 width / 2.0f) @@ center.Y - (float32 height / 2.0f))
-      width = width; height = height
-      label = label
-      buttonState = Up
-      isSelected = false }
+  static member initCenter (center: Vector2<_>) dimensions label =
+    { position = center - (dimensions / 2.)
+      dimensions= dimensions; label = label
+      buttonState = Up; isSelected = false }

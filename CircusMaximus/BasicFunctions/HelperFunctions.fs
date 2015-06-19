@@ -1,16 +1,62 @@
 module CircusMaximus.HelperFunctions
 open System
+open Microsoft.FSharp.Core.LanguagePrimitives
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 open CircusMaximus.TupleClassExtensions
+open CircusMaximus.Types
+open CircusMaximus.Types.UnitNames
 
-/// 2D Vector constructor
-let inline (@@) a b = new Vector2(float32 a, float32 b)
-/// Nullable 2D constructor
-let inline (@~) a b = new Nullable<_>(new Vector2(float32 a, float32 b))
+/// Cosine of a given number
+let inline unitlessCos (value: ^T) = cos value
+/// Sine of a given number
+let inline unitlessSin (value: ^T) = sin value
+/// Inverse tangent of the given number
+let inline unitlessAtan (value: ^T) = atan value
+/// Inverse tangent of y/x where x and y are specified separately
+let inline unitlessAtan2 x y = atan2 x y
+
+let inline f32m (n: ^a) = Float32WithMeasure (float32 n)
+
+type OverloadedOperators() =
+  static member _Sin (_, n: float<radian>) = float n |> unitlessSin
+  static member _Sin (_, n: float32<radian>) = float32 n |> unitlessSin
+  static member _Cos (_, n: float<radian>) = float n |> unitlessCos
+  static member _Cos (_, n: float32<radian>) = float32 n |> unitlessCos
+  static member _Atan (_, n: float) = n |> unitlessAtan |> FloatWithMeasure<radian>
+  static member _Atan (_, n: float32) = n |> unitlessAtan |> Float32WithMeasure<radian>
+  static member _Atan2 (_, x: float, y: float) = unitlessAtan2 x y |> FloatWithMeasure<radian>
+  static member _Atan2 (_, x: float32, y: float32) = unitlessAtan2 x y |> Float32WithMeasure<radian>
+  static member CreateVector2 (_, x: float32<'u>, y: float32<'u>) = new Vector2<'u>(x, y)
+  static member CreateVector2 (_, x: float32<'u>, y: float<'u>) = new Vector2<'u>(x, f32m y)
+  static member CreateVector2 (_, x: float32<'u>, y: int<'u>) = new Vector2<'u>(x, f32m y)
+  static member CreateVector2 (_, x: float<'u>, y: float32<'u>) = new Vector2<'u>(f32m x, y)
+  static member CreateVector2 (_, x: float<'u>, y: float<'u>) = new Vector2<'u>(f32m x, f32m y)
+  static member CreateVector2 (_, x: float<'u>, y: int<'u>) = new Vector2<'u> (f32m x, f32m y)
+  static member CreateVector2 (_, x: int<'u>, y: float32<'u>) = new Vector2<'u>(f32m x, y)
+  static member CreateVector2 (_, x: int<'u>, y: float<'u>) = new Vector2<'u>(f32m x, f32m y)
+  static member CreateVector2 (_, x: int<'u>, y: int<'u>) = new Vector2<'u>(f32m x, f32m y)
+
+let ops = new OverloadedOperators()
+
+/// Generic 2D Vector operator
+let inline (@@) (x: ^a) (y: ^b) : Vector2<'u> = ((^T or ^a or ^b) : (static member CreateVector2 : ^T * ^a * ^b -> Vector2<'u>) (ops, x, y))
+
+#nowarn "64"  // All of the ^T s are constrained to OverloadedOperators, but it doesn't compile if I replace them manually
+/// Cosine of a given number, in radians
+let inline cos (value: ^a) = ((^T or ^a) : (static member _Cos : ^T * ^a -> _) (ops, value))
+/// Sine of a given number, in radians
+let inline sin (value: ^a) = ((^T or ^a) : (static member _Sin : ^T * ^a -> _) (ops, value))
+/// Inverse tangent of the given number
+let inline atan (value: ^a) = ((^T or ^a) : (static member _Atan : ^T * ^a -> _) (ops, value))
+/// Inverse tangent of y/x where x and y are specified separately
+let inline atan2 (y: ^a) (x: ^b) = ((^T or ^a or ^b) : (static member _Atan2 : ^T * ^a * ^b -> _) (ops, y, x))
+
+let xnaVec2 (v: Vector2<pixel>) = v.xnaVector2
+
 /// Vector2 X position (as a float32/single)
 let inline vecxs (vector2: Vector2) = vector2.X
 /// Vector2 Y position (as a float32/single)
@@ -20,7 +66,7 @@ let inline vecx (vector2: Vector2) = float vector2.X
 /// Vector2 Y position (as a float/double)
 let inline vecy (vector2: Vector2) = float vector2.Y
 /// Vector2 cross product
-let cross (a: Vector2) (b: Vector2) = (a.X * b.Y) - (a.Y * b.X)
+let cross (a: Vector2<_>) (b: Vector2<_>) = (a.X * b.Y) - (a.Y * b.X)
 let degreesToRadians d = 2.0 * Math.PI / 360.0 * d
 
 /// Randomly changes two values so that all values still add up to the same total
@@ -80,7 +126,7 @@ let toRoman =
   fun n ->
     List.fold acc (n, "") numerals |> snd
 
-let positionForward position (direction: float) distance = position + (cos direction * distance @@ sin direction * distance)
+let positionForward (position: Vector2<'u>) (direction: float<radian>) (distance: float<'u>) = (cos direction @@ sin direction) * distance + position
 
 let placingColor = function
   | 1 -> Color.Gold

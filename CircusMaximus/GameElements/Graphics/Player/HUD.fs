@@ -33,8 +33,8 @@ let drawItemBar (generalBatch: SpriteBatch) fontBatch (player: Player) assets =
   let widthDiff = ItemGraphics.defaultItemSelectorImageWidth - ItemGraphics.defaultItemImageWidth
   let heightDiff = ItemGraphics.defaultItemSelectorImageHeight - ItemGraphics.defaultItemImageHeight
   player.items |> List.iteri (fun i item ->
-    let i' = float32 i - (float32 player.items.Length / 2.f)
-    let itemCenter = (player.position.X + (float32 ItemGraphics.defaultItemSelectorImageWidth * i')) @@ (player.position.Y - player.bounds.Width)
+    let i' = float i - (float player.items.Length / 2.)
+    let itemCenter = xnaVec2 <| player.position + (ItemGraphics.defaultItemSelectorImageWidth * i' @@ -player.bounds.Dimensions.X)
     ItemGraphics.draw generalBatch item itemCenter assets
     if player.selectedItem = i
       then generalBatch.DrawCentered(assets.ItemSelector, itemCenter, Color.White))

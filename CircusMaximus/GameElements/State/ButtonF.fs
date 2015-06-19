@@ -17,11 +17,11 @@ module Button =
   
   /// Returns the next button state, taking into account the input devices
   let next input (button: Button) =
-    let leftDown = input.mouse.LeftButton = Input.ButtonState.Pressed
+    let leftDown = input.mouse.xnaMouseState.LeftButton = Input.ButtonState.Pressed
     let leftUp = not leftDown
     let mouseInBounds =
-      (   float32 input.mouse.Position.X > button.position.X    && float32 input.mouse.Position.Y > button.position.Y)
-      && (float32 input.mouse.Position.X < button.bottomLeft.X  && float32 input.mouse.Position.Y < button.bottomLeft.Y)
+      (   input.mouse.Position.X > button.position.X    && input.mouse.Position.Y > button.position.Y)
+      && (input.mouse.Position.X < button.bottomLeft.X  && input.mouse.Position.Y < button.bottomLeft.Y)
     let isInputPressing =
       (button.isSelected && ((input.keyboard.IsKeyDown Keys.Space) || input.keyboard.IsKeyDown Keys.Enter)) ||
       (button.isSelected && (List.exists (fun (gamepad: GamePadState) -> gamepad.IsButtonDown Buttons.A) input.gamepads)) ||

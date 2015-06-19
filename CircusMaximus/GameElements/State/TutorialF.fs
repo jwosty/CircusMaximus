@@ -9,7 +9,7 @@ open CircusMaximus.Collision
 open CircusMaximus.Types
 
 module Tutorial =
-  let next (tutorial: Tutorial) fields input =
+  let next (tutorial: Tutorial) deltaTime fields input =
     let rec next players chariotSounds =
       match players, chariotSounds with
       | player :: restPlayers, playerChariotSound :: restPlayerChariotSounds ->

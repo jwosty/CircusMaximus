@@ -3,19 +3,26 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus.HelperFunctions
+open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
+
+type Microsoft.Xna.Framework.Graphics.SpriteFont with
+  member this.MeasureStringPx (text: string) = new Vector2<_>(this.MeasureString (text))
 
 type Microsoft.Xna.Framework.Graphics.SpriteBatch with
-  member this.DrawStringCentered(font: SpriteFont, string: string, position, color) =
-    this.DrawString(font, string, font.MeasureString(string) / (2 @@ 2), color)
+  member this.DrawStringCentered (font: SpriteFont, string: string, position, color) =
+
+    this.DrawString (font, string, font.MeasureStringPx(string) / (2<px> @@ 2<px>) |> xnaVec2, color)
   
   member this.DrawLine(t: Texture2D, start: Vector2, ``end``: Vector2, ?color, ?width) =
     let width_, color_ = defaultArg width 1, defaultArg color Color.White
     let edge = ``end`` - start
+    let blah = atan2 1. 2.
     this.Draw(t,
       new Rectangle(int start.X, int start.Y, int <| edge.Length(), width_),
       new Nullable<Rectangle>(), color_,
-      atan2 edge.Y edge.X,  // angle
-      0 @@ 0, SpriteEffects.None, 0.0f)
+      atan2 edge.Y edge.X |> float32,  // angle
+      Vector2.Zero, SpriteEffects.None, 0.0f)
   
   /// Begins the sprite batch with no arguments and calls the predicate with the sprite batch
   /// before ending
@@ -25,7 +32,7 @@ type Microsoft.Xna.Framework.Graphics.SpriteBatch with
     this.End ()
   
   member this.DrawCentered(texture: Texture2D, center, color) =
-    this.Draw(texture, center - (float texture.Width / 2. @@ float texture.Height / 2.), color)
+    this.Draw(texture, center - new Vector2(float32 texture.Width / 2.f, float32 texture.Height / 2.f), color)
 
   /// Begins the sprite batch in point clamp mode and calls the predicate with the sprite batch
   /// before ending

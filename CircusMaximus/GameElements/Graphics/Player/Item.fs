@@ -6,6 +6,7 @@ open CircusMaximus
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
 let getItemImage item (assets: GameContent) =
   match item with
@@ -15,8 +16,8 @@ let getItemImage item (assets: GameContent) =
 let draw (spriteBatch: SpriteBatch) item position (assets: GameContent) =
   spriteBatch.DrawCentered(getItemImage item assets, position, Color.White)
 
-let defaultItemImageHeight = 32
-let defaultItemImageWidth = 32
+let defaultItemImageHeight = 32.<px>
+let defaultItemImageWidth = 32.<px>
 
-let defaultItemSelectorImageWidth = 40
-let defaultItemSelectorImageHeight = 40
+let defaultItemSelectorImageWidth = 40.<px>
+let defaultItemSelectorImageHeight = 40.<px>

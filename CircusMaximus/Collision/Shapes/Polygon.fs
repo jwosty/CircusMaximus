@@ -1,16 +1,19 @@
 namespace CircusMaximus
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
+open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
 [<AbstractClass>]
 type Polygon(center) =
-  member this.Center: Vector2 = center
+  member this.Center: Vector2<px> = center
   
   /// A clockwise list of the polygon's vertices
-  abstract member Points: Vector2 list
+  abstract member Points: Vector2<px> list
   
   /// Decomposes the structure into the most primitive parts (line segments)
   abstract member Edges: CircusMaximus.LineSegment.LineSegment list
@@ -24,4 +27,4 @@ type Polygon(center) =
         let color = if isRed then Color.Red else Color.White
         sb.DrawLine(pixelTexture, start, ``end``, color))
       redLines
-      this.Edges
+      (this.Edges |> List.map (fun (start,``end``) -> xnaVec2 start, xnaVec2 ``end``))

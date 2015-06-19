@@ -82,9 +82,10 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.fs" />
     <Compile Include="BasicFunctions\TupleExtensions.fs" />
+    <Compile Include="BasicFunctions\Aliases.fs" />
+    <Compile Include="BasicFunctions\Units.fs" />
     <Compile Include="BasicFunctions\HelperFunctions.fs" />
     <Compile Include="BasicFunctions\Extensions.fs" />
-    <Compile Include="BasicFunctions\Aliases.fs" />
     <Compile Include="Collision\Shapes\LineSegment.fs" />
     <Compile Include="Collision\Shapes\Polygon.fs" />
     <Compile Include="Collision\Shapes\PlayerShape.fs" />

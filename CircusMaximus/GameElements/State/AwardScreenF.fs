@@ -10,7 +10,7 @@ open CircusMaximus.Types
 
 module AwardScreen =
   /// Updates an award screen and returns the new model
-  let next (awardScreen: AwardScreen) fields input =
+  let next (awardScreen: AwardScreen) deltaTime fields input =
     let inline buttonState label = ButtonGroup.buttonState awardScreen.buttonGroup label
     match buttonState "Contine", buttonState "Exi cursus" with
     | Releasing, _ -> Some((Race.init awardScreen.playerHorses fields.settings) :> IGameScreen, fields)
@@ -18,6 +18,6 @@ module AwardScreen =
     | _ ->
       Some(
         upcast new AwardScreen(
-          awardScreen.timer + 1, awardScreen.playerDataAndWinnings, awardScreen.playerHorses,
+          awardScreen.playerDataAndWinnings, awardScreen.playerHorses,
           ButtonGroup.next awardScreen.buttonGroup input),
         fields)

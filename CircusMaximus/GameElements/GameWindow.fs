@@ -1,5 +1,6 @@
 namespace CircusMaximus
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Graphics
@@ -10,10 +11,11 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Media
 open CircusMaximus
 open CircusMaximus.Extensions
+open CircusMaximus.Functions
+open CircusMaximus.Graphics
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
-open CircusMaximus.Graphics
-open CircusMaximus.Functions
+open CircusMaximus.Types.UnitSymbols
 
 /// Default Project Template
 type GameWindow() as this =
@@ -27,7 +29,7 @@ type GameWindow() as this =
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable assets = Unchecked.defaultof<_>
 
-  let mutable input = GameInput.initInitial <| Keyboard.GetState () <| Mouse.GetState () <| [for i in 0..3 -> GamePad.GetState(enum i)]
+  let mutable input = GameInput.initInitial <| Keyboard.GetState () <| new MouseInput(Mouse.GetState ()) <| [for i in 0..3 -> GamePad.GetState(enum i)]
   
   do
     this.Content.RootDirectory <- "../Resources/Content"
@@ -39,8 +41,7 @@ type GameWindow() as this =
     graphics.PreferredBackBufferWidth <- GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width
     graphics.PreferredBackBufferHeight <- GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height
   
-  member this.WindowRect = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight)
-  member this.WindowDimensions = graphics.PreferredBackBufferWidth @@ graphics.PreferredBackBufferHeight
+  member this.WindowDimensions = graphics.PreferredBackBufferWidth * 1<px> @@ graphics.PreferredBackBufferHeight * 1<px>
   member this.WindowCenter = this.WindowDimensions * (0.5 @@ 0.5)
   
   /// Overridden from the base Game.Initialize. Once the GraphicsDevice is setup,
@@ -82,10 +83,10 @@ type GameWindow() as this =
   override this.Update(gameTime:GameTime) =
     base.Update gameTime
     // Fetch input
-    input <- input.shift <| Keyboard.GetState () <| Mouse.GetState () <| [for i in 0..3 -> GamePad.GetState <| enum i]
+    input <- input.shift <| Keyboard.GetState () <| new MouseInput(Mouse.GetState ()) <| [for i in 0..3 -> GamePad.GetState <| enum i]
     
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
-    match Game.next game input with
+    match Game.next game (gameTime.ElapsedGameTime.TotalMilliseconds * 1.<s>) input with
     | Some(newScreen, newFields) -> (game <- { game with gameScreen = newScreen; fields = newFields })
     | None -> this.Exit()
     
@@ -102,4 +103,4 @@ type GameWindow() as this =
   override this.Draw(gameTime:GameTime) =
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw(gameTime)
-    GameGraphics.draw graphics assets generalBatch fontBatch this.WindowCenter this.WindowRect game
+    GameGraphics.draw graphics assets generalBatch fontBatch this.WindowCenter this.WindowDimensions game

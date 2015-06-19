@@ -9,7 +9,7 @@ open CircusMaximus.Input
 open CircusMaximus.Types
 
 module HorseScreen =
-  let next (horseScreen: HorseScreen) fields input =
+  let next (horseScreen: HorseScreen) deltaTime fields input =
     let buttons = ButtonGroup.next horseScreen.buttons input
     let screen =
       match buttons.buttons.[0].buttonState with

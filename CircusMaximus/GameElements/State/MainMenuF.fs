@@ -9,7 +9,7 @@ open CircusMaximus.Types
 
 module MainMenu =
   /// Updates the main menu
-  let next (mainMenu: MainMenu) fields input =
+  let next (mainMenu: MainMenu) deltaTime fields input =
     let inline buttonState label = ButtonGroup.buttonState mainMenu.buttonGroup label
     match buttonState "Exi" with
     | Releasing -> None

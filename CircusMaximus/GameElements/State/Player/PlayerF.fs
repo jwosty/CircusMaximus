@@ -4,11 +4,12 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
+open CircusMaximus.Collision
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
-open CircusMaximus.Collision
 open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
 #nowarn "49"
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -24,7 +25,7 @@ module Player =
       else []
     | _ -> []
   
-  let isPassingTurnLine (center: Vector2) lastTurnedLeft (lastPosition: Vector2) (position: Vector2) =
+  let isPassingTurnLine (center: Vector2<px>) lastTurnedLeft (lastPosition: Vector2<px>) (position: Vector2<px>) =
     if lastTurnedLeft && position.X > center.X then
       lastPosition.Y > center.Y && position.Y < center.Y
     elif (not lastTurnedLeft) && position.X < center.X then
@@ -37,7 +38,7 @@ module Player =
   let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
   
   /// Returns the next position and direction of the player and change in direction
-  let nextPositionDirection (player: Player) Δdirection =
+  let nextPositionDirection (player: Player) (Δdirection: float<r>) =
     let Δdirection = Δdirection * player.horses.turn
     let finalΔdirection =
       // Being taunted affects players' turning ability
@@ -46,7 +47,7 @@ module Player =
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
     let finalVelocity = (if List.exists (fst >> ((=) VelocityDecreased)) player.effects then player.velocity * 0.5 else player.velocity)
-    positionForward player.position finalDirection finalVelocity, finalDirection
+    positionForward player.position finalDirection (finalVelocity * 1.<fr>), finalDirection
   
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
   let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
@@ -100,7 +101,7 @@ module Player =
     useItem items effects 0 itemIndex
   
   /// A basic function an updated version of the given player model. Players are not given a placing here.
-  let basicNext (input: PlayerInput) (player: Player) respawnPoints collisionResults (racetrackCenter: Vector2) rand playerChariotSound =
+  let basicNext (input: PlayerInput) (player: Player) respawnPoints collisionResults (racetrackCenter: Vector2<px>) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = Effect.nextEffects player.effects
@@ -115,10 +116,10 @@ module Player =
         | _ ->
           let spawnState =
             match spawnState with
-            | Spawning safeTime -> Spawning (safeTime - 1)
+            | Spawning safeTime -> Spawning (safeTime - 1<fr>)
             | Spawned -> Spawned
           
-          let turn = -input.leftReignPull + input.rightReignPull
+          let turn = (-input.leftReignPull + input.rightReignPull) * 1.<r>
           let velocity =
             match Effect.findLongest player.effects VelocityIncreased with
             | Some(_, EffectDurations.sugar) -> Player.baseTopSpeed * 2.5
@@ -126,16 +127,16 @@ module Player =
               // Accelerate if the player so wishes
               let v =
                 if input.flickReigns
-                then player.velocity + player.horses.acceleration
+                then player.velocity + (player.horses.acceleration * 1.<fr>)
                 else player.velocity
               // Slow down depending on how hard the reigns are being pulled
               let v =
                 clampMin
                   (Player.baseTopSpeed * -0.25)
-                  (v - (input.leftReignPull * input.rightReignPull / 2.0))
+                  (v - (input.leftReignPull * input.rightReignPull * 1.<px/fr> / 2.0))
               // Slow down if the horses are going faster than they normally can
               if v > player.horses.topSpeed
-                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * 0.25))
+                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * 1.<fr> / 4.))
                 else v
           
           let position, direction = nextPositionDirection player turn
@@ -149,16 +150,16 @@ module Player =
           
           { player with
               motionState = Moving(spawnState, velocity)
-              bounds = new PlayerShape(position, player.bounds.Width, player.bounds.Height, direction)
+              bounds = new PlayerShape(position, player.bounds.Dimensions, direction)
               age = player.age + 1.; selectedItem = selectedItem; turns = turns; lastTurnedLeft = lastTurnedLeft
               tauntState = tauntState; effects = effects; items = items; particles = particles; intersectingLines = collisionResults },
-            if player.velocity >= 0.75
+            if player.velocity >= 0.75<px/fr>
             then Looping
             else Paused
     | Crashed timeUntilRespawn ->
-      if timeUntilRespawn > 0 then
+      if timeUntilRespawn > 0<fr> then
         { player with
-            motionState = Crashed (timeUntilRespawn - 1)
+            motionState = Crashed (timeUntilRespawn - 1<fr>)
             tauntState = tauntState
             effects = effects
             particles = particles }, playerChariotSound
@@ -168,13 +169,13 @@ module Player =
           let rspI, rsp =
             respawnPoints
               |> List.mapi (fun i p -> i, p)
-              |> List.minBy (fun (_, p) -> Vector2.DistanceSquared(player.position, p))
+              |> List.minBy (fun (_, p) -> (player.position - p).LengthSquared)
           let direction = respawnPoints.[List.wrapIndex respawnPoints (rspI - 1)] - rsp
-          rsp, atan2 direction.Y direction.X |> float
+          rsp, atan2 (float direction.Y) (float direction.X)
         
         { player with
-            motionState = Moving(Spawning 100, 0.4)
-            bounds = new PlayerShape(respawnPoint, player.bounds.Width, player.bounds.Height, respawnDirection)
+            motionState = Moving(Spawning 100<fr>, 0.4<px/fr>)
+            bounds = new PlayerShape(respawnPoint, player.bounds.Dimensions, respawnDirection)
             tauntState = tauntState
             effects = effects
             particles = particles }, playerChariotSound

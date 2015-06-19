@@ -3,10 +3,11 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
-open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Graphics
+open CircusMaximus.HelperFunctions
 open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
 let draw graphics (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: SpriteBatch) (settings: GameSettings) (awardScreen: AwardScreen) =
   let y = (settings.windowDimensions / (2 @@ 2)).Y
@@ -14,7 +15,7 @@ let draw graphics (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: 
     (fun (playerData, playerWinnings) ->
       // Do some quick calculations
       let playerN = "Auriga " + toRoman playerData.number
-      let x = vecx settings.windowDimensions / (float awardScreen.playerDataAndWinnings.Length + 0.25) * (float (playerData.number - 1) + 0.625)
+      let x = settings.windowDimensions.X / (float32 awardScreen.playerDataAndWinnings.Length + 0.25f) * (float32 (playerData.number - 1) + 0.625f)
       let playerCoinAmtStr, playerCoinsStrCol =
         // TODO: extract this first part out into a function since it will be useful throughout the
         // game -- the Romans couldn't say "0 things", only "no things"!
@@ -36,14 +37,14 @@ let draw graphics (assets: GameContent) (fontBatch: SpriteBatch) (generalBatch: 
             awardScreen.buttonGroup.buttons
           
           // Draw the player background image
-          generalBatch.DrawCentered(assets.AwardBackground, x @@ y, Color.White)
+          generalBatch.DrawCentered(assets.AwardBackground, xnaVec2 (x @@ y), Color.White)
           // Draw player text
           FlatSpriteFont.drawString     // "heading"
-            assets.Font fontBatch playerN (x @@ (y - 25.f)) 3.f Color.White
+            assets.Font fontBatch playerN (x @@ (y - 25.f<px>)) 3. Color.White
             (FlatSpriteFont.Center, FlatSpriteFont.Center)
           FlatSpriteFont.drawString     // current coin balance
-            assets.Font fontBatch playerCoinsStr (x @@ (y + 25.f)) 2.f playerCoinsStrCol
+            assets.Font fontBatch playerCoinsStr (x @@ (y + 25.f<px>)) 2. playerCoinsStrCol
             (FlatSpriteFont.Center, FlatSpriteFont.Center)
           FlatSpriteFont.drawString
-            assets.Font fontBatch playerWinningsStr (x @@ (y + 37.f)) 1.f Color.Green
+            assets.Font fontBatch playerWinningsStr (x @@ (y + 37.f<px>)) 1. Color.Green
             (FlatSpriteFont.Center, FlatSpriteFont.Center))))

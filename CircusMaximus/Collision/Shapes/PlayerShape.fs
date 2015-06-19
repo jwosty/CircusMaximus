@@ -1,34 +1,34 @@
 namespace CircusMaximus
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.LineSegment
+open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
-type PlayerShape(center, width, height, direction) =
+type PlayerShape(center, dimensions, direction) =
   inherit Polygon(center)
   
-  static member standardWidth = 64.0f
-  static member standardHeight = 29.0f
+  static member standardDimensions = 64.f<px> @@ 29.f<px>
   
-  member this.Width: float32 = width
-  member this.Height: float32 = height
-  member this.Direction: float = direction
+  member this.Dimensions: Vector2<px> = dimensions
+  member this.Direction: float<r> = direction
   
-  member this.X with get() = this.Center.X
-  member this.Y with get() = this.Center.Y
-  member this.HalfWidth with get() = this.Width / 2.0f
-  member this.HalfHeight with get() = this.Height / 2.0f
+  member this.X with get() = center.X
+  member this.Y with get() = center.Y
+  member this.HalfDimensions with get() = this.Dimensions / 2.f<_>
   
   /// The corners in clockwise order, starting at the top-left
   override this.Points =
     let origin, direction = this.Center, this.Direction
     // Offsets from the center
-    [  this.HalfWidth @@ -this.HalfHeight;
-       this.HalfWidth @@  this.HalfHeight;
-      -this.HalfWidth @@  this.HalfHeight;
-      -this.HalfWidth @@ -this.HalfHeight]
+    [  this.HalfDimensions.X @@ -this.HalfDimensions.Y;
+       this.HalfDimensions.X @@  this.HalfDimensions.Y;
+      -this.HalfDimensions.Y @@  this.HalfDimensions.Y;
+      -this.HalfDimensions.X @@ -this.HalfDimensions.Y]
     // Rotate the points around the center by applying a rotation matrix, and ofsetting by the origin
-      |> List.map (fun v -> Vector2.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)
+      |> List.map (fun v -> Vector2<_>.Transform(v, Matrix.CreateRotationZ(float32 direction)) + origin)

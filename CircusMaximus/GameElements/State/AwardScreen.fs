@@ -1,5 +1,6 @@
 namespace CircusMaximus.Types
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
@@ -7,8 +8,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Input
 
-type AwardScreen(timer, playerDataAndWinnings, playerHorses, buttonGroup) =
-  member this.timer = timer
+type AwardScreen(playerDataAndWinnings, playerHorses, buttonGroup) =
   /// A list of player data and the amounts they just earned
   member this.playerDataAndWinnings = playerDataAndWinnings
   /// A list of players' horses saved from the last race, which will be passed onto the next
@@ -16,7 +16,7 @@ type AwardScreen(timer, playerDataAndWinnings, playerHorses, buttonGroup) =
   member this.buttonGroup = buttonGroup
   
   interface IGameScreen with
-    member this.Next rand input = AwardScreen.next this rand input
+    member this.Next deltaTime rand input = AwardScreen.next this deltaTime rand input
   
   static member val next = Unchecked.defaultof<_> with get, set
   
@@ -27,7 +27,7 @@ type AwardScreen(timer, playerDataAndWinnings, playerHorses, buttonGroup) =
     let inline initb i label =
       Button.initCenter
         (x @@ y * i)
-        Button.defaultButtonSize label
-    new AwardScreen(0, playerDataAndWinnings, playerHorses, ButtonGroup.init [initb 1.f "Contine"; initb 2.f "Exi cursus"]),
+        Button.defaultButtonDimensions label
+    new AwardScreen(playerDataAndWinnings, playerHorses, ButtonGroup.init [initb 1.f "Contine"; initb 2.f "Exi cursus"]),
     playerDataAndWinnings |> List.map
         (fun (playerData, winnings) -> { playerData with coinBalance = playerData.coinBalance + winnings })

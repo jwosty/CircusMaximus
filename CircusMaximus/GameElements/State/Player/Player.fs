@@ -1,16 +1,18 @@
 namespace CircusMaximus.Types
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
+open CircusMaximus.Collision
 open CircusMaximus.Extensions
 open CircusMaximus.HelperFunctions
 open CircusMaximus.Input
-open CircusMaximus.Collision
+open CircusMaximus.Types.UnitSymbols
 
-type SpawnState = Spawning of int | Spawned
-type MotionState = Moving of SpawnState * Velocity | Crashed of int
+type SpawnState = Spawning of int<fr> | Spawned
+type MotionState = Moving of SpawnState * float<px/fr> | Crashed of int<fr>
 type FinishState = | Racing | Finished of Placing
 
 type Player =
@@ -50,16 +52,16 @@ type Player =
   member this.position = this.bounds.Center
   /// Player direction, in radians
   member this.direction = this.bounds.Direction
-  member this.velocity = match this.motionState with | Moving(_, v) -> v | Crashed _ -> 0.
+  member this.velocity = match this.motionState with | Moving(_, v) -> v | Crashed _ -> 0.<px/fr>
   member this.collisionBox = BoundingPolygon(this.bounds)
   member this.finished = match this.finishState with | Racing -> false | _ -> true
   
   /// The default number of players participating in the race (TODO: make all uses parameterized)
   static member numPlayers = 5
   /// The base player acceleration change in percent per frame
-  static member baseAcceleration = 2.0
+  static member baseAcceleration = 2.0<px/fr^2>
   /// A normal top speed, and the factor to convert a turn percentage into an absolute velocity
-  static member baseTopSpeed = 8.0
+  static member baseTopSpeed = 8.0<px/fr>
   /// A normal turn speed, and the factor to convert a turn percentage into radians
   static member baseTurn = 0.03125  // 1/32nd radian
   
@@ -67,12 +69,12 @@ type Player =
   static member maxStatUnbalance = 0.1
   static member unbalanceTimes = 4
   
-  static member crashDuration = 200
-  static member spawnDuration = 100
+  static member crashDuration = 200<fr>
+  static member spawnDuration = 100<fr>
   
   static member init horses (bounds: PlayerShape) number =
     let color, colorString = playerColorWithString number
-    { motionState = Moving(Spawning Player.spawnDuration, 0.); finishState = Racing;
+    { motionState = Moving(Spawning Player.spawnDuration, 0.<px/fr>); finishState = Racing;
       tauntState = None; ability = TauntSlow
       number = number; color = color; colorString = colorString;
       items = List.init 11 (fun _ -> Item.SugarCubes)

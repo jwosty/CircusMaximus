@@ -3,22 +3,23 @@ module CircusMaximus.FlatSpriteFont
 open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
-open HelperFunctions
+open CircusMaximus.HelperFunctions
+open CircusMaximus.Types.UnitSymbols
 
 type Alignment = | Min | Center | Max
 
 type AxisAlignment = Alignment * Alignment
 
 // Returns a vector of the offset for an object to be aligned in that manner
-let inline axisAlignmentToOffset objWidth objHeight ((xAlignment, yAlignment): AxisAlignment) =
+let inline axisAlignmentToOffset (objWidth: float<px>) (objHeight: float<px>) ((xAlignment, yAlignment): AxisAlignment) =
   let x =
     match xAlignment with
-      | Min -> 0.0f | Center -> -0.5f | Max -> -1.0f
-      * float32 objWidth
+      | Min -> 0.0 | Center -> -0.5 | Max -> -1.0
+      * objWidth
   let y =
     match yAlignment with
-      | Min -> 0.0f | Center -> -0.5f | Max -> -1.0f
-      * float32 objHeight
+      | Min -> 0.0 | Center -> -0.5 | Max -> -1.0
+      * objHeight
   x @@ y
 
 // Returns the a rectangle that specifies where the character is in the texture
@@ -36,12 +37,11 @@ let drawChar (fontTexture: Texture2D) (sb: SpriteBatch) (chr: char) (position: V
 // Returns an list of the string's lines
 let lines (str: string) = List.ofArray (str.Split([|'\n'|]))
 
-let width (str: string) charWidth scale =
-  float32 (str.Split([|'\n'|]) |> Array.fold (fun longest str -> if str.Length > longest then str.Length else longest) 0)
-    * float32 charWidth * scale
+let width (str: string) (charWidth: float<px>) scale : float<px>=
+  float (str.Split([|'\n'|]) |> Array.fold (fun longest str -> if str.Length > longest then str.Length else longest) 0)
+    * charWidth * scale
 
-let height (str: string) charHeight scale =
-  float32 (str.Split([|'\n'|]).Length) * float32 charHeight * scale
+let height (str: string) (charHeight: float<px>) scale : float<px> = float (str.Split([|'\n'|]).Length) * charHeight * scale
 
 // Draws a string without interpreting newlines
 let drawSingleLineString fontTexture sb (str: String) position scale color =
@@ -50,17 +50,19 @@ let drawSingleLineString fontTexture sb (str: String) position scale color =
       drawChar
         fontTexture sb chr
         // line position + char offset
-        (position + (float32 fontTexture.Height * scale * float32 i @@ 0))
+        (xnaVec2 (position + (float fontTexture.Height * 1.<px> * float scale * float i @@ 0<px>)))
         scale color)
     (str.ToCharArray())
 
 let drawString (fontTexture: Texture2D) sb (str: String) position scale color alignment =
-  let grandOffset = axisAlignmentToOffset <| width str fontTexture.Height scale <| height str fontTexture.Height scale <| alignment
+  let grandOffset = axisAlignmentToOffset <| width str (float fontTexture.Height * 1.<px>) scale <| height str (float fontTexture.Height * 1.<px>) scale <| alignment
   Array.iteri
     (fun i siStr ->
+      let p = (0<px> @@ float fontTexture.Height * 1.<px> * float scale * float i)
+      
       drawSingleLineString
         fontTexture sb siStr
         // string position + line offset + string offset
-        (position + (0 @@ float32 fontTexture.Height * scale * float32 i) + grandOffset)
+        (position + (0<px> @@ float fontTexture.Height * 1.<px> * float scale * float i) + grandOffset)
         scale color)
     (str.Split([|'\n'|]))

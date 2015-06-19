@@ -7,6 +7,7 @@ open CircusMaximus.HelperFunctions
 open CircusMaximus.Extensions
 open CircusMaximus.Input
 open CircusMaximus.Types
+open CircusMaximus.Types.UnitSymbols
 
 module Race =
   /// Calculates the intersections for all objects
@@ -64,20 +65,20 @@ module Race =
     { fields with playerData = playerData }
   
   /// Returns the next race state. 
-  let next (race: Race) fields input =
+  let next (race: Race) deltaTime fields input =
     let nextPlayer = Player.next fields input Racetrack.collisionShape.RespawnPath
     match race.raceState with
     | PreRace ->
-      if race.timer >= Race.preRaceTicks then
+      if race.elapsedTime >= Race.preRaceTicks then
         Some(
           // Begin the race when it's time
           new Race(
-            MidRace(getLastPlacing race.players),  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
-            race.players, 0) :> IGameScreen,
+            0.<fr>, MidRace(getLastPlacing race.players),  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
+            race.players) :> IGameScreen,
           { fields with sounds = { fields.sounds with CrowdCheer = Playing 1 } } )   // The crowd gets exited when the race begins
       else
         Some(
-          upcast new Race(race.raceState, race.players, race.timer + 1),   // Simply increment the timer until the race starts
+          upcast new Race(race.elapsedTime + 1.<fr>, race.raceState, race.players),   // Simply increment the timer until the race starts
           fields)   // No sounds here
     
     | _ ->
@@ -100,9 +101,9 @@ module Race =
               // Check if there are any players that are still racing
               match players |> List.tryFind (fun player -> not player.finished) with
                 | Some _ -> MidRace(latestPlacing)
-                | None -> Race.initPostRaceState Button.defaultButtonSize fields
+                | None -> Race.initPostRaceState Button.defaultButtonDimensions fields
             else MidRace(latestPlacing)
-          upcast new Race(raceState, players, race.timer + 1), sounds
+          upcast new Race(race.elapsedTime + 1.<fr>, raceState, players), sounds
         // No player placings
         | PostRace buttonGroup ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions fields.sounds.Chariots race.players

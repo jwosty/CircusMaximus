@@ -12,7 +12,7 @@ type HorseScreen(horses: Horses list, buttons: ButtonGroup) =
   member this.buttons = buttons
   
   interface IGameScreen with
-    member this.Next rand input = HorseScreen.next this rand input
+    member this.Next deltaTime rand input = HorseScreen.next this deltaTime rand input
   
   static member val next = Unchecked.defaultof<_> with get, set
   
@@ -26,5 +26,5 @@ type HorseScreen(horses: Horses list, buttons: ButtonGroup) =
       { acceleration = Player.baseAcceleration * values.[0]
         topSpeed = Player.baseTopSpeed * values.[1]
         turn = Player.baseTurn * values.[2]})
-    let buttons = ButtonGroup.init([ Button.initCenter (fields.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonSize "Contine" ])
+    let buttons = ButtonGroup.init([ Button.initCenter (fields.settings.windowDimensions / (2 @@ 8)) Button.defaultButtonDimensions "Contine" ])
     new HorseScreen(horses, buttons), fields

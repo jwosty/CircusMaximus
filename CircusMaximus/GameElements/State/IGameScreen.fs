@@ -1,13 +1,20 @@
 ﻿namespace CircusMaximus.Types
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
+open CircusMaximus.HelperFunctions
+open CircusMaximus.Types.UnitSymbols
+
+type MouseInput(xnaMouseState: MouseState) =
+  member this.xnaMouseState = xnaMouseState
+  member this.Position = (xnaMouseState.X @@ xnaMouseState.Y) * 1.<px>
 
 type GameInput =
   { lastKeyboard: KeyboardState
     keyboard: KeyboardState
-    lastMouse: MouseState
-    mouse: MouseState
+    lastMouse: MouseInput
+    mouse: MouseInput
     lastGamepads: GamePadState list
     gamepads: GamePadState list }
   
@@ -31,4 +38,4 @@ type GameFields =
     sounds: GameSounds }
 
 type IGameScreen =
-  abstract member Next: GameFields -> GameInput -> (IGameScreen * GameFields) option
+  abstract member Next: deltaTime:float<s> -> GameFields -> GameInput -> (IGameScreen * GameFields) option
