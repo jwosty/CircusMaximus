@@ -28,7 +28,9 @@ type GameWindow() as this =
   let mutable generalBatch = Unchecked.defaultof<_>
   let mutable fontBatch = Unchecked.defaultof<_>
   let mutable assets = Unchecked.defaultof<_>
-
+  let mutable fpsTimer = 0.<s>
+  let rand = new Random()
+  
   let mutable input = GameInput.initInitial <| Keyboard.GetState () <| new MouseInput(Mouse.GetState ()) <| [for i in 0..3 -> GamePad.GetState(enum i)]
   
   do
@@ -40,6 +42,7 @@ type GameWindow() as this =
 #endif
     graphics.PreferredBackBufferWidth <- GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width
     graphics.PreferredBackBufferHeight <- GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height
+    this.IsFixedTimeStep <- false
   
   member this.WindowDimensions = graphics.PreferredBackBufferWidth * 1<px> @@ graphics.PreferredBackBufferHeight * 1<px>
   member this.WindowCenter = this.WindowDimensions * (0.5 @@ 0.5)
@@ -84,9 +87,10 @@ type GameWindow() as this =
     base.Update gameTime
     // Fetch input
     input <- input.shift <| Keyboard.GetState () <| new MouseInput(Mouse.GetState ()) <| [for i in 0..3 -> GamePad.GetState <| enum i]
-    
+    let deltaTime = gameTime.ElapsedGameTime.TotalSeconds * 1.<s>
+    fpsTimer <- fpsTimer + deltaTime
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
-    match Game.next game (gameTime.ElapsedGameTime.TotalMilliseconds * 1.<s>) input with
+    match Game.next game (deltaTime) input with
     | Some(newScreen, newFields) -> (game <- { game with gameScreen = newScreen; fields = newFields })
     | None -> this.Exit()
     
@@ -103,4 +107,8 @@ type GameWindow() as this =
   override this.Draw(gameTime:GameTime) =
     graphics.GraphicsDevice.Clear (Color.Black)
     base.Draw(gameTime)
+    let deltaTime = gameTime.ElapsedGameTime.TotalSeconds * 1.<s>
     GameGraphics.draw graphics assets generalBatch fontBatch this.WindowCenter this.WindowDimensions game
+    if fpsTimer >= 0.5<s> then
+      this.Window.Title <- sprintf "CircusMaximus (%i FPS)" (int (1.<fr> / deltaTime))
+      fpsTimer <- 0.<s> 
