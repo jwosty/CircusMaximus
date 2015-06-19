@@ -1,5 +1,6 @@
 ﻿namespace CircusMaximus.Functions
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open CircusMaximus
@@ -69,16 +70,16 @@ module Race =
     let nextPlayer = Player.next fields input Racetrack.collisionShape.RespawnPath
     match race.raceState with
     | PreRace ->
-      if race.elapsedTime >= Race.preRaceTicks then
+      if race.elapsedTime >= Race.preRaceDuration then
         Some(
           // Begin the race when it's time
           new Race(
-            0.<fr>, MidRace(getLastPlacing race.players),  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
+            0.<s>, MidRace(getLastPlacing race.players),  // In case we needed to hard-code some players to start into the pre-race state; this should normally return 0
             race.players) :> IGameScreen,
           { fields with sounds = { fields.sounds with CrowdCheer = Playing 1 } } )   // The crowd gets exited when the race begins
       else
         Some(
-          upcast new Race(race.elapsedTime + 1.<fr>, race.raceState, race.players),   // Simply increment the timer until the race starts
+          upcast new Race(race.elapsedTime + deltaTime, race.raceState, race.players),   // Simply increment the timer until the race starts
           fields)   // No sounds here
     
     | _ ->
@@ -103,7 +104,7 @@ module Race =
                 | Some _ -> MidRace(latestPlacing)
                 | None -> Race.initPostRaceState Button.defaultButtonDimensions fields
             else MidRace(latestPlacing)
-          upcast new Race(race.elapsedTime + 1.<fr>, raceState, players), sounds
+          upcast new Race(race.elapsedTime + deltaTime, raceState, players), sounds
         // No player placings
         | PostRace buttonGroup ->
           let players, _, chariotSounds = nextPlayers nextPlayer 0 playerCollisions fields.sounds.Chariots race.players

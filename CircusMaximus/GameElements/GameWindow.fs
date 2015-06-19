@@ -90,7 +90,7 @@ type GameWindow() as this =
     let deltaTime = gameTime.ElapsedGameTime.TotalSeconds * 1.<s>
     fpsTimer <- fpsTimer + deltaTime
     // If Game.next returns a Some, use the contained state as the current state; otherwise, exit the game
-    match Game.next game (deltaTime) input with
+    match Game.next game deltaTime input with
     | Some(newScreen, newFields) -> (game <- { game with gameScreen = newScreen; fields = newFields })
     | None -> this.Exit()
     
