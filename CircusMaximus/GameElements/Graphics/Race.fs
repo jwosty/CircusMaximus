@@ -21,7 +21,7 @@ let draw (graphics: GraphicsDeviceManager) assets spriteBatch fontBatch (windowD
       fontBatch.DoWithPointClamp
         (fun (fb: SpriteBatch) ->
           FlatSpriteFont.drawString
-            assets.Font fontBatch (Race.preRaceMaxCount - (race.elapsedTime / Race.preRaceTicksPerCount) |> int |> toRoman)
+            assets.Font fontBatch (Race.preRaceCountdown - (race.elapsedTime / Race.preRaceTicksPerCount) |> int |> toRoman)
             windowCenter 8.0 Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center))
     
     | _ ->

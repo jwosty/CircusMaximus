@@ -24,8 +24,8 @@ type Race(elapsedTime, raceState, players) =
   static member val next = Unchecked.defaultof<_> with get, set
   
   static member preRaceTicks = 200.<fr>
-  static member preRaceMaxCount = 3.
-  static member preRaceTicksPerCount = Race.preRaceTicks / Race.preRaceMaxCount
+  static member preRaceCountdown = 3.
+  static member preRaceTicksPerCount = Race.preRaceTicks / Race.preRaceCountdown
   
   /// The amount of time into the race that it can still be said that it has "just begun"
   static member midRaceBeginPeriod = Race.preRaceTicksPerCount * 2.
