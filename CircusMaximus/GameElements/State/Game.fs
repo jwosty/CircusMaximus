@@ -15,6 +15,7 @@ type Game =
   static member init rand startingWindowDimensions =
     let settings =
       { windowDimensions = startingWindowDimensions
+        debugDrawAccelerationTimer = true
         debugDrawBounds = false
         debugLapIncrement = false }
     { gameScreen = MainMenu.init settings

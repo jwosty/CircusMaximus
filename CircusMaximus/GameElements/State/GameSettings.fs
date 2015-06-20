@@ -8,5 +8,6 @@ open CircusMaximus.Types.UnitSymbols
 
 type GameSettings =
   { windowDimensions: Vector2<px>
+    debugDrawAccelerationTimer: bool
     debugDrawBounds: bool
     debugLapIncrement: bool }

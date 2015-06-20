@@ -1,5 +1,6 @@
 ﻿namespace CircusMaximus.Functions
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Input
@@ -38,7 +39,7 @@ module Player =
   let findByNumber number players = List.find (fun (player: Player) -> player.number = number) players
   
   /// Returns the next position and direction of the player and change in direction
-  let nextPositionDirection (player: Player) (Δdirection: float<r>) =
+  let nextPositionDirection (player: Player) (Δdirection: float<r>) deltaTime =
     let Δdirection = Δdirection * player.horses.turn
     let finalΔdirection =
       // Being taunted affects players' turning ability
@@ -47,7 +48,7 @@ module Player =
       | None -> Δdirection
     let finalDirection = player.direction + finalΔdirection
     let finalVelocity = (if List.exists (fst >> ((=) VelocityDecreased)) player.effects then player.velocity * 0.5 else player.velocity)
-    positionForward player.position finalDirection (finalVelocity * 1.<fr>), finalDirection
+    positionForward player.position finalDirection (finalVelocity * deltaTime), finalDirection
   
   /// Returns the next number of laps and whether or not the player last turned on the left side of the map
   let nextTurns racetrackCenter (input: PlayerInput) (player: Player) nextPosition =
@@ -101,14 +102,14 @@ module Player =
     useItem items effects 0 itemIndex
   
   /// A basic function an updated version of the given player model. Players are not given a placing here.
-  let basicNext (input: PlayerInput) (player: Player) respawnPoints collisionResults (racetrackCenter: Vector2<px>) rand playerChariotSound =
+  let basicNext (input: PlayerInput) (player: Player) respawnPoints collisionResults (racetrackCenter: Vector2<px>) (deltaTime: float<s>) rand playerChariotSound =
     // Common code between crashed and moving players
     let tauntState = nextTauntState input.expectingTaunt rand player.tauntState
     let effects = Effect.nextEffects player.effects
     let particles = nextParticles rand player.particles player.effects
     
     match player.motionState with
-    | Moving(spawnState, velocity) ->
+    | Moving(spawnState, velocity, accelerationTimer) ->
       // If the player is colliding on the front, then the player is crashing
       match collisionResults with
         | true :: _ ->
@@ -116,30 +117,31 @@ module Player =
         | _ ->
           let spawnState =
             match spawnState with
-            | Spawning safeTime -> Spawning (safeTime - 1<fr>)
+            | Spawning safeTime -> Spawning (safeTime - deltaTime)
             | Spawned -> Spawned
           
           let turn = (-input.leftReignPull + input.rightReignPull) * 1.<r>
+          let accelerationTimer = if input.flickReigns then Player.accelerationDuration else max 0.<s> (accelerationTimer - deltaTime)
           let velocity =
             match Effect.findLongest player.effects VelocityIncreased with
-            | Some(_, EffectDurations.sugar) -> Player.baseTopSpeed * 2.5
+            | Some(_, EffectDurations.sugar) -> Player.baseTopSpeed
             | _ ->
               // Accelerate if the player so wishes
               let v =
-                if input.flickReigns
-                then player.velocity + (player.horses.acceleration * 1.<fr>)
+                if accelerationTimer > 0.<s>
+                then player.velocity + (player.horses.acceleration * deltaTime)
                 else player.velocity
               // Slow down depending on how hard the reigns are being pulled
               let v =
                 clampMin
                   (Player.baseTopSpeed * -0.25)
-                  (v - (input.leftReignPull * input.rightReignPull * 1.<px/fr> / 2.0))
+                  (v - (input.leftReignPull * input.rightReignPull * 1.<px> / (2. * deltaTime)))
               // Slow down if the horses are going faster than they normally can
               if v > player.horses.topSpeed
-                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * 1.<fr> / 4.))
+                then clampMin player.horses.topSpeed (v - (player.horses.acceleration * deltaTime))
                 else v
           
-          let position, direction = nextPositionDirection player turn
+          let position, direction = nextPositionDirection player turn deltaTime
           let turns, lastTurnedLeft = nextTurns racetrackCenter input player position
           
           let selectedItem = MathHelper.Clamp(player.selectedItem + input.selectorΔ, 0, player.items.Length - 1)
@@ -149,17 +151,17 @@ module Player =
               else player.items, effects
           
           { player with
-              motionState = Moving(spawnState, velocity)
+              motionState = Moving(spawnState, velocity, accelerationTimer)
               bounds = new PlayerShape(position, player.bounds.Dimensions, direction)
-              age = player.age + 1.; selectedItem = selectedItem; turns = turns; lastTurnedLeft = lastTurnedLeft
+              age = player.age + deltaTime; selectedItem = selectedItem; turns = turns; lastTurnedLeft = lastTurnedLeft
               tauntState = tauntState; effects = effects; items = items; particles = particles; intersectingLines = collisionResults },
-            if player.velocity >= 0.75<px/fr>
+            if player.velocity >= 50.0<px/s>
             then Looping
             else Paused
     | Crashed timeUntilRespawn ->
-      if timeUntilRespawn > 0<fr> then
+      if timeUntilRespawn > 0.<s> then
         { player with
-            motionState = Crashed (timeUntilRespawn - 1<fr>)
+            motionState = Crashed (timeUntilRespawn - deltaTime)
             tauntState = tauntState
             effects = effects
             particles = particles }, playerChariotSound
@@ -174,23 +176,23 @@ module Player =
           rsp, atan2 (float direction.Y) (float direction.X)
         
         { player with
-            motionState = Moving(Spawning 100<fr>, 0.4<px/fr>)
+            motionState = Moving(Spawning Player.spawnDuration, 0.006<px/s>, 0.<s>)
             bounds = new PlayerShape(respawnPoint, player.bounds.Dimensions, respawnDirection)
             tauntState = tauntState
             effects = effects
             particles = particles }, playerChariotSound
   
   /// Updates a player like basicNext, but also handles input things
-  let next fields input respawnPoints collisionResult playerChariotSound player =
+  let next fields input respawnPoints deltaTime collisionResult playerChariotSound player =
     let collision = match collisionResult with | Collision.Result_Poly(lines) -> lines | _ -> failwith "Bad player collision result; that's not supposed to happen!"
     let player, playerChariotSound =
       if player.number = 1 then
         basicNext
           (PlayerInput.initFromKeyboard (input.lastKeyboard, input.keyboard) fields.settings)
-          player respawnPoints collision Racetrack.center fields.rand playerChariotSound
+          player respawnPoints collision Racetrack.center deltaTime fields.rand playerChariotSound
       else
         let lastGamepad, gamepad = input.lastGamepads.[player.number - 2], input.gamepads.[player.number - 2]
         basicNext
           (PlayerInput.initFromGamepad (lastGamepad, gamepad) fields.settings)
-          player respawnPoints collision Racetrack.center fields.rand playerChariotSound
+          player respawnPoints collision Racetrack.center deltaTime fields.rand playerChariotSound
     player, playerChariotSound

@@ -67,7 +67,7 @@ module Race =
   
   /// Returns the next race state. 
   let next (race: Race) deltaTime fields input =
-    let nextPlayer = Player.next fields input Racetrack.collisionShape.RespawnPath
+    let nextPlayer = Player.next fields input Racetrack.collisionShape.RespawnPath deltaTime
     match race.raceState with
     | PreRace ->
       if race.elapsedTime >= Race.preRaceDuration then

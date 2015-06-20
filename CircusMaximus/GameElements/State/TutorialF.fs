@@ -15,8 +15,8 @@ module Tutorial =
       | player :: restPlayers, playerChariotSound :: restPlayerChariotSounds ->
         let player, playerChariotSound =
           Player.next
-            fields input
-            Racetrack.collisionShape.RespawnPath (Result_Poly [false; false; false; false; false; false])
+            fields input Racetrack.collisionShape.RespawnPath deltaTime
+            (Result_Poly [false; false; false; false; false; false])
             playerChariotSound player
         let restPlayers, restPlayerChariotSounds = next restPlayers restPlayerChariotSounds
         player :: restPlayers, playerChariotSound :: restPlayerChariotSounds

@@ -1,6 +1,7 @@
 /// A module to draw player states. It's dirty because it, by nature, has side effects
 module CircusMaximus.Graphics.PlayerGraphics
 open System
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open CircusMaximus
@@ -14,8 +15,8 @@ open CircusMaximus.Types.UnitSymbols
 let drawPlayer (spriteBatch: SpriteBatch) (player: Player) (settings: GameSettings) (assets: GameContent) (fontBatch: SpriteBatch) =
   let playerAlpha, shouldDrawGlow =
     match player.motionState with
-    | Moving(Spawning spawnTime, _) ->
-      if spawnTime % 15<fr> < 5<fr>
+    | Moving(Spawning spawnTime, _, _) ->
+      if (int spawnTime) % 15 < 5
         then 255, true
         else 128, false
     | _ -> 255, true
@@ -40,8 +41,12 @@ let drawPlayer (spriteBatch: SpriteBatch) (player: Player) (settings: GameSettin
       let fade = (BoundParticle.particleAge - p.age) / BoundParticle.particleAge |> float32 // Particles fade out
       spriteBatch.DrawCentered(assets.Particle, xnaVec2 (player.position + p.position), Color.White * fade))
   
+  if settings.debugDrawAccelerationTimer then
+    FlatSpriteFont.drawString assets.Font fontBatch (((float player.accelerationTimer).ToString "0.00") + "s") player.position 2.0 Color.White (FlatSpriteFont.Center, FlatSpriteFont.Center)
+
+  
   match player.motionState with
-  | Moving(_, velocity) ->
+  | Moving(_, _, _) ->
     // Draw the player's taunt, if any
     match player.tauntState with
     | Some(taunt, duration) ->
